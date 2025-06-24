@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { EdgeType } from '@/types/canvas';
-import { Minus, CornerDownRight, Zap, Route, Workflow } from 'lucide-react';
+import { Minus, Workflow, Zap } from 'lucide-react';
 
 interface EdgeTypeSelectorProps {
   currentType: EdgeType;
@@ -12,32 +12,14 @@ interface EdgeTypeSelectorProps {
 export const EdgeTypeSelector = ({ currentType, onTypeChange }: EdgeTypeSelectorProps) => {
   const edgeTypes: { type: EdgeType; name: string; icon: React.ReactNode; description: string }[] = [
     { 
-      type: 'default', 
-      name: 'Padrão', 
-      icon: <Minus className="w-4 h-4" />, 
-      description: 'Linha reta simples' 
-    },
-    { 
       type: 'straight', 
-      name: 'Reta', 
+      name: 'Reto', 
       icon: <Minus className="w-4 h-4" />, 
-      description: 'Linha completamente reta' 
-    },
-    { 
-      type: 'step', 
-      name: 'Escada', 
-      icon: <CornerDownRight className="w-4 h-4" />, 
-      description: 'Linha em formato de escada' 
+      description: 'Linha reta' 
     },
     { 
       type: 'smoothstep', 
-      name: 'Escada Suave', 
-      icon: <Route className="w-4 h-4" />, 
-      description: 'Linha em escada com cantos arredondados' 
-    },
-    { 
-      type: 'simplebezier', 
-      name: 'Curva', 
+      name: 'Curvado', 
       icon: <Workflow className="w-4 h-4" />, 
       description: 'Linha curva suave' 
     },
@@ -46,13 +28,13 @@ export const EdgeTypeSelector = ({ currentType, onTypeChange }: EdgeTypeSelector
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 px-2 text-xs opacity-60 hover:opacity-100">
+        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs opacity-40 hover:opacity-70 transition-opacity">
           <Zap className="w-3 h-3 mr-1" />
           Linha
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-3" side="top">
-        <div className="space-y-2">
+      <PopoverContent className="w-56 p-2" side="top">
+        <div className="space-y-1">
           <h4 className="font-medium text-xs mb-2 text-gray-600">Tipo de Linha</h4>
           {edgeTypes.map((edgeType) => (
             <button

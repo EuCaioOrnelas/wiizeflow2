@@ -61,7 +61,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const [selectedNode, setSelectedNode] = useState<Node<CustomNodeData> | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
-  const [currentEdgeType, setCurrentEdgeType] = useState<EdgeType>('smoothstep');
+  const [currentEdgeType, setCurrentEdgeType] = useState<EdgeType>('straight');
   const [edgeToDelete, setEdgeToDelete] = useState<string | null>(null);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);

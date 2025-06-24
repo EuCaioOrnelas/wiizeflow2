@@ -28,4 +28,4 @@ export interface InfiniteCanvasProps {
   onFunnelNameChange: (name: string) => void;
 }
 
-export type EdgeType = 'default' | 'straight' | 'step' | 'smoothstep' | 'simplebezier';
+export type EdgeType = 'straight' | 'smoothstep';

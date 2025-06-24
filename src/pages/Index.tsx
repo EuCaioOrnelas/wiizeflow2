@@ -1,12 +1,45 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
          MousePointer, Palette, Download, Eye, Lightbulb, Trophy, Shield, 
          Crown, PlayCircle, TrendingUp, Clock, DollarSign } from "lucide-react";
+import { usePayment } from "@/hooks/usePayment";
+import { useState } from "react";
+import EmailCaptureDialog from "@/components/EmailCaptureDialog";
 
 const Index = () => {
+  const { createPayment, getCurrentUser, loading } = usePayment();
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [selectedPriceId, setSelectedPriceId] = useState<string>("");
+
   const handleGetStarted = () => {
     window.location.href = '/auth';
+  };
+
+  const handlePlanClick = async (priceId: string | null) => {
+    if (!priceId) {
+      // Plano gratuito - redirecionar para página de cadastro
+      window.location.href = '/auth';
+      return;
+    }
+
+    // Verificar se usuário está logado
+    const user = await getCurrentUser();
+    if (user?.email) {
+      // Usuário logado - usar email da sessão
+      console.log('User logged in, using session email:', user.email);
+      createPayment(priceId, user.email);
+    } else {
+      // Usuário não logado - abrir popup para capturar email
+      setSelectedPriceId(priceId);
+      setEmailDialogOpen(true);
+    }
+  };
+
+  const handleEmailConfirm = (email: string) => {
+    createPayment(selectedPriceId, email);
+    setEmailDialogOpen(false);
   };
 
   const plans = [
@@ -28,9 +61,9 @@ const Index = () => {
         "Funcionalidades limitadas"
       ],
       buttonText: "Começar Grátis",
-      buttonAction: () => window.location.href = '/auth',
       popular: false,
-      color: "gray"
+      color: "gray",
+      priceId: null
     },
     {
       name: "Mensal",
@@ -50,9 +83,9 @@ const Index = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => window.location.href = '/pricing',
       popular: false,
-      color: "blue"
+      color: "blue",
+      priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
     },
     {
       name: "Anual",
@@ -75,9 +108,9 @@ const Index = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => window.location.href = '/pricing',
       popular: true,
-      color: "green"
+      color: "green",
+      priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
     }
   ];
 
@@ -186,6 +219,12 @@ const Index = () => {
           <div className="flex items-center space-x-4">
             <Button variant="ghost" onClick={() => window.location.href = '/dashboard'}>
               Dashboard
+            </Button>
+            <Button variant="ghost" onClick={() => window.location.href = '/contact'}>
+              Contato
+            </Button>
+            <Button variant="outline" onClick={() => window.location.href = '/auth'}>
+              Login
             </Button>
             <Button onClick={handleGetStarted} className="bg-blue-600 hover:bg-blue-700">
               Começar Agora
@@ -485,10 +524,11 @@ const Index = () => {
                   </ul>
 
                   <Button 
-                    onClick={plan.buttonAction}
+                    onClick={() => handlePlanClick(plan.priceId)}
+                    disabled={loading}
                     className={`w-full py-3 text-lg font-medium ${getButtonStyle(plan)} shadow-lg hover:shadow-xl transition-all`}
                   >
-                    {plan.buttonText}
+                    {loading && plan.priceId === selectedPriceId ? "Processando..." : plan.buttonText}
                   </Button>
                 </CardContent>
               </Card>
@@ -496,13 +536,31 @@ const Index = () => {
           </div>
 
           <div className="text-center mt-12">
-            <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto">
+            <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto mb-6">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">
                 🎯 Garantia de 30 Dias
               </h3>
               <p className="text-blue-700">
                 Se não aumentar suas conversões em 30 dias, devolvemos 100% do seu dinheiro.
               </p>
+            </div>
+
+            {/* Nova seção explicativa sobre acesso */}
+            <div className="bg-green-50 p-6 rounded-lg max-w-3xl mx-auto border border-green-200">
+              <h3 className="text-lg font-semibold text-green-800 mb-3">
+                📧 Como Acessar Após a Compra
+              </h3>
+              <div className="text-green-700 space-y-2">
+                <p className="font-medium">
+                  ✅ <strong>Já tem conta?</strong> Use o mesmo email para fazer login e ter acesso imediato aos benefícios premium
+                </p>
+                <p className="font-medium">
+                  ✅ <strong>Não tem conta?</strong> Após a compra, crie sua conta usando o mesmo email da compra para ativar automaticamente todos os benefícios
+                </p>
+                <p className="text-sm text-green-600 mt-3">
+                  💡 <em>É importante usar o mesmo email da compra para que o sistema reconheça automaticamente sua assinatura</em>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -550,6 +608,15 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">Absolutamente não! O WiizeFlow foi desenvolvido para ser usado por qualquer pessoa. Nosso editor visual funciona com arrastar e soltar, sem necessidade de código.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle>Comprei sem ter conta, como acesso meus benefícios?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Muito simples! Crie sua conta usando o mesmo email que você usou na compra. O sistema reconhecerá automaticamente sua assinatura e ativará todos os benefícios premium na sua conta.</p>
               </CardContent>
             </Card>
 
@@ -622,6 +689,7 @@ const Index = () => {
                 <li><a href="/pricing" className="text-gray-300 hover:text-blue-400 transition-colors">Planos</a></li>
                 <li><a href="/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors">Dashboard</a></li>
                 <li><a href="/account" className="text-gray-300 hover:text-blue-400 transition-colors">Minha Conta</a></li>
+                <li><a href="/contact" className="text-gray-300 hover:text-blue-400 transition-colors">Contato</a></li>
               </ul>
             </div>
 
@@ -642,6 +710,14 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Email Capture Dialog */}
+      <EmailCaptureDialog
+        open={emailDialogOpen}
+        onClose={() => setEmailDialogOpen(false)}
+        onConfirm={handleEmailConfirm}
+        loading={loading}
+      />
     </div>
   );
 };

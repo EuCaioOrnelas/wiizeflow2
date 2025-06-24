@@ -309,19 +309,26 @@ const InfiniteCanvasInner = ({
   const exportAsImage = useCallback(async () => {
     if (reactFlowWrapper.current) {
       try {
-        // Criar um estilo temporário para garantir que os SVGs sejam capturados
-        const style = document.createElement('style');
-        style.textContent = `
-          .react-flow__edges svg {
-            position: relative !important;
-            z-index: 1 !important;
-          }
-          .react-flow__edge path {
-            stroke: #10b981 !important;
-            stroke-width: 2 !important;
-          }
-        `;
-        document.head.appendChild(style);
+        // Aguardar um momento para garantir que tudo esteja renderizado
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Forçar re-renderização dos SVGs
+        const svgElements = reactFlowWrapper.current.querySelectorAll('.react-flow__edges svg');
+        svgElements.forEach((svg: any) => {
+          svg.style.position = 'absolute';
+          svg.style.zIndex = '1';
+          svg.style.pointerEvents = 'none';
+        });
+
+        const pathElements = reactFlowWrapper.current.querySelectorAll('.react-flow__edge path');
+        pathElements.forEach((path: any) => {
+          path.style.stroke = '#10b981';
+          path.style.strokeWidth = '2';
+          path.style.fill = 'none';
+        });
+
+        // Aguardar mais um momento após aplicar os estilos
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         const canvas = await html2canvas(reactFlowWrapper.current, {
           backgroundColor: '#ffffff',
@@ -329,29 +336,45 @@ const InfiniteCanvasInner = ({
           allowTaint: true,
           scale: 2,
           logging: false,
+          width: reactFlowWrapper.current.scrollWidth,
+          height: reactFlowWrapper.current.scrollHeight,
           ignoreElements: (element) => {
-            // Não ignorar elementos SVG das conexões
             return element.classList.contains('react-flow__minimap') ||
-                   element.classList.contains('react-flow__controls');
+                   element.classList.contains('react-flow__controls') ||
+                   element.classList.contains('react-flow__panel');
           },
-          onclone: (clonedDoc) => {
-            // Garantir que os SVGs sejam visíveis no clone
-            const svgElements = clonedDoc.querySelectorAll('.react-flow__edges svg');
-            svgElements.forEach((svg: any) => {
+          onclone: (clonedDoc, element) => {
+            // Garantir que todos os SVGs estejam visíveis no clone
+            const clonedSvgs = clonedDoc.querySelectorAll('.react-flow__edges svg');
+            clonedSvgs.forEach((svg: any) => {
               svg.style.position = 'absolute';
-              svg.style.zIndex = '1';
+              svg.style.zIndex = '10';
+              svg.style.display = 'block';
+              svg.style.visibility = 'visible';
+              svg.style.opacity = '1';
             });
             
-            const pathElements = clonedDoc.querySelectorAll('.react-flow__edge path');
-            pathElements.forEach((path: any) => {
+            const clonedPaths = clonedDoc.querySelectorAll('.react-flow__edge path');
+            clonedPaths.forEach((path: any) => {
               path.style.stroke = '#10b981';
               path.style.strokeWidth = '2';
+              path.style.fill = 'none';
+              path.style.display = 'block';
+              path.style.visibility = 'visible';
+              path.style.opacity = '1';
             });
+
+            // Garantir que o container das edges esteja visível
+            const edgesContainer = clonedDoc.querySelector('.react-flow__edges');
+            if (edgesContainer) {
+              (edgesContainer as any).style.position = 'absolute';
+              (edgesContainer as any).style.zIndex = '10';
+              (edgesContainer as any).style.display = 'block';
+              (edgesContainer as any).style.visibility = 'visible';
+              (edgesContainer as any).style.opacity = '1';
+            }
           }
         });
-
-        // Remover o estilo temporário
-        document.head.removeChild(style);
 
         const link = document.createElement('a');
         link.download = `${funnelName}-funnel.png`;
@@ -377,19 +400,26 @@ const InfiniteCanvasInner = ({
   const exportAsPDF = useCallback(async () => {
     if (reactFlowWrapper.current) {
       try {
-        // Criar um estilo temporário para garantir que os SVGs sejam capturados
-        const style = document.createElement('style');
-        style.textContent = `
-          .react-flow__edges svg {
-            position: relative !important;
-            z-index: 1 !important;
-          }
-          .react-flow__edge path {
-            stroke: #10b981 !important;
-            stroke-width: 2 !important;
-          }
-        `;
-        document.head.appendChild(style);
+        // Aguardar um momento para garantir que tudo esteja renderizado
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Forçar re-renderização dos SVGs
+        const svgElements = reactFlowWrapper.current.querySelectorAll('.react-flow__edges svg');
+        svgElements.forEach((svg: any) => {
+          svg.style.position = 'absolute';
+          svg.style.zIndex = '1';
+          svg.style.pointerEvents = 'none';
+        });
+
+        const pathElements = reactFlowWrapper.current.querySelectorAll('.react-flow__edge path');
+        pathElements.forEach((path: any) => {
+          path.style.stroke = '#10b981';
+          path.style.strokeWidth = '2';
+          path.style.fill = 'none';
+        });
+
+        // Aguardar mais um momento após aplicar os estilos
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         const canvas = await html2canvas(reactFlowWrapper.current, {
           backgroundColor: '#ffffff',
@@ -397,27 +427,45 @@ const InfiniteCanvasInner = ({
           allowTaint: true,
           scale: 2,
           logging: false,
+          width: reactFlowWrapper.current.scrollWidth,
+          height: reactFlowWrapper.current.scrollHeight,
           ignoreElements: (element) => {
             return element.classList.contains('react-flow__minimap') ||
-                   element.classList.contains('react-flow__controls');
+                   element.classList.contains('react-flow__controls') ||
+                   element.classList.contains('react-flow__panel');
           },
-          onclone: (clonedDoc) => {
-            const svgElements = clonedDoc.querySelectorAll('.react-flow__edges svg');
-            svgElements.forEach((svg: any) => {
+          onclone: (clonedDoc, element) => {
+            // Garantir que todos os SVGs estejam visíveis no clone
+            const clonedSvgs = clonedDoc.querySelectorAll('.react-flow__edges svg');
+            clonedSvgs.forEach((svg: any) => {
               svg.style.position = 'absolute';
-              svg.style.zIndex = '1';
+              svg.style.zIndex = '10';
+              svg.style.display = 'block';
+              svg.style.visibility = 'visible';
+              svg.style.opacity = '1';
             });
             
-            const pathElements = clonedDoc.querySelectorAll('.react-flow__edge path');
-            pathElements.forEach((path: any) => {
+            const clonedPaths = clonedDoc.querySelectorAll('.react-flow__edge path');
+            clonedPaths.forEach((path: any) => {
               path.style.stroke = '#10b981';
               path.style.strokeWidth = '2';
+              path.style.fill = 'none';
+              path.style.display = 'block';
+              path.style.visibility = 'visible';
+              path.style.opacity = '1';
             });
+
+            // Garantir que o container das edges esteja visível
+            const edgesContainer = clonedDoc.querySelector('.react-flow__edges');
+            if (edgesContainer) {
+              (edgesContainer as any).style.position = 'absolute';
+              (edgesContainer as any).style.zIndex = '10';
+              (edgesContainer as any).style.display = 'block';
+              (edgesContainer as any).style.visibility = 'visible';
+              (edgesContainer as any).style.opacity = '1';
+            }
           }
         });
-
-        // Remover o estilo temporário
-        document.head.removeChild(style);
 
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF({

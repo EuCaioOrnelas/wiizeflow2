@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Mail } from "lucide-react";
+import { Mail, Info } from "lucide-react";
 
 interface EmailCaptureDialogProps {
   open: boolean;
@@ -77,6 +77,17 @@ const EmailCaptureDialog = ({ open, onClose, onConfirm, loading }: EmailCaptureD
             {emailError && (
               <p className="text-sm text-red-500 mt-1">{emailError}</p>
             )}
+          </div>
+
+          {/* Informação sobre acesso */}
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div className="flex items-start gap-2">
+              <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-blue-800">
+                <p className="font-medium mb-1">💡 Como acessar após a compra:</p>
+                <p>Use este mesmo email para fazer login ou criar sua conta e ter acesso automático aos benefícios premium.</p>
+              </div>
+            </div>
           </div>
           
           <div className="flex gap-3">

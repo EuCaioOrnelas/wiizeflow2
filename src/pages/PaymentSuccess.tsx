@@ -1,6 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Download, Target } from "lucide-react";
+import { CheckCircle, Download, Target, AlertCircle } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
 const PaymentSuccess = () => {
@@ -37,6 +38,25 @@ const PaymentSuccess = () => {
             <p className="text-xl text-gray-600">
               Obrigado por escolher o WiizeFlow! Seu pagamento foi processado com sucesso.
             </p>
+          </div>
+
+          {/* Destaque sobre acesso */}
+          <div className="bg-blue-50 p-6 rounded-lg mb-8 border border-blue-200">
+            <div className="flex items-start gap-3 mb-4">
+              <AlertCircle className="w-6 h-6 text-blue-600 mt-0.5" />
+              <div className="text-left">
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                  🔑 IMPORTANTE: Como Acessar Seus Benefícios
+                </h3>
+                <div className="text-blue-800 space-y-2">
+                  <p><strong>✅ Já tem conta no WiizeFlow?</strong></p>
+                  <p className="ml-4">Faça login com o mesmo email usado na compra para ativar automaticamente seus benefícios premium.</p>
+                  
+                  <p className="mt-3"><strong>✅ Ainda não tem conta?</strong></p>
+                  <p className="ml-4">Crie sua conta usando o mesmo email da compra para ter acesso imediato a todos os recursos premium.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <Card className="mb-8 shadow-lg">
@@ -85,15 +105,15 @@ const PaymentSuccess = () => {
             </div>
           )}
 
-          <div className="bg-green-50 p-6 rounded-lg mb-8">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              📧 Dados de Acesso
+          <div className="bg-yellow-50 p-6 rounded-lg mb-8 border border-yellow-200">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+              📧 Lembre-se: Use o Email da Compra
             </h3>
-            <p className="text-green-700 mb-2">
-              Use o mesmo email da compra para acessar sua conta premium!
+            <p className="text-yellow-700 mb-2">
+              Para ter acesso automático aos seus benefícios premium, é essencial usar o mesmo email da compra ao fazer login ou criar sua conta.
             </p>
-            <p className="text-sm text-green-600">
-              Se você ainda não tem conta, crie uma com o email usado na compra para ativar automaticamente seus benefícios.
+            <p className="text-sm text-yellow-600">
+              Se usar um email diferente, não conseguiremos reconhecer sua assinatura automaticamente.
             </p>
           </div>
 

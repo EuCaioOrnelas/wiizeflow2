@@ -18,8 +18,8 @@ const Sales = () => {
 
   const handlePlanClick = async (priceId: string | null) => {
     if (!priceId) {
-      // Plano gratuito - redirecionar para home
-      window.location.href = '/';
+      // Plano gratuito - redirecionar para página de cadastro
+      window.location.href = '/auth';
       return;
     }
 
@@ -529,13 +529,31 @@ const Sales = () => {
           </div>
 
           <div className="text-center mt-12">
-            <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto">
+            <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto mb-6">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">
                 🎯 Garantia de 30 Dias
               </h3>
               <p className="text-blue-700">
                 Se não aumentar suas conversões em 30 dias, devolvemos 100% do seu dinheiro.
               </p>
+            </div>
+
+            {/* Nova seção explicativa sobre acesso */}
+            <div className="bg-green-50 p-6 rounded-lg max-w-3xl mx-auto border border-green-200">
+              <h3 className="text-lg font-semibold text-green-800 mb-3">
+                📧 Como Acessar Após a Compra
+              </h3>
+              <div className="text-green-700 space-y-2">
+                <p className="font-medium">
+                  ✅ <strong>Já tem conta?</strong> Use o mesmo email para fazer login e ter acesso imediato aos benefícios premium
+                </p>
+                <p className="font-medium">
+                  ✅ <strong>Não tem conta?</strong> Após a compra, crie sua conta usando o mesmo email da compra para ativar automaticamente todos os benefícios
+                </p>
+                <p className="text-sm text-green-600 mt-3">
+                  💡 <em>É importante usar o mesmo email da compra para que o sistema reconheça automaticamente sua assinatura</em>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -583,6 +601,15 @@ const Sales = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">Absolutamente não! O FunnelWiize foi desenvolvido para ser usado por qualquer pessoa. Nosso editor visual funciona com arrastar e soltar, sem necessidade de código.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle>Comprei sem ter conta, como acesso meus benefícios?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Muito simples! Crie sua conta usando o mesmo email que você usou na compra. O sistema reconhecerá automaticamente sua assinatura e ativará todos os benefícios premium na sua conta.</p>
               </CardContent>
             </Card>
 

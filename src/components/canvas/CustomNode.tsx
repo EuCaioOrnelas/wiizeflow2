@@ -1,4 +1,5 @@
 
+
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -147,6 +148,12 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     }
   };
 
+  const handleNameClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingName(true);
+  };
+
   const handleOpenEditor = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Trigger double click event to open content editor
@@ -257,11 +264,12 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                 onKeyDown={handleNameKeyPress}
                 className="h-6 text-sm font-medium"
                 autoFocus
+                onClick={(e) => e.stopPropagation()}
               />
             ) : (
               <span 
                 className="font-medium text-sm cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
-                onClick={() => setEditingName(true)}
+                onClick={handleNameClick}
               >
                 {data.label}
               </span>
@@ -364,3 +372,4 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
 });
 
 CustomNode.displayName = 'CustomNode';
+

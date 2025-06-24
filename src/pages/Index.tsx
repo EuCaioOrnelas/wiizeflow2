@@ -21,61 +21,60 @@ const Index = () => {
 
   const plans = [
     {
-      name: "Free",
+      name: "Gratuito",
       price: "R$0",
-      period: "/mês",
+      period: "/sempre",
       funnelLimit: 2,
       features: [
         "Até 2 funis",
-        "Sem cartão de crédito",
-        "Funcionalidades básicas"
+        "Editor visual básico",
+        "Exportar como imagem/PDF",
+        "Suporte por email"
+      ],
+      restrictions: [
+        "Sem acesso aos templates"
       ],
       buttonText: "Começar grátis",
       buttonAction: handleGetStarted,
       popular: false
     },
     {
-      name: "Start",
-      price: "R$9",
-      period: "/mês",
-      funnelLimit: 5,
-      features: [
-        "Até 5 funis",
-        "Suporte básico",
-        "Templates inclusos"
-      ],
-      buttonText: "Assinar plano básico",
-      buttonAction: () => alert("Integração com Stripe em breve"),
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: "R$19",
-      period: "/mês",
-      funnelLimit: 10,
-      features: [
-        "Até 10 funis",
-        "Suporte priorizado",
-        "Analytics avançado"
-      ],
-      buttonText: "Assinar pro",
-      buttonAction: () => alert("Integração com Stripe em breve"),
-      popular: true
-    },
-    {
-      name: "Wiize Max",
-      price: "R$39",
+      name: "Mensal",
+      price: "R$47",
       period: "/mês",
       funnelLimit: "Ilimitados",
       features: [
         "Funis ilimitados",
-        "Suporte completo",
-        "Acesso antecipado a funções novas",
-        "Consultoria personalizada"
+        "Todos os templates inclusos",
+        "Editor visual completo",
+        "Suporte prioritário",
+        "Análises detalhadas"
       ],
-      buttonText: "Assinar Plano max",
-      buttonAction: () => alert("Integração com Stripe em breve"),
+      restrictions: [],
+      buttonText: "Assinar Mensal",
+      buttonAction: () => window.location.href = '/pricing',
       popular: false
+    },
+    {
+      name: "Anual",
+      price: "R$397",
+      period: "/ano",
+      originalPrice: "R$564",
+      savings: "30% OFF",
+      funnelLimit: "Ilimitados",
+      features: [
+        "Funis ilimitados",
+        "Todos os templates inclusos", 
+        "Editor visual completo",
+        "Suporte prioritário VIP",
+        "Análises detalhadas",
+        "Consultoria personalizada",
+        "Acesso antecipado"
+      ],
+      restrictions: [],
+      buttonText: "Assinar Anual",
+      buttonAction: () => window.location.href = '/pricing',
+      popular: true
     }
   ];
 
@@ -233,11 +232,11 @@ const Index = () => {
               Escolha seu plano e comece a criar seus funis agora mesmo
             </h2>
             <p className="text-xl text-gray-600">
-              Planos flexíveis para todos os tipos de negócio
+              Comece grátis e escale conforme seu negócio cresce
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {plans.map((plan, index) => (
               <Card key={index} className={`relative ${plan.popular ? 'border-2 border-green-500 scale-105' : 'border border-gray-200'} hover:shadow-lg transition-all duration-200`}>
                 {plan.popular && (
@@ -252,10 +251,20 @@ const Index = () => {
                   <CardTitle className="text-xl font-bold text-gray-900 mb-2">
                     {plan.name}
                   </CardTitle>
-                  <div className="flex items-baseline justify-center">
+                  <div className="flex items-baseline justify-center mb-2">
                     <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
                     <span className="text-gray-500 ml-1">{plan.period}</span>
                   </div>
+                  
+                  {plan.originalPrice && (
+                    <div className="flex items-center justify-center space-x-2 mb-2">
+                      <span className="text-sm text-gray-400 line-through">{plan.originalPrice}</span>
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                        {plan.savings}
+                      </span>
+                    </div>
+                  )}
+                  
                   <p className="text-sm text-gray-600 mt-2">
                     {typeof plan.funnelLimit === 'number' ? `Até ${plan.funnelLimit} funis` : plan.funnelLimit + ' funis'}
                   </p>
@@ -269,11 +278,17 @@ const Index = () => {
                         <span className="text-gray-700 text-sm">{feature}</span>
                       </li>
                     ))}
+                    {plan.restrictions?.map((restriction, restrictionIndex) => (
+                      <li key={restrictionIndex} className="flex items-start">
+                        <span className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0 text-red-500">✗</span>
+                        <span className="text-gray-500 text-sm">{restriction}</span>
+                      </li>
+                    ))}
                   </ul>
 
                   <Button 
                     onClick={plan.buttonAction}
-                    className={`w-full ${plan.popular ? 'bg-green-600 hover:bg-green-700' : plan.name === 'Free' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-800 hover:bg-gray-900'} text-white`}
+                    className={`w-full ${plan.popular ? 'bg-green-600 hover:bg-green-700' : plan.name === 'Gratuito' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-800 hover:bg-gray-900'} text-white`}
                   >
                     {plan.buttonText}
                   </Button>

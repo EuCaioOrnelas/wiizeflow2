@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Target, Star, Crown } from "lucide-react";
+import { Check, Target, Crown } from "lucide-react";
 
 const Pricing = () => {
   const plans = [
@@ -14,11 +14,11 @@ const Pricing = () => {
         "Até 2 funis",
         "Editor visual básico",
         "Exportar como imagem/PDF",
-        "Sem cartão de crédito"
+        "Suporte por email"
       ],
       restrictions: [
-        "Não inclui templates",
-        "Suporte limitado"
+        "Sem acesso aos templates",
+        "Funcionalidades limitadas"
       ],
       buttonText: "Começar grátis",
       buttonAction: () => window.location.href = '/',
@@ -26,17 +26,18 @@ const Pricing = () => {
       color: "gray"
     },
     {
-      name: "Mensal",
+      name: "Mensal", 
       price: "R$47",
       period: "/mês",
       funnelLimit: "Ilimitados",
       features: [
         "Funis ilimitados",
         "Todos os templates inclusos",
-        "Editor visual avançado",
+        "Editor visual completo",
         "Exportar como imagem/PDF",
         "Suporte prioritário",
-        "Atualizações automáticas"
+        "Análises detalhadas",
+        "Histórico de versões"
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
@@ -50,16 +51,18 @@ const Pricing = () => {
       period: "/ano",
       originalPrice: "R$564",
       savings: "30% OFF",
-      funnelLimit: "Ilimitados",
+      funnelLimit: "Ilimitados", 
       features: [
         "Funis ilimitados",
         "Todos os templates inclusos",
-        "Editor visual avançado",
+        "Editor visual completo",
         "Exportar como imagem/PDF",
         "Suporte prioritário VIP",
-        "Atualizações automáticas",
+        "Análises detalhadas",
+        "Histórico de versões",
         "Acesso antecipado a novas funcionalidades",
-        "Consultoria personalizada (1h/mês)"
+        "Consultoria personalizada (1h/mês)",
+        "Integração com ferramentas externas"
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
@@ -112,7 +115,7 @@ const Pricing = () => {
           Escolha o Plano Ideal para Seu Negócio
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Crie funis visuais profissionais e aumente suas conversões com nossa plataforma completa
+          Comece grátis e escale conforme seu negócio cresce. Todos os planos incluem suporte em português.
         </p>
       </section>
 
@@ -185,7 +188,7 @@ const Pricing = () => {
         <div className="text-center mt-12 max-w-4xl mx-auto">
           <div className="bg-blue-50 p-6 rounded-lg mb-6">
             <h3 className="text-lg font-semibold text-blue-900 mb-2">
-              💡 Dica: Economize 30% com o Plano Anual
+              💡 Economize 30% com o Plano Anual
             </h3>
             <p className="text-blue-700">
               Pague apenas R$ 397 ao invés de R$ 564 e tenha acesso completo por um ano inteiro!
@@ -193,10 +196,10 @@ const Pricing = () => {
           </div>
           
           <p className="text-gray-600 mb-4">
-            ✨ Todos os planos pagos incluem acesso completo às funcionalidades de criação de funis
+            ✨ Todos os planos pagos incluem acesso completo aos templates e funcionalidades avançadas
           </p>
           <p className="text-gray-600">
-            🔒 Pagamento seguro • Cancele a qualquer momento • Suporte em português
+            🔒 Pagamento seguro • Cancele a qualquer momento • Suporte em português • Garantia de 30 dias
           </p>
         </div>
       </section>

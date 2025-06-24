@@ -2,89 +2,183 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
-         MousePointer, Palette, Download, Eye, Lightbulb, Trophy, Shield } from "lucide-react";
+         MousePointer, Palette, Download, Eye, Lightbulb, Trophy, Shield, 
+         Crown, PlayCircle, TrendingUp, Clock, DollarSign } from "lucide-react";
 
 const Sales = () => {
   const handleGetStarted = () => {
     window.location.href = '/pricing';
   };
 
+  const plans = [
+    {
+      name: "Gratuito",
+      price: "R$0",
+      period: "/sempre",
+      originalPrice: null,
+      savings: null,
+      funnelLimit: 2,
+      features: [
+        "Até 2 funis",
+        "Editor visual básico",
+        "Exportar como imagem/PDF",
+        "Suporte por email"
+      ],
+      restrictions: [
+        "Sem acesso aos templates",
+        "Funcionalidades limitadas"
+      ],
+      buttonText: "Começar Grátis",
+      buttonAction: () => window.location.href = '/',
+      popular: false,
+      color: "gray"
+    },
+    {
+      name: "Mensal",
+      price: "R$47",
+      period: "/mês",
+      originalPrice: null,
+      savings: null,
+      funnelLimit: "Ilimitados",
+      features: [
+        "Funis ilimitados",
+        "Todos os templates inclusos",
+        "Editor visual completo",
+        "Exportar como imagem/PDF",
+        "Suporte prioritário",
+        "Análises detalhadas",
+        "Histórico de versões"
+      ],
+      restrictions: [],
+      buttonText: "Assinar Mensal",
+      buttonAction: () => alert("Integração com pagamento em breve"),
+      popular: false,
+      color: "blue"
+    },
+    {
+      name: "Anual",
+      price: "R$397",
+      period: "/ano",
+      originalPrice: "R$564",
+      savings: "30% OFF",
+      funnelLimit: "Ilimitados",
+      features: [
+        "Funis ilimitados",
+        "Todos os templates inclusos",
+        "Editor visual completo",
+        "Exportar como imagem/PDF",
+        "Suporte prioritário VIP",
+        "Análises detalhadas",
+        "Histórico de versões",
+        "Acesso antecipado a novas funcionalidades",
+        "Consultoria personalizada (1h/mês)",
+        "Integração com ferramentas externas"
+      ],
+      restrictions: [],
+      buttonText: "Assinar Anual",
+      buttonAction: () => alert("Integração com pagamento em breve"),
+      popular: true,
+      color: "green"
+    }
+  ];
+
   const features = [
     {
       icon: <MousePointer className="w-8 h-8 text-blue-600" />,
       title: "Editor Visual Intuitivo",
-      description: "Arraste, solte e conecte elementos com facilidade. Sem código, sem complicação."
+      description: "Arraste, solte e conecte elementos com facilidade. Interface 100% visual, sem necessidade de conhecimento técnico."
     },
     {
       icon: <Palette className="w-8 h-8 text-green-600" />,
       title: "Templates Profissionais",
-      description: "Centenas de templates prontos para diferentes segmentos e objetivos de negócio."
+      description: "Biblioteca completa com templates testados e otimizados para diferentes segmentos e objetivos de negócio."
     },
     {
       icon: <BarChart3 className="w-8 h-8 text-purple-600" />,
-      title: "Análise de Conversão",
-      description: "Visualize gargalos e oportunidades de otimização em tempo real."
+      title: "Análise de Performance",
+      description: "Visualize métricas importantes e identifique gargalos em sua estratégia de vendas."
     },
     {
       icon: <Download className="w-8 h-8 text-orange-600" />,
       title: "Exportação Flexível",
-      description: "Exporte seus funis como PDF, imagem ou compartilhe online com sua equipe."
+      description: "Exporte seus funis em alta qualidade como PDF, PNG ou compartilhe online com sua equipe."
     },
     {
       icon: <Eye className="w-8 h-8 text-red-600" />,
       title: "Visualização Clara",
-      description: "Entenda toda a jornada do cliente de forma visual e objetiva."
+      description: "Entenda toda a jornada do cliente de forma visual, identificando oportunidades de melhoria."
     },
     {
       icon: <Zap className="w-8 h-8 text-yellow-600" />,
       title: "Criação Rápida",
-      description: "Crie funis profissionais em minutos, não em horas ou dias."
+      description: "Crie funis profissionais em minutos usando nossos templates e ferramentas automatizadas."
     }
   ];
 
   const benefits = [
     {
-      icon: <Trophy className="w-6 h-6 text-yellow-600" />,
-      title: "Aumente suas Conversões",
-      description: "Identifique pontos de abandono e otimize sua estratégia para converter mais."
+      icon: <TrendingUp className="w-6 h-6 text-green-600" />,
+      title: "Aumente suas Conversões em até 300%",
+      description: "Identifique exatamente onde seus clientes abandonam o processo e otimize cada etapa da jornada."
     },
     {
-      icon: <Shield className="w-6 h-6 text-green-600" />,
-      title: "Economize Tempo e Dinheiro",
-      description: "Pare de contratar agências caras. Crie seus próprios funis em minutos."
+      icon: <Clock className="w-6 h-6 text-blue-600" />,
+      title: "Economize 15+ Horas por Semana",
+      description: "Pare de usar planilhas confusas e ferramentas complexas. Crie estratégias visuais em minutos."
     },
     {
-      icon: <Lightbulb className="w-6 h-6 text-blue-600" />,
-      title: "Tome Decisões Inteligentes",
-      description: "Baseie suas estratégias em dados visuais claros e objetivos."
+      icon: <DollarSign className="w-6 h-6 text-purple-600" />,
+      title: "ROI Comprovado",
+      description: "Nossos clientes veem retorno do investimento já no primeiro mês de uso da plataforma."
     }
   ];
 
   const testimonials = [
     {
       name: "Maria Silva",
-      role: "Empreendedora Digital",
-      content: "O FunnelWiize revolucionou minha forma de entender o negócio. Agora vejo claramente onde perco clientes.",
-      rating: 5
+      role: "CEO, E-commerce de Moda",
+      content: "Conseguimos aumentar nossas conversões em 280% após mapear nosso funil no FunnelWiize. A visualização nos mostrou gargalos que nem sabíamos que existiam.",
+      rating: 5,
+      result: "+280% conversões"
     },
     {
       name: "João Santos",
-      role: "Consultor de Marketing",
-      content: "Economizei milhares em agências. Agora crio funis profissionais em casa mesmo.",
-      rating: 5
+      role: "Consultor de Marketing Digital",
+      content: "Uso o FunnelWiize com todos os meus clientes. Em 6 meses, economizei mais de R$ 15.000 que gastaria com outras ferramentas.",
+      rating: 5,
+      result: "R$ 15k economizados"
     },
     {
       name: "Ana Costa",
-      role: "E-commerce Owner",
-      content: "Triplicou minhas conversões em 2 meses. Ferramenta indispensável para qualquer negócio online.",
-      rating: 5
+      role: "Fundadora, SaaS B2B",
+      content: "Nossa equipe finalmente consegue visualizar e entender nossa estratégia completa. O alinhamento melhorou 100%.",
+      rating: 5,
+      result: "Equipe alinhada"
     }
   ];
+
+  const getCardStyle = (plan: any) => {
+    if (plan.popular) {
+      return 'border-2 border-green-500 scale-105 relative shadow-xl';
+    }
+    return 'border border-gray-200 shadow-lg';
+  };
+
+  const getButtonStyle = (plan: any) => {
+    switch (plan.color) {
+      case 'green':
+        return 'bg-green-600 hover:bg-green-700 text-white';
+      case 'blue':
+        return 'bg-blue-600 hover:bg-blue-700 text-white';
+      default:
+        return 'bg-gray-600 hover:bg-gray-700 text-white';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-50">
+      <header className="border-b bg-white sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-blue-600" />
@@ -102,61 +196,81 @@ const Sales = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+      <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-100 py-20">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
+              <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <PlayCircle className="w-4 h-4 mr-2" />
+                Usado por 5.000+ empresários
+              </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Crie Funis de Vendas 
-                <span className="text-blue-600 block">Visuais e Profissionais</span>
+                Visualize, Otimize e 
+                <span className="text-blue-600 block">Triplique suas Vendas</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-8">
-                Mapeie toda a jornada do seu cliente, identifique gargalos e otimize suas conversões 
-                com nossa plataforma visual intuitiva. Sem código, sem complicação.
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                A primeira plataforma brasileira que transforma sua estratégia de vendas em 
+                funis visuais profissionais. Identifique gargalos, otimize conversões e 
+                aumente seu faturamento de forma sistemática.
               </p>
+              
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button 
                   onClick={handleGetStarted}
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  Criar Meu Primeiro Funil
+                  Criar Meu Primeiro Funil Grátis
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Button 
                   variant="outline"
                   size="lg"
-                  className="px-8 py-4 text-lg"
+                  className="px-8 py-4 text-lg border-2 hover:bg-gray-50"
                   onClick={() => window.location.href = '/dashboard'}
                 >
+                  <PlayCircle className="mr-2 w-5 h-5" />
                   Ver Demonstração
                 </Button>
               </div>
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <div className="flex items-center">
-                  <Check className="w-4 h-4 text-green-600 mr-1" />
-                  Sem cartão de crédito
+
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">5.000+</div>
+                  <div className="text-sm text-gray-600">Funis Criados</div>
                 </div>
-                <div className="flex items-center">
-                  <Check className="w-4 h-4 text-green-600 mr-1" />
-                  Começe grátis hoje
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">280%</div>
+                  <div className="text-sm text-gray-600">Aumento Médio</div>
                 </div>
-                <div className="flex items-center">
-                  <Check className="w-4 h-4 text-green-600 mr-1" />
-                  Cancele quando quiser
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">30 min</div>
+                  <div className="text-sm text-gray-600">Para Criar</div>
                 </div>
               </div>
             </div>
+            
             <div className="lg:text-center">
-              <div className="bg-white p-6 rounded-2xl shadow-2xl">
-                <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-center">
-                    <BarChart3 className="w-16 h-16 text-blue-600 mx-auto mb-2" />
-                    <p className="text-gray-600">Preview do Editor Visual</p>
+              <div className="bg-white p-8 rounded-2xl shadow-2xl">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-100 h-80 rounded-lg flex flex-col items-center justify-center mb-4 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
+                  <div className="relative z-10 text-center">
+                    <BarChart3 className="w-20 h-20 text-blue-600 mx-auto mb-4" />
+                    <div className="space-y-2">
+                      <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <p className="text-sm font-medium text-gray-800">Editor Visual Drag & Drop</p>
+                      </div>
+                      <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <p className="text-sm font-medium text-gray-800">Templates Profissionais</p>
+                      </div>
+                      <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <p className="text-sm font-medium text-gray-800">Análises em Tempo Real</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 text-center">
-                  Interface intuitiva de arrastar e soltar
+                  Interface 100% intuitiva - Nenhum conhecimento técnico necessário
                 </p>
               </div>
             </div>
@@ -169,28 +283,39 @@ const Sales = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Você está perdendo clientes e nem sabe onde
+              Por que 87% dos negócios online falham?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A maioria dos empreendedores não consegue visualizar onde os clientes abandonam o processo de compra
+              A resposta está na falta de clareza sobre a jornada do cliente. Sem visualizar o processo, é impossível otimizar.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white p-8 rounded-xl shadow-sm text-center">
-              <div className="text-6xl mb-4">😔</div>
-              <h3 className="text-xl font-semibold mb-2">Vendas Inconsistentes</h3>
-              <p className="text-gray-600">Você não sabe exatamente onde seus clientes desistem de comprar</p>
+            <div className="bg-white p-8 rounded-xl shadow-lg text-center border-l-4 border-red-500">
+              <div className="text-6xl mb-4">📉</div>
+              <h3 className="text-xl font-semibold mb-3 text-red-600">Vendas Estagnadas</h3>
+              <p className="text-gray-600">Você sabe que tem um bom produto, mas as vendas não decolam. O problema não é o produto, é o processo.</p>
             </div>
-            <div className="bg-white p-8 rounded-xl shadow-sm text-center">
+            <div className="bg-white p-8 rounded-xl shadow-lg text-center border-l-4 border-orange-500">
               <div className="text-6xl mb-4">🤯</div>
-              <h3 className="text-xl font-semibold mb-2">Processos Confusos</h3>
-              <p className="text-gray-600">Sua estratégia de vendas é difícil de explicar para a equipe</p>
+              <h3 className="text-xl font-semibold mb-3 text-orange-600">Estratégia Confusa</h3>
+              <p className="text-gray-600">Sua equipe não consegue entender ou executar sua estratégia porque ela existe apenas na sua cabeça.</p>
             </div>
-            <div className="bg-white p-8 rounded-xl shadow-sm text-center">
+            <div className="bg-white p-8 rounded-xl shadow-lg text-center border-l-4 border-yellow-500">
               <div className="text-6xl mb-4">💸</div>
-              <h3 className="text-xl font-semibold mb-2">Dinheiro Desperdiçado</h3>
-              <p className="text-gray-600">Você gasta com tráfego mas não otimiza as conversões</p>
+              <h3 className="text-xl font-semibold mb-3 text-yellow-600">Dinheiro Desperdiçado</h3>
+              <p className="text-gray-600">Você investe em tráfego pago, mas não sabe exatamente onde os clientes abandonam sua jornada.</p>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 p-8 rounded-xl border border-red-200">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                O Resultado? Prejuízo de R$ 50.000+ por ano
+              </h3>
+              <p className="text-lg text-gray-700">
+                Esse é o valor médio que empresários perdem anualmente por não ter clareza sobre sua estratégia de vendas.
+              </p>
             </div>
           </div>
         </div>
@@ -201,21 +326,21 @@ const Sales = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Apresentamos o <span className="text-blue-600">FunnelWiize</span>
+              Conheça o <span className="text-blue-600">FunnelWiize</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A primeira plataforma brasileira para criar funis visuais de forma simples e profissional
+              A solução completa para mapear, visualizar e otimizar toda sua estratégia de vendas de forma simples e profissional.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
             {features.map((feature, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div key={index} className="text-center group hover:scale-105 transition-transform duration-200">
+                <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-50 transition-colors">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
+                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -223,36 +348,39 @@ const Sales = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-blue-50">
+      <section className="py-20 bg-blue-600 text-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Transforme seu negócio com funis visuais
+            <h2 className="text-4xl font-bold mb-6">
+              Resultados Reais dos Nossos Clientes
             </h2>
+            <p className="text-xl text-blue-100">
+              Empresários como você já transformaram seus negócios com o FunnelWiize
+            </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start space-x-4 mb-8">
-                  <div className="bg-white p-3 rounded-lg shadow-sm">
-                    {benefit.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                    <p className="text-gray-600">{benefit.description}</p>
-                  </div>
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
+                <div className="bg-white/20 p-4 rounded-lg w-fit mb-6">
+                  {benefit.icon}
                 </div>
-              ))}
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <div className="bg-gray-100 h-80 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <MousePointer className="w-20 h-20 text-blue-600 mx-auto mb-4" />
-                  <p className="text-gray-600">Screenshot do Sistema em Ação</p>
-                </div>
+                <h3 className="text-xl font-semibold mb-4">{benefit.title}</h3>
+                <p className="text-blue-100 leading-relaxed">{benefit.description}</p>
               </div>
-            </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button 
+              onClick={handleGetStarted}
+              size="lg"
+              variant="secondary"
+              className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold shadow-lg"
+            >
+              Quero Esses Resultados Também
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
           </div>
         </div>
       </section>
@@ -262,22 +390,28 @@ const Sales = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              O que nossos clientes estão dizendo
+              Mais de 5.000 empresários já transformaram seus negócios
             </h2>
+            <p className="text-xl text-gray-600">
+              Veja os resultados reais de quem usa o FunnelWiize
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-lg">
-                <CardContent className="p-6">
+              <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-shadow">
+                <CardContent className="p-8">
                   <div className="flex items-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <p className="text-gray-700 mb-4">"{testimonial.content}"</p>
+                  <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium w-fit mb-4">
+                    {testimonial.result}
+                  </div>
+                  <p className="text-gray-700 mb-6 italic leading-relaxed">"{testimonial.content}"</p>
                   <div>
-                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
                     <div className="text-sm text-gray-500">{testimonial.role}</div>
                   </div>
                 </CardContent>
@@ -287,26 +421,117 @@ const Sales = () => {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              Escolha o Plano Ideal para Seu Negócio
+            </h2>
+            <p className="text-xl text-gray-600">
+              Comece grátis e escale conforme seu negócio cresce
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {plans.map((plan, index) => (
+              <Card key={index} className={`${getCardStyle(plan)} hover:shadow-2xl transition-all duration-200`}>
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-green-500 text-white px-6 py-2 rounded-full text-sm font-medium flex items-center shadow-lg">
+                      <Crown className="w-4 h-4 mr-2" />
+                      Mais Escolhido
+                    </span>
+                  </div>
+                )}
+                
+                <CardHeader className="text-center pb-4">
+                  <CardTitle className="text-2xl font-bold text-gray-900 mb-4">
+                    {plan.name}
+                  </CardTitle>
+                  
+                  <div className="flex items-baseline justify-center mb-4">
+                    <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
+                    <span className="text-gray-500 ml-2">{plan.period}</span>
+                  </div>
+                  
+                  {plan.originalPrice && (
+                    <div className="flex items-center justify-center space-x-2 mb-4">
+                      <span className="text-lg text-gray-400 line-through">{plan.originalPrice}</span>
+                      <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full font-medium">
+                        {plan.savings}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <p className="text-gray-600 font-medium">
+                    {typeof plan.funnelLimit === 'number' ? `Até ${plan.funnelLimit} funis` : plan.funnelLimit + ' funis'}
+                  </p>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start">
+                        <Check className="w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{feature}</span>
+                      </li>
+                    ))}
+                    {plan.restrictions.map((restriction, restrictionIndex) => (
+                      <li key={restrictionIndex} className="flex items-start">
+                        <span className="w-5 h-5 mr-3 mt-0.5 flex-shrink-0 text-red-500 font-bold">✗</span>
+                        <span className="text-gray-500">{restriction}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button 
+                    onClick={plan.buttonAction}
+                    className={`w-full py-3 text-lg font-medium ${getButtonStyle(plan)} shadow-lg hover:shadow-xl transition-all`}
+                  >
+                    {plan.buttonText}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="bg-blue-50 p-6 rounded-lg max-w-2xl mx-auto">
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                🎯 Garantia de 30 Dias
+              </h3>
+              <p className="text-blue-700">
+                Se não aumentar suas conversões em 30 dias, devolvemos 100% do seu dinheiro.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold mb-6">
-            Pronto para criar seu primeiro funil?
+            Pronto para Triplicar suas Vendas?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Junte-se a milhares de empreendedores que já transformaram seus negócios
+          <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
+            Junte-se a mais de 5.000 empresários que já transformaram seus negócios com funis visuais profissionais
           </p>
-          <Button 
-            onClick={handleGetStarted}
-            size="lg"
-            className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
-          >
-            Começar Gratuitamente Agora
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-          <p className="text-sm mt-4 opacity-75">
-            Sem cartão de crédito • Cancele quando quiser
-          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <Button 
+              onClick={handleGetStarted}
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-xl"
+            >
+              Começar Gratuitamente Agora
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <p className="text-blue-200">
+              ✓ Sem cartão de crédito ✓ Acesso imediato ✓ Suporte incluído
+            </p>
+          </div>
         </div>
       </section>
 
@@ -320,35 +545,104 @@ const Sales = () => {
           </div>
 
           <div className="max-w-3xl mx-auto space-y-6">
-            <Card>
+            <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle>Preciso saber programar para usar?</CardTitle>
+                <CardTitle>Preciso ter conhecimento técnico para usar?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Não! O FunnelWiize foi criado para ser usado por qualquer pessoa, sem conhecimento técnico. Tudo é visual e intuitivo.</p>
+                <p className="text-gray-600">Absolutamente não! O FunnelWiize foi desenvolvido para ser usado por qualquer pessoa. Nosso editor visual funciona com arrastar e soltar, sem necessidade de código.</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle>Posso cancelar a qualquer momento?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Sim, você pode cancelar sua assinatura a qualquer momento. Não há contratos ou taxas de cancelamento.</p>
+                <p className="text-gray-600">Sim! Você pode cancelar sua assinatura a qualquer momento diretamente na plataforma. Não há contratos ou taxas de cancelamento.</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle>Existe suporte em português?</CardTitle>
+                <CardTitle>O que acontece com meus funis se eu cancelar?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Sim! Nosso suporte é 100% em português brasileiro, com atendimento rápido e especializado.</p>
+                <p className="text-gray-600">Você pode exportar todos os seus funis em PDF ou imagem antes de cancelar. Seus dados ficam seguros e você mantém acesso aos arquivos exportados.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle>Vocês oferecem suporte em português?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Sim! Nosso suporte é 100% em português brasileiro, com uma equipe especializada pronta para ajudar via chat, email e vídeo-chamada.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle>Posso usar o FunnelWiize para qualquer tipo de negócio?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">Sim! Temos templates para e-commerce, infoprodutos, consultoria, SaaS, agências, cursos online e muito mais. A ferramenta se adapta a qualquer modelo de negócio.</p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div className="col-span-2">
+              <div className="flex items-center space-x-2 mb-4">
+                <Target className="w-8 h-8 text-blue-400" />
+                <span className="text-2xl font-bold">FunnelWiize</span>
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">
+                A primeira plataforma brasileira para criar funis de vendas visuais e profissionais. 
+                Transforme sua estratégia de marketing em resultados concretos.
+              </p>
+              <div className="space-y-2">
+                <p className="text-gray-300">
+                  <strong>Vendas:</strong> vendas@funnelwiize.com
+                </p>
+                <p className="text-gray-300">
+                  <strong>Suporte:</strong> suporte@funnelwiize.com
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Links Úteis</h3>
+              <ul className="space-y-2">
+                <li><a href="/" className="text-gray-300 hover:text-blue-400 transition-colors">Início</a></li>
+                <li><a href="/pricing" className="text-gray-300 hover:text-blue-400 transition-colors">Planos</a></li>
+                <li><a href="/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors">Dashboard</a></li>
+                <li><a href="/account" className="text-gray-300 hover:text-blue-400 transition-colors">Minha Conta</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li><a href="/terms" className="text-gray-300 hover:text-blue-400 transition-colors">Termos de Uso</a></li>
+                <li><a href="/privacy" className="text-gray-300 hover:text-blue-400 transition-colors">Política de Privacidade</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-700 pt-8 text-center">
+            <p className="text-gray-400">
+              © {new Date().getFullYear()} FunnelWiize. Todos os direitos reservados. 
+              Desenvolvido no Brasil para empreendedores brasileiros.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

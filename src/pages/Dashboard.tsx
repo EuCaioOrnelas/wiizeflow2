@@ -8,8 +8,8 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [funnels, setFunnels] = useState<any[]>([]);
   const [funnelsLimit, setFunnelsLimit] = useState<number | string>(2);
-  const [currentPlan, setCurrentPlan] = useState('Free');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState('Gratuito');
+  const [hasTemplateAccess, setHasTemplateAccess] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -34,13 +34,13 @@ const Dashboard = () => {
       const plan = JSON.parse(planInfo);
       setCurrentPlan(plan.name);
       setFunnelsLimit(plan.funnelLimit);
+      setHasTemplateAccess(plan.hasTemplateAccess);
+    } else {
+      // Default free plan
+      setCurrentPlan('Gratuito');
+      setFunnelsLimit(2);
+      setHasTemplateAccess(false);
     }
-
-    // Load theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    const darkMode = savedTheme === 'dark';
-    setIsDarkMode(darkMode);
-    document.documentElement.classList.toggle('dark', darkMode);
   }, []);
 
   const handleLogout = () => {
@@ -56,7 +56,7 @@ const Dashboard = () => {
     if (isLimitReached) {
       toast({
         title: "Limite atingido",
-        description: "Você atingiu o limite do seu plano. Faça upgrade para continuar criando funis.",
+        description: "Você atingiu o limite do seu plano gratuito. Faça upgrade para continuar criando funis.",
         variant: "destructive",
       });
       return;
@@ -92,11 +92,39 @@ const Dashboard = () => {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'Free': return isDarkMode ? 'text-gray-300 bg-gray-700' : 'text-gray-600 bg-gray-100';
-      case 'Start': return isDarkMode ? 'text-green-400 bg-green-900' : 'text-green-600 bg-green-100';
-      case 'Pro': return isDarkMode ? 'text-purple-400 bg-purple-900' : 'text-purple-600 bg-purple-100';
-      case 'Wiize Max': return isDarkMode ? 'text-yellow-400 bg-yellow-900' : 'text-yellow-600 bg-yellow-100';
-      default: return isDarkMode ? 'text-gray-300 bg-gray-700' : 'text-gray-600 bg-gray-100';
+      case 'Gratuito': return 'text-gray-600 bg-gray-100';
+      case 'Mensal': return 'text-blue-600 bg-blue-100';
+      case 'Anual': return 'text-green-600 bg-green-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const getPlanBenefits = (plan: string) => {
+    switch (plan) {
+      case 'Gratuito':
+        return {
+          funnelLimit: 2,
+          templates: false,
+          support: 'Email básico'
+        };
+      case 'Mensal':
+        return {
+          funnelLimit: 'Ilimitados',
+          templates: true,
+          support: 'Prioritário'
+        };
+      case 'Anual':
+        return {
+          funnelLimit: 'Ilimitados',
+          templates: true,
+          support: 'VIP + Consultoria'
+        };
+      default:
+        return {
+          funnelLimit: 2,
+          templates: false,
+          support: 'Email básico'
+        };
     }
   };
 
@@ -122,6 +150,8 @@ const Dashboard = () => {
     return <div>Carregando...</div>;
   }
 
+  const planBenefits = getPlanBenefits(currentPlan);
+
   return (
     <div className="min-h-screen bg-gray-50 transition-colors duration-300">
       {/* Header */}
@@ -134,7 +164,7 @@ const Dashboard = () => {
           
           <div className="flex items-center space-x-4">
             <div className={`px-3 py-1 rounded-full text-xs font-medium ${getPlanColor(currentPlan)}`}>
-              {currentPlan}
+              Plano {currentPlan}
             </div>
             <span className="text-gray-600">Olá, {user.name}!</span>
             <Button variant="outline" onClick={handleAccount} size="sm">
@@ -152,7 +182,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Usage Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-gray-600">Funis Criados</CardTitle>
@@ -191,15 +221,26 @@ const Dashboard = () => {
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-600">Próximos Funis</CardTitle>
+              <CardTitle className="text-sm text-gray-600">Templates</CardTitle>
             </CardHeader>
             <CardContent>
-              <span className="text-2xl font-bold">
-                {getRemainingFunnels()}
+              <span className="text-xl font-bold">
+                {hasTemplateAccess ? 'Disponível' : 'Bloqueado'}
               </span>
               <p className="text-xs text-gray-500 mt-1">
-                {typeof funnelsLimit === "string" ? "Sem limites" : "Você ainda pode criar"}
+                {hasTemplateAccess ? 'Acesso completo' : 'Upgrade para usar'}
               </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-gray-600">Suporte</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-lg font-bold">
+                {planBenefits.support}
+              </span>
             </CardContent>
           </Card>
         </div>
@@ -220,16 +261,43 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Upgrade Banner */}
-        {isAtLimit() && (
-          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg mb-8">
+        {/* Upgrade Banner for Free Plan */}
+        {currentPlan === 'Gratuito' && (
+          <div className="bg-gradient-to-r from-blue-500 to-green-600 text-white p-6 rounded-lg mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold mb-2">Upgrade seu plano</h3>
+                <h3 className="text-xl font-bold mb-2">🚀 Desbloqueie todo o potencial</h3>
+                <p className="mb-2">Com os planos pagos você tem:</p>
+                <ul className="text-sm space-y-1">
+                  <li>• Funis ilimitados</li>
+                  <li>• Acesso a todos os templates</li>
+                  <li>• Suporte prioritário</li>
+                  <li>• Análises detalhadas</li>
+                </ul>
+              </div>
+              <div className="text-center">
+                <div className="bg-white/20 p-4 rounded-lg mb-3">
+                  <div className="text-2xl font-bold">R$ 47</div>
+                  <div className="text-sm">por mês</div>
+                </div>
+                <Button onClick={handleUpgrade} variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
+                  Ver Planos
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Upgrade Banner for Limit Reached */}
+        {isAtLimit() && (
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white p-6 rounded-lg mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-2">Limite de funis atingido!</h3>
                 <p>Você atingiu o limite do plano {currentPlan}. Faça upgrade para continuar criando funis!</p>
               </div>
               <Button onClick={handleUpgrade} variant="secondary">
-                Ver Planos
+                Fazer Upgrade
               </Button>
             </div>
           </div>

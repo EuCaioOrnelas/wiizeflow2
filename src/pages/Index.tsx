@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
@@ -217,9 +216,6 @@ const Index = () => {
             <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => window.location.href = '/dashboard'}>
-              Dashboard
-            </Button>
             <Button variant="ghost" onClick={() => window.location.href = '/contact'}>
               Contato
             </Button>

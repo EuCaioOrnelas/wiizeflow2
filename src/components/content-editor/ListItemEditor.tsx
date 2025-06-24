@@ -1,51 +1,55 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus } from 'lucide-react';
-import { ContentItem } from '@/types/contentEditor';
+import { Trash2 } from 'lucide-react';
+
+interface ListItem {
+  id: string;
+  text: string;
+  checked?: boolean;
+}
 
 interface ListItemEditorProps {
-  item: ContentItem;
-  onAddListItem: () => void;
-  onUpdateListItem: (listItemId: string, text: string) => void;
-  onToggleChecklist?: (listItemId: string) => void;
+  item: ListItem;
+  isChecklist: boolean;
+  onUpdate: (text: string) => void;
+  onToggle: () => void;
+  onRemove?: () => void;
 }
 
 export const ListItemEditor = ({ 
   item, 
-  onAddListItem, 
-  onUpdateListItem, 
-  onToggleChecklist 
+  isChecklist,
+  onUpdate, 
+  onToggle,
+  onRemove
 }: ListItemEditorProps) => {
   return (
-    <div className="space-y-2">
-      {item.items?.map((listItem) => (
-        <div key={listItem.id} className="flex items-center space-x-2">
-          {item.type === 'checklist' && onToggleChecklist && (
-            <input
-              type="checkbox"
-              checked={listItem.checked || false}
-              onChange={() => onToggleChecklist(listItem.id)}
-              className="rounded border-gray-300"
-            />
-          )}
-          <Input
-            value={listItem.text}
-            onChange={(e) => onUpdateListItem(listItem.id, e.target.value)}
-            placeholder="Item da lista..."
-            className="flex-1"
-          />
-        </div>
-      ))}
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={onAddListItem}
-        className="w-full"
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        Adicionar item
-      </Button>
+    <div className="flex items-center space-x-2 py-1">
+      {isChecklist && (
+        <input
+          type="checkbox"
+          checked={item.checked || false}
+          onChange={onToggle}
+          className="rounded border-gray-300"
+        />
+      )}
+      <Input
+        value={item.text}
+        onChange={(e) => onUpdate(e.target.value)}
+        placeholder="Item da lista..."
+        className="flex-1"
+      />
+      {onRemove && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRemove}
+          className="text-red-500 hover:text-red-700"
+        >
+          <Trash2 className="w-3 h-3" />
+        </Button>
+      )}
     </div>
   );
 };

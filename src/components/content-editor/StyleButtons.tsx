@@ -4,46 +4,45 @@ import {
   Bold,
   Italic,
   Underline,
-  X,
 } from 'lucide-react';
 import { ContentItem } from '@/types/contentEditor';
 
 interface StyleButtonsProps {
-  item: ContentItem;
-  onToggleStyle: (styleKey: keyof ContentItem['style']) => void;
-  onRemove: () => void;
+  style: ContentItem['style'];
+  onStyleChange: (style: ContentItem['style']) => void;
 }
 
-export const StyleButtons = ({ item, onToggleStyle, onRemove }: StyleButtonsProps) => {
+export const StyleButtons = ({ style, onStyleChange }: StyleButtonsProps) => {
+  const toggleStyle = (styleKey: keyof ContentItem['style']) => {
+    const newStyle = {
+      ...style,
+      [styleKey]: !style?.[styleKey]
+    };
+    onStyleChange(newStyle);
+  };
+
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-1">
       <Button
         size="sm"
-        variant={item.style?.bold ? "default" : "outline"}
-        onClick={() => onToggleStyle('bold')}
+        variant={style?.bold ? "default" : "outline"}
+        onClick={() => toggleStyle('bold')}
       >
         <Bold className="w-3 h-3" />
       </Button>
       <Button
         size="sm"
-        variant={item.style?.italic ? "default" : "outline"}
-        onClick={() => onToggleStyle('italic')}
+        variant={style?.italic ? "default" : "outline"}
+        onClick={() => toggleStyle('italic')}
       >
         <Italic className="w-3 h-3" />
       </Button>
       <Button
         size="sm"
-        variant={item.style?.underline ? "default" : "outline"}
-        onClick={() => onToggleStyle('underline')}
+        variant={style?.underline ? "default" : "outline"}
+        onClick={() => toggleStyle('underline')}
       >
         <Underline className="w-3 h-3" />
-      </Button>
-      <Button
-        size="sm"
-        variant="destructive"
-        onClick={onRemove}
-      >
-        <X className="w-3 h-3" />
       </Button>
     </div>
   );

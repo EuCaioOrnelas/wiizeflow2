@@ -14,6 +14,7 @@ interface ContentItemCardProps {
   onAddListItem: () => void;
   onUpdateListItem: (listItemId: string, text: string) => void;
   onToggleChecklist: (listItemId: string) => void;
+  onRemoveListItem?: (listItemId: string) => void;
 }
 
 export const ContentItemCard = ({
@@ -23,6 +24,7 @@ export const ContentItemCard = ({
   onAddListItem,
   onUpdateListItem,
   onToggleChecklist,
+  onRemoveListItem,
 }: ContentItemCardProps) => {
   const getTypeLabel = (type: ContentItem['type']) => {
     const labels = {
@@ -43,28 +45,32 @@ export const ContentItemCard = ({
       case 'h2':
       case 'subtitle':
         return (
-          <div className="flex items-center space-x-3">
-            <span className="text-sm font-medium text-gray-600 min-w-[120px]">
-              {getTypeLabel(item.type)}:
-            </span>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">
+                {getTypeLabel(item.type)}
+              </span>
+              <div className="flex items-center space-x-2">
+                <StyleButtons
+                  style={item.style || {}}
+                  onStyleChange={(style) => onUpdate({ style })}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onRemove}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
             <Input
               value={item.content}
               onChange={(e) => onUpdate({ content: e.target.value })}
               placeholder={`Digite o ${getTypeLabel(item.type).toLowerCase()}...`}
-              className="flex-1"
+              className="w-full"
             />
-            <StyleButtons
-              style={item.style || {}}
-              onStyleChange={(style) => onUpdate({ style })}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRemove}
-              className="text-red-500 hover:text-red-700"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
           </div>
         );
 
@@ -73,7 +79,7 @@ export const ContentItemCard = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">
-                {getTypeLabel(item.type)}:
+                {getTypeLabel(item.type)}
               </span>
               <div className="flex items-center space-x-2">
                 <StyleButtons
@@ -105,7 +111,7 @@ export const ContentItemCard = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">
-                {getTypeLabel(item.type)}:
+                {getTypeLabel(item.type)}
               </span>
               <Button
                 variant="ghost"
@@ -137,7 +143,7 @@ export const ContentItemCard = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">
-                {getTypeLabel(item.type)}:
+                {getTypeLabel(item.type)}
               </span>
               <div className="flex items-center space-x-2">
                 <Button
@@ -167,6 +173,7 @@ export const ContentItemCard = ({
                   isChecklist={item.type === 'checklist'}
                   onUpdate={(text) => onUpdateListItem(listItem.id, text)}
                   onToggle={() => onToggleChecklist(listItem.id)}
+                  onRemove={onRemoveListItem ? () => onRemoveListItem(listItem.id) : undefined}
                 />
               ))}
             </div>
@@ -179,7 +186,7 @@ export const ContentItemCard = ({
   };
 
   return (
-    <div className="py-3 border-b border-gray-200 last:border-b-0">
+    <div className="py-2 border-b border-gray-200 last:border-b-0">
       {renderContent()}
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
@@ -137,14 +136,14 @@ const Index = () => {
     {
       name: "Maria Silva",
       role: "CEO, E-commerce de Moda",
-      content: "Conseguimos aumentar nossas conversões em 280% após mapear nosso funil no FunnelWiize. A visualização nos mostrou gargalos que nem sabíamos que existiam.",
+      content: "Conseguimos aumentar nossas conversões em 280% após mapear nosso funil no WiizeFlow. A visualização nos mostrou gargalos que nem sabíamos que existiam.",
       rating: 5,
       result: "+280% conversões"
     },
     {
       name: "João Santos",
       role: "Consultor de Marketing Digital",
-      content: "Uso o FunnelWiize com todos os meus clientes. Em 6 meses, economizei mais de R$ 15.000 que gastaria com outras ferramentas.",
+      content: "Uso o WiizeFlow com todos os meus clientes. Em 6 meses, economizei mais de R$ 15.000 que gastaria com outras ferramentas.",
       rating: 5,
       result: "R$ 15k economizados"
     },
@@ -182,7 +181,7 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
+            <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="ghost" onClick={() => window.location.href = '/dashboard'}>
@@ -326,7 +325,7 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Conheça o <span className="text-blue-600">FunnelWiize</span>
+              Conheça o <span className="text-blue-600">WiizeFlow</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               A solução completa para mapear, visualizar e otimizar toda sua estratégia de vendas de forma simples e profissional.
@@ -355,7 +354,7 @@ const Index = () => {
               Resultados Reais dos Nossos Clientes
             </h2>
             <p className="text-xl text-blue-100">
-              Empresários como você já transformaram seus negócios com o FunnelWiize
+              Empresários como você já transformaram seus negócios com o WiizeFlow
             </p>
           </div>
 
@@ -393,7 +392,7 @@ const Index = () => {
               Mais de 5.000 empresários já transformaram seus negócios
             </h2>
             <p className="text-xl text-gray-600">
-              Veja os resultados reais de quem usa o FunnelWiize
+              Veja os resultados reais de quem usa o WiizeFlow
             </p>
           </div>
 
@@ -550,7 +549,7 @@ const Index = () => {
                 <CardTitle>Preciso ter conhecimento técnico para usar?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Absolutamente não! O FunnelWiize foi desenvolvido para ser usado por qualquer pessoa. Nosso editor visual funciona com arrastar e soltar, sem necessidade de código.</p>
+                <p className="text-gray-600">Absolutamente não! O WiizeFlow foi desenvolvido para ser usado por qualquer pessoa. Nosso editor visual funciona com arrastar e soltar, sem necessidade de código.</p>
               </CardContent>
             </Card>
 
@@ -583,7 +582,7 @@ const Index = () => {
 
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle>Posso usar o FunnelWiize para qualquer tipo de negócio?</CardTitle>
+                <CardTitle>Posso usar o WiizeFlow para qualquer tipo de negócio?</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600">Sim! Temos templates para e-commerce, infoprodutos, consultoria, SaaS, agências, cursos online e muito mais. A ferramenta se adapta a qualquer modelo de negócio.</p>
@@ -600,7 +599,7 @@ const Index = () => {
             <div className="col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <Target className="w-8 h-8 text-blue-400" />
-                <span className="text-2xl font-bold">FunnelWiize</span>
+                <span className="text-2xl font-bold">WiizeFlow</span>
               </div>
               <p className="text-gray-300 mb-4 leading-relaxed">
                 A primeira plataforma brasileira para criar funis de vendas visuais e profissionais. 
@@ -608,10 +607,10 @@ const Index = () => {
               </p>
               <div className="space-y-2">
                 <p className="text-gray-300">
-                  <strong>Vendas:</strong> vendas@funnelwiize.com
+                  <strong>Vendas:</strong> vendas@wiizeflow.com
                 </p>
                 <p className="text-gray-300">
-                  <strong>Suporte:</strong> suporte@funnelwiize.com
+                  <strong>Suporte:</strong> suporte@wiizeflow.com
                 </p>
               </div>
             </div>
@@ -637,7 +636,7 @@ const Index = () => {
 
           <div className="border-t border-gray-700 pt-8 text-center">
             <p className="text-gray-400">
-              © {new Date().getFullYear()} FunnelWiize. Todos os direitos reservados. 
+              © {new Date().getFullYear()} WiizeFlow. Todos os direitos reservados. 
               Desenvolvido no Brasil para empreendedores brasileiros.
             </p>
           </div>

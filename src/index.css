@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -201,13 +202,13 @@
 
 .react-flow__handle:hover,
 .react-flow__handle.connectionindicator {
-  opacity: 1 !important;
+  opacity: 0.6 !important;
 }
 
 /* Conectando - handles ficam visíveis durante a conexão */
 .react-flow__handle.connectingfrom,
 .react-flow__handle.connectingto {
-  opacity: 1 !important;
+  opacity: 0.8 !important;
 }
 
 /* Estilo das setas nas conexões */

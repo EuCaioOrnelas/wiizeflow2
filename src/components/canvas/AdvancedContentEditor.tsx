@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,18 +8,15 @@ import { useToast } from '@/hooks/use-toast';
 import { Node } from '@xyflow/react';
 import { 
   Save, 
-  X, 
   Bold, 
   Italic, 
   Underline, 
-  Palette,
   Link,
   List,
   CheckSquare,
   Heading1,
   Heading2,
   Type,
-  ListOrdered,
   Highlighter
 } from 'lucide-react';
 import { CustomNodeData, NodeContent } from '@/types/canvas';
@@ -40,7 +36,6 @@ interface ContentBlock {
     bold?: boolean;
     italic?: boolean;
     underline?: boolean;
-    color?: string;
     highlight?: boolean;
   };
   url?: string;
@@ -50,6 +45,7 @@ interface ContentBlock {
 export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: AdvancedContentEditorProps) => {
   const { toast } = useToast();
   const [title, setTitle] = useState('');
+  const [elementName, setElementName] = useState('');
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const [activeBlock, setActiveBlock] = useState<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
@@ -60,6 +56,7 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
       setTitle(content.title || '');
       setBlocks(content.items || []);
     }
+    setElementName(node.data.label || '');
   }, [node]);
 
   // Atalhos de teclado
@@ -134,17 +131,6 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
     }
   }, [activeBlock, blocks, updateBlock]);
 
-  const setColor = useCallback((color: string) => {
-    if (activeBlock) {
-      updateBlock(activeBlock, {
-        style: {
-          ...blocks.find(b => b.id === activeBlock)?.style,
-          color
-        }
-      });
-    }
-  }, [activeBlock, blocks, updateBlock]);
-
   const addListItem = useCallback((blockId: string) => {
     const block = blocks.find(b => b.id === blockId);
     if (block && (block.type === 'list' || block.type === 'checklist')) {
@@ -203,7 +189,6 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
     if (block.style?.bold) style.fontWeight = 'bold';
     if (block.style?.italic) style.fontStyle = 'italic';
     if (block.style?.underline) style.textDecoration = 'underline';
-    if (block.style?.color) style.color = block.style.color;
     if (block.style?.highlight) style.backgroundColor = '#fef08a';
     return style;
   };
@@ -327,16 +312,26 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col p-0">
+      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col p-0 m-4">
         {/* Header */}
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="flex items-center justify-between">
-            <span>Editor de Conteúdo - {String(node.data.label || 'Node')}</span>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
+            <span>Editor de Conteúdo - {elementName}</span>
           </DialogTitle>
         </DialogHeader>
+
+        {/* Element Name Section */}
+        <div className="px-6 py-2 border-b">
+          <div className="flex items-center space-x-2">
+            <label className="text-sm font-medium">Nome do Elemento:</label>
+            <Input
+              value={elementName}
+              onChange={(e) => setElementName(e.target.value)}
+              placeholder="Nome do elemento"
+              className="flex-1 max-w-xs"
+            />
+          </div>
+        </div>
 
         {/* Toolbar */}
         <div className="px-6 py-2 border-b flex items-center space-x-2 flex-wrap">
@@ -396,18 +391,6 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
           >
             <Highlighter className="w-4 h-4" />
           </Button>
-
-          <div className="flex space-x-1">
-            {['#000000', '#ef4444', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'].map((color) => (
-              <button
-                key={color}
-                onClick={() => setColor(color)}
-                disabled={!activeBlock}
-                className="w-6 h-6 rounded border border-gray-300 disabled:opacity-50"
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Editor Content */}

@@ -190,18 +190,19 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
                              targetHandle.includes('top') ? 'top' : 'bottom';
       
       // Baseado nas posições dos handles, determine a direção da seta
-      if (sourceHandlePos === 'right' || targetHandlePos === 'left') {
-        return 'right';
-      } else if (sourceHandlePos === 'left' || targetHandlePos === 'right') {
+      // A seta deve apontar na direção do target
+      if (targetHandlePos === 'left') {
         return 'left';
-      } else if (sourceHandlePos === 'bottom' || targetHandlePos === 'top') {
-        return 'down';
-      } else {
+      } else if (targetHandlePos === 'right') {
+        return 'right';
+      } else if (targetHandlePos === 'top') {
         return 'up';
+      } else if (targetHandlePos === 'bottom') {
+        return 'down';
       }
     }
     
-    // Fallback baseado na posição dos nós
+    // Fallback baseado na posição dos nós - seta aponta para o target
     const deltaX = targetPos.x - sourcePos.x;
     const deltaY = targetPos.y - sourcePos.y;
     
@@ -231,7 +232,6 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
           width: 20,
           height: 20,
           color: '#10b981',
-          orient: 'auto-start-reverse', // Isso corrige a direção da seta
         },
       };
       setEdges((eds) => addEdge(newEdge, eds));

@@ -241,11 +241,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     <div className={`relative ${selectedClass}`}>
       
       {/* Indicador de conteúdo */}
-      {hasContent && (
-        <div className="absolute -top-1 -right-1 z-10">
-          <Circle className="w-3 h-3 text-blue-500 fill-blue-500" />
-        </div>
-      )}
+      
 
       {/* Handles nas 4 direções - corrigindo direções */}
       <Handle

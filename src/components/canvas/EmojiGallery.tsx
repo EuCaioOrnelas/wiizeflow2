@@ -34,33 +34,55 @@ export const EmojiGallery = ({ isOpen, onClose, onEmojiSelect, currentEmoji }: E
     onClose();
   };
 
+  const handleContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleCategoryClick = (category: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedCategory(category);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
-        <DialogHeader>
+      <DialogContent 
+        className="max-w-md max-h-[80vh] overflow-hidden flex flex-col"
+        onClick={handleContentClick}
+      >
+        <DialogHeader onClick={handleContentClick}>
           <DialogTitle>Escolher Emoji</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div className="space-y-4 flex-1 overflow-hidden flex flex-col" onClick={handleContentClick}>
           {/* Busca */}
-          <div className="relative">
+          <div className="relative" onClick={handleSearchClick}>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Buscar emoji..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
+              onClick={handleSearchClick}
               className="pl-10"
             />
           </div>
 
           {/* Categorias */}
-          <div className="flex gap-1 overflow-x-auto pb-2">
+          <div className="flex gap-1 overflow-x-auto pb-2" onClick={handleContentClick}>
             {Object.keys(emojiCategories).map((category) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedCategory(category)}
+                onClick={(e) => handleCategoryClick(category, e)}
                 className="whitespace-nowrap text-xs"
               >
                 {category}
@@ -69,11 +91,14 @@ export const EmojiGallery = ({ isOpen, onClose, onEmojiSelect, currentEmoji }: E
           </div>
 
           {/* Grade de Emojis */}
-          <div className="grid grid-cols-8 gap-2 overflow-y-auto flex-1 pr-2">
+          <div className="grid grid-cols-8 gap-2 overflow-y-auto flex-1 pr-2" onClick={handleContentClick}>
             {filteredEmojis.map((emoji) => (
               <button
                 key={emoji}
-                onClick={() => handleEmojiClick(emoji)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEmojiClick(emoji);
+                }}
                 className={`w-10 h-10 text-2xl hover:bg-gray-100 rounded flex items-center justify-center transition-colors ${
                   currentEmoji === emoji ? 'bg-blue-100 ring-2 ring-blue-500' : ''
                 }`}
@@ -84,8 +109,14 @@ export const EmojiGallery = ({ isOpen, onClose, onEmojiSelect, currentEmoji }: E
           </div>
         </div>
 
-        <div className="flex justify-end space-x-2 pt-4 border-t">
-          <Button variant="outline" onClick={onClose}>
+        <div className="flex justify-end space-x-2 pt-4 border-t" onClick={handleContentClick}>
+          <Button 
+            variant="outline" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+          >
             Cancelar
           </Button>
         </div>

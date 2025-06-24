@@ -178,7 +178,7 @@ const Account = () => {
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
-        <Target className="w-12 h-12 text-green-600 mx-auto mb-4 animate-spin" />
+        <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-12 h-12 mx-auto mb-4 animate-pulse" />
         <p className="text-gray-600">Carregando...</p>
       </div>
     </div>;
@@ -194,7 +194,7 @@ const Account = () => {
       <header className="bg-white border-b">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Target className="w-8 h-8 text-green-600" />
+            <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-8 h-8" />
             <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           

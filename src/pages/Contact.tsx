@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,7 +88,7 @@ const Contact = () => {
       <header className="border-b bg-white sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Target className="w-8 h-8 text-blue-600" />
+            <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-8 h-8" />
             <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           <div className="flex items-center space-x-4">
@@ -285,7 +284,7 @@ const Contact = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-2">
               <div className="flex items-center space-x-2 mb-4">
-                <Target className="w-8 h-8 text-blue-400" />
+                <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-8 h-8" />
                 <span className="text-2xl font-bold">WiizeFlow</span>
               </div>
               <p className="text-gray-300 mb-4 leading-relaxed">

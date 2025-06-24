@@ -30,12 +30,9 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-8 h-8" />
-            <DialogTitle className="text-center text-2xl font-bold">
-              {mode === 'login' ? 'Fazer Login' : 'Criar Conta'}
-            </DialogTitle>
-          </div>
+          <DialogTitle className="text-center text-2xl font-bold">
+            {mode === 'login' ? 'Fazer Login' : 'Criar Conta'}
+          </DialogTitle>
         </DialogHeader>
         
         <div className="text-center space-y-4 py-6">

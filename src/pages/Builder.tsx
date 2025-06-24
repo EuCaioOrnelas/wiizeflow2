@@ -159,7 +159,6 @@ const Builder = () => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-12 h-12 mx-auto mb-4 animate-pulse" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Carregando funil...
           </h2>
@@ -175,7 +174,6 @@ const Builder = () => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-12 h-12 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Funil não encontrado
           </h2>

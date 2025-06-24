@@ -185,7 +185,7 @@ const Auth = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <img src="/lovable-uploads/3b925cd0-3804-4ad5-a91c-5ca756868f59.png" alt="WiizeFlow Logo" className="w-10 h-10" />
+            <Target className="w-10 h-10 text-green-600" />
             <span className="text-3xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">

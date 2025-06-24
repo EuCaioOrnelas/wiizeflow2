@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -195,9 +194,10 @@
   box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
 }
 
-/* Handles que aparecem sempre mas ficam transparentes até o hover */
+/* Handles que aparecem sempre mas ficam transparentes até o hover - agora ainda menores */
 .react-flow__handle {
   transition: opacity 0.2s ease-in-out;
+  border: 1px solid #6b7280 !important;
 }
 
 .react-flow__handle:hover,
@@ -215,8 +215,43 @@
 .react-flow__edge .react-flow__edge-path {
   stroke: #10b981;
   stroke-width: 2;
+  cursor: pointer;
+}
+
+.react-flow__edge .react-flow__edge-path:hover {
+  stroke: #059669;
+  stroke-width: 3;
 }
 
 .react-flow__edge-arrow {
   fill: #10b981;
+}
+
+/* Hover effect para edges */
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: #059669;
+  stroke-width: 3;
+}
+
+.react-flow__edge:hover .react-flow__edge-arrow {
+  fill: #059669;
+}
+
+/* Tooltip para edges */
+.react-flow__edge::after {
+  content: "Clique para deletar";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1000;
+}
+
+.react-flow__edge:hover::after {
+  opacity: 1;
 }

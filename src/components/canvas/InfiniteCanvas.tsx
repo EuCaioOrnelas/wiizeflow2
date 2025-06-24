@@ -185,6 +185,17 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     [setEdges, saveToHistory, currentEdgeType]
   );
 
+  // Função para deletar edge ao clicar
+  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    setEdges((edges) => edges.filter((e) => e.id !== edge.id));
+    saveToHistory();
+    toast({
+      title: "Conexão removida!",
+      description: "A conexão foi deletada com sucesso.",
+    });
+  }, [setEdges, saveToHistory, toast]);
+
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node<CustomNodeData>) => {
     setSelectedNode(node);
   }, []);
@@ -299,6 +310,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
             onNodeDoubleClick={onNodeDoubleClick}
             onNodeContextMenu={onNodeContextMenu}
             onPaneContextMenu={onPaneContextMenu}
+            onEdgeClick={onEdgeClick}
             onDragOver={onDragOver}
             onDrop={onDrop}
             nodeTypes={customNodeTypes}

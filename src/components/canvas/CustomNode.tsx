@@ -1,4 +1,3 @@
-
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -128,34 +127,62 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
 
   return (
     <div className={`relative ${selectedClass}`}>
-      {/* Handles nas 4 direções - agora menores e mais suaves */}
+      {/* Handles nas 4 direções - agora menores e mais suaves - todos como source e target */}
+      <Handle
+        type="source"
+        position={Position.Top}
+        id="top"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ top: -3 }}
+      />
       <Handle
         type="target"
         position={Position.Top}
-        id="top"
-        className="w-2 h-2 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ top: -4 }}
+        id="top-target"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ top: -3 }}
+      />
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="left"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ left: -3 }}
       />
       <Handle
         type="target"
         position={Position.Left}
-        id="left"
-        className="w-2 h-2 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ left: -4 }}
+        id="left-target"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ left: -3 }}
       />
       <Handle
         type="source"
         position={Position.Right}
         id="right"
-        className="w-2 h-2 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ right: -4 }}
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ right: -3 }}
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right-target"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ right: -3 }}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom"
-        className="w-2 h-2 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ bottom: -4 }}
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ bottom: -3 }}
+      />
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        id="bottom-target"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ bottom: -3 }}
       />
       
       <div className={`

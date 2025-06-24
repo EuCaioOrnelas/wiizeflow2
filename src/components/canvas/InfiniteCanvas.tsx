@@ -1,3 +1,4 @@
+
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -176,65 +177,19 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     addNode(type, position);
   }, [screenToFlowPosition, addNode]);
 
-  const getArrowDirection = useCallback((sourceNode: Node, targetNode: Node, sourceHandle: string, targetHandle: string) => {
-    const sourcePos = sourceNode.position;
-    const targetPos = targetNode.position;
-    
-    // Se temos handles específicos, use eles para determinar a direção
-    if (sourceHandle && targetHandle) {
-      const targetHandlePos = targetHandle.includes('right') ? 'right' : 
-                             targetHandle.includes('left') ? 'left' :
-                             targetHandle.includes('top') ? 'top' : 'bottom';
-      
-      // A seta deve apontar PARA o target handle
-      // Se o target handle está na esquerda, a seta aponta para a esquerda (←)
-      if (targetHandlePos === 'left') {
-        return 'left'; // Seta aponta para a esquerda
-      } else if (targetHandlePos === 'right') {
-        return 'right'; // Seta aponta para a direita
-      } else if (targetHandlePos === 'top') {
-        return 'up'; // Seta aponta para cima
-      } else if (targetHandlePos === 'bottom') {
-        return 'down'; // Seta aponta para baixo
-      }
-    }
-    
-    // Fallback baseado na posição dos nós - seta aponta para o target
-    const deltaX = targetPos.x - sourcePos.x;
-    const deltaY = targetPos.y - sourcePos.y;
-    
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      return deltaX > 0 ? 'right' : 'left';
-    } else {
-      return deltaY > 0 ? 'down' : 'up';
-    }
-  }, []);
-
   const onConnect = useCallback(
     (params: Connection) => {
-      const sourceNode = nodes.find(n => n.id === params.source);
-      const targetNode = nodes.find(n => n.id === params.target);
-      
-      if (!sourceNode || !targetNode) return;
-      
-      const direction = getArrowDirection(sourceNode, targetNode, params.sourceHandle || '', params.targetHandle || '');
-      
       const newEdge = {
         ...params,
         type: currentEdgeType,
         animated: true,
         style: { stroke: '#10b981', strokeWidth: 2 },
-        markerEnd: {
-          type: 'arrowclosed',
-          width: 20,
-          height: 20,
-          color: '#10b981',
-        },
+        // Removido markerEnd para tirar as setas
       };
       setEdges((eds) => addEdge(newEdge, eds));
       saveToHistory();
     },
-    [setEdges, saveToHistory, currentEdgeType, nodes, getArrowDirection]
+    [setEdges, saveToHistory, currentEdgeType]
   );
 
   // Função para deletar edge ao clicar com confirmação

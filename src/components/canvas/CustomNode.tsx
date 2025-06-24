@@ -1,3 +1,4 @@
+
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -12,12 +13,15 @@ import {
   Heart,
   FileText,
   Plus,
-  Palette
+  Palette,
+  Edit3,
+  Circle
 } from 'lucide-react';
 
 interface CustomNodeComponentProps extends NodeProps {
   data: CustomNodeData;
   onUpdateNode?: (nodeId: string, updates: Partial<CustomNodeData>) => void;
+  onOpenEditor?: (nodeId: string) => void;
 }
 
 const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆'];
@@ -25,6 +29,7 @@ const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'
 
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
+  const [showEditButton, setShowEditButton] = useState(false);
 
   const getNodeIcon = (type: string) => {
     switch (type) {
@@ -120,13 +125,48 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     setShowCustomizer(false);
   };
 
+  const handleOpenEditor = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Trigger double click event to open content editor
+    const event = new MouseEvent('dblclick', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+    });
+    e.currentTarget.parentElement?.dispatchEvent(event);
+  };
+
   const hasContent = data.hasContent && data.content;
   const nodeColor = getNodeColor(data.type);
   const selectedClass = selected ? 'ring-2 ring-blue-500 ring-opacity-50' : '';
   const iconBgClass = getIconBackgroundColor(data.type);
 
   return (
-    <div className={`relative ${selectedClass}`}>
+    <div className={`relative ${selectedClass}`} 
+         onMouseEnter={() => setShowEditButton(true)}
+         onMouseLeave={() => setShowEditButton(false)}>
+      
+      {/* Indicador de conteúdo */}
+      {hasContent && (
+        <div className="absolute -top-1 -right-1 z-10">
+          <Circle className="w-3 h-3 text-blue-500 fill-blue-500" />
+        </div>
+      )}
+
+      {/* Botão de edição */}
+      {showEditButton && (
+        <div className="absolute -top-2 -right-8 z-10">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0 bg-white shadow-md hover:bg-gray-50"
+            onClick={handleOpenEditor}
+          >
+            <Edit3 className="w-3 h-3" />
+          </Button>
+        </div>
+      )}
+
       {/* Handles nas 4 direções - agora menores e mais suaves - todos como source e target */}
       <Handle
         type="source"
@@ -254,7 +294,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         {hasContent && (
           <div className="text-xs bg-white bg-opacity-50 rounded p-1 mt-2">
             {data.content && data.content.title && (
-              <div className="font-medium">{data.content.title}</div>
+              <div className="font-medium truncate">{data.content.title}</div>
             )}
           </div>
         )}

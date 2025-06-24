@@ -1,57 +1,89 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Target, LogOut, Edit3, User, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 const Dashboard = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [funnels, setFunnels] = useState<any[]>([]);
-  const [funnelsLimit, setFunnelsLimit] = useState<number | string>(2);
-  const [currentPlan, setCurrentPlan] = useState('Gratuito');
-  const [hasTemplateAccess, setHasTemplateAccess] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      window.location.href = '/';
-      return;
-    }
-    
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
-    
-    // Load saved funnels
-    const savedFunnels = localStorage.getItem('funnels');
-    if (savedFunnels) {
-      setFunnels(JSON.parse(savedFunnels));
-    }
+    // Configurar listener de mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (!session?.user) {
+          window.location.href = '/auth';
+        } else {
+          // Carregar perfil do usuário
+          setTimeout(() => {
+            loadUserProfile(session.user.id);
+          }, 0);
+        }
+      }
+    );
 
-    // Load plan info (simulated - in real app this would come from backend)
-    const planInfo = localStorage.getItem('userPlan');
-    if (planInfo) {
-      const plan = JSON.parse(planInfo);
-      setCurrentPlan(plan.name);
-      setFunnelsLimit(plan.funnelLimit);
-      setHasTemplateAccess(plan.hasTemplateAccess);
-    } else {
-      // Default free plan
-      setCurrentPlan('Gratuito');
-      setFunnelsLimit(2);
-      setHasTemplateAccess(false);
-    }
+    // Verificar sessão existente
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session?.user) {
+        window.location.href = '/auth';
+      } else {
+        loadUserProfile(session.user.id);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      setProfile(data);
+      
+      // Carregar funis salvos no localStorage por enquanto
+      const savedFunnels = localStorage.getItem('funnels');
+      if (savedFunnels) {
+        setFunnels(JSON.parse(savedFunnels));
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem('funnels');
     localStorage.removeItem('userPlan');
     window.location.href = '/';
   };
 
   const createNewFunnel = () => {
-    const isLimitReached = typeof funnelsLimit === 'number' && funnels.length >= funnelsLimit;
+    const funnelLimit = profile?.plan_type === 'free' ? 2 : 'unlimited';
+    const isLimitReached = funnelLimit === 2 && funnels.length >= 2;
     
     if (isLimitReached) {
       toast({
@@ -83,7 +115,7 @@ const Dashboard = () => {
   };
 
   const handleUpgrade = () => {
-    window.location.href = '/pricing';
+    window.location.href = '/sales';
   };
 
   const handleAccount = () => {
@@ -92,65 +124,60 @@ const Dashboard = () => {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'Gratuito': return 'text-gray-600 bg-gray-100';
-      case 'Mensal': return 'text-blue-600 bg-blue-100';
-      case 'Anual': return 'text-green-600 bg-green-100';
+      case 'free': return 'text-gray-600 bg-gray-100';
+      case 'monthly': return 'text-blue-600 bg-blue-100';
+      case 'annual': return 'text-green-600 bg-green-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
 
-  const getPlanBenefits = (plan: string) => {
+  const getPlanName = (plan: string) => {
     switch (plan) {
-      case 'Gratuito':
-        return {
-          funnelLimit: 2,
-          templates: false,
-          support: 'Email básico'
-        };
-      case 'Mensal':
-        return {
-          funnelLimit: 'Ilimitados',
-          templates: true,
-          support: 'Prioritário'
-        };
-      case 'Anual':
-        return {
-          funnelLimit: 'Ilimitados',
-          templates: true,
-          support: 'VIP + Consultoria'
-        };
-      default:
-        return {
-          funnelLimit: 2,
-          templates: false,
-          support: 'Email básico'
-        };
+      case 'free': return 'Gratuito';
+      case 'monthly': return 'Mensal';
+      case 'annual': return 'Anual';
+      default: return 'Gratuito';
     }
+  };
+
+  const getFunnelLimit = () => {
+    return profile?.plan_type === 'free' ? 2 : 'Ilimitados';
   };
 
   const getRemainingFunnels = () => {
-    if (typeof funnelsLimit === 'string') {
+    if (profile?.plan_type !== 'free') {
       return "∞";
     }
-    return Math.max(0, funnelsLimit - funnels.length);
+    return Math.max(0, 2 - funnels.length);
   };
 
   const getProgressPercentage = () => {
-    if (typeof funnelsLimit === 'string') {
+    if (profile?.plan_type !== 'free') {
       return 0;
     }
-    return (funnels.length / funnelsLimit) * 100;
+    return (funnels.length / 2) * 100;
   };
 
   const isAtLimit = () => {
-    return typeof funnelsLimit === 'number' && funnels.length >= funnelsLimit;
+    return profile?.plan_type === 'free' && funnels.length >= 2;
   };
 
-  if (!user) {
-    return <div>Carregando...</div>;
+  const hasTemplateAccess = () => {
+    return profile?.plan_type !== 'free';
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <Target className="w-12 h-12 text-green-600 mx-auto mb-4 animate-spin" />
+        <p className="text-gray-600">Carregando...</p>
+      </div>
+    </div>;
   }
 
-  const planBenefits = getPlanBenefits(currentPlan);
+  if (!user || !profile) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 transition-colors duration-300">
@@ -163,10 +190,10 @@ const Dashboard = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${getPlanColor(currentPlan)}`}>
-              Plano {currentPlan}
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${getPlanColor(profile.plan_type)}`}>
+              Plano {getPlanName(profile.plan_type)}
             </div>
-            <span className="text-gray-600">Olá, {user.name}!</span>
+            <span className="text-gray-600">Olá, {profile.name || user.email}!</span>
             <Button variant="outline" onClick={handleAccount} size="sm">
               <User className="w-4 h-4 mr-2" />
               Conta
@@ -190,7 +217,7 @@ const Dashboard = () => {
             <CardContent>
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-bold">{funnels.length}</span>
-                <span className="text-sm text-gray-500">de {funnelsLimit}</span>
+                <span className="text-sm text-gray-500">de {getFunnelLimit()}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div 
@@ -210,7 +237,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-xl font-bold">{currentPlan}</span>
+                <span className="text-xl font-bold">{getPlanName(profile.plan_type)}</span>
                 <Button onClick={handleUpgrade} size="sm" variant="outline">
                   <CreditCard className="w-4 h-4 mr-1" />
                   Upgrade
@@ -225,10 +252,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <span className="text-xl font-bold">
-                {hasTemplateAccess ? 'Disponível' : 'Bloqueado'}
+                {hasTemplateAccess() ? 'Disponível' : 'Bloqueado'}
               </span>
               <p className="text-xs text-gray-500 mt-1">
-                {hasTemplateAccess ? 'Acesso completo' : 'Upgrade para usar'}
+                {hasTemplateAccess() ? 'Acesso completo' : 'Upgrade para usar'}
               </p>
             </CardContent>
           </Card>
@@ -239,7 +266,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <span className="text-lg font-bold">
-                {planBenefits.support}
+                {profile.plan_type === 'free' ? 'Email básico' : profile.plan_type === 'monthly' ? 'Prioritário' : 'VIP + Consultoria'}
               </span>
             </CardContent>
           </Card>
@@ -262,7 +289,7 @@ const Dashboard = () => {
         </div>
 
         {/* Upgrade Banner for Free Plan */}
-        {currentPlan === 'Gratuito' && (
+        {profile.plan_type === 'free' && (
           <div className="bg-gradient-to-r from-blue-500 to-green-600 text-white p-6 rounded-lg mb-8">
             <div className="flex items-center justify-between">
               <div>
@@ -294,7 +321,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold mb-2">Limite de funis atingido!</h3>
-                <p>Você atingiu o limite do plano {currentPlan}. Faça upgrade para continuar criando funis!</p>
+                <p>Você atingiu o limite do plano {getPlanName(profile.plan_type)}. Faça upgrade para continuar criando funis!</p>
               </div>
               <Button onClick={handleUpgrade} variant="secondary">
                 Fazer Upgrade

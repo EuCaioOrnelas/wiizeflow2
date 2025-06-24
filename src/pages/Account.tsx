@@ -7,95 +7,195 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Target, LogOut, Camera, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 const Account = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [funnelsCount, setFunnelsCount] = useState(0);
-  const [funnelsLimit, setFunnelsLimit] = useState(2);
-  const [currentPlan, setCurrentPlan] = useState('Gratuito');
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      window.location.href = '/';
-      return;
-    }
-    
-    const parsedUser = JSON.parse(userData);
-    setUser(parsedUser);
-    setNewName(parsedUser.name);
+    // Configurar listener de mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (!session?.user) {
+          window.location.href = '/auth';
+        } else {
+          // Carregar perfil do usuário
+          setTimeout(() => {
+            loadUserProfile(session.user.id);
+          }, 0);
+        }
+      }
+    );
 
-    // Load user settings
-    const savedFunnels = localStorage.getItem('funnels');
-    if (savedFunnels) {
-      const funnels = JSON.parse(savedFunnels);
-      setFunnelsCount(funnels.length);
-    }
+    // Verificar sessão existente
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session?.user) {
+        window.location.href = '/auth';
+      } else {
+        loadUserProfile(session.user.id);
+      }
+      setLoading(false);
+    });
 
-    // Load plan info (simulated - in real app this would come from backend)
-    const planInfo = localStorage.getItem('userPlan');
-    if (planInfo) {
-      const plan = JSON.parse(planInfo);
-      setCurrentPlan(plan.name);
-      setFunnelsLimit(plan.funnelLimit);
-    }
+    return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      setProfile(data);
+      setNewName(data.name || '');
+      
+      // Carregar funis salvos no localStorage por enquanto
+      const savedFunnels = localStorage.getItem('funnels');
+      if (savedFunnels) {
+        const funnels = JSON.parse(savedFunnels);
+        setFunnelsCount(funnels.length);
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem('funnels');
     localStorage.removeItem('userPlan');
     window.location.href = '/';
   };
 
-  const handleSaveProfile = () => {
-    if (newName.trim()) {
-      const updatedUser = { ...user, name: newName.trim() };
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+  const handleSaveProfile = async () => {
+    if (!newName.trim() || !user) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ name: newName.trim() })
+        .eq('id', user.id);
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível salvar as alterações.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProfile({ ...profile, name: newName.trim() });
       setIsEditing(false);
       toast({
         title: "Perfil atualizado",
         description: "Suas informações foram salvas com sucesso.",
       });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar as alterações.",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleChangePassword = () => {
-    if (newPassword.length >= 6) {
-      // In a real app, this would make an API call
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter pelo menos 6 caracteres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível alterar a senha.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setNewPassword('');
       toast({
         title: "Senha alterada",
         description: "Sua senha foi atualizada com sucesso.",
       });
-    } else {
+    } catch (error) {
       toast({
         title: "Erro",
-        description: "A senha deve ter pelo menos 6 caracteres.",
+        description: "Não foi possível alterar a senha.",
         variant: "destructive",
       });
     }
   };
 
   const handleUpgrade = () => {
-    window.location.href = '/pricing';
+    window.location.href = '/sales';
   };
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'Gratuito': return 'text-gray-600 bg-gray-100';
-      case 'Mensal': return 'text-blue-600 bg-blue-100';
-      case 'Anual': return 'text-green-600 bg-green-100';
+      case 'free': return 'text-gray-600 bg-gray-100';
+      case 'monthly': return 'text-blue-600 bg-blue-100';
+      case 'annual': return 'text-green-600 bg-green-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
 
-  if (!user) {
+  const getPlanName = (plan: string) => {
+    switch (plan) {
+      case 'free': return 'Gratuito';
+      case 'monthly': return 'Mensal';
+      case 'annual': return 'Anual';
+      default: return 'Gratuito';
+    }
+  };
+
+  const getFunnelLimit = () => {
+    return profile?.plan_type === 'free' ? 2 : 'Ilimitados';
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <Target className="w-12 h-12 text-green-600 mx-auto mb-4 animate-spin" />
+        <p className="text-gray-600">Carregando...</p>
+      </div>
+    </div>;
+  }
+
+  if (!user || !profile) {
     return <div>Carregando...</div>;
   }
 
@@ -135,9 +235,9 @@ const Account = () => {
               <CardContent className="space-y-6">
                 <div className="flex items-center space-x-4">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage src={user.avatar} />
+                    <AvatarImage src="" />
                     <AvatarFallback className="text-lg">
-                      {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                      {profile.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                   <Button variant="outline" size="sm">
@@ -163,7 +263,7 @@ const Account = () => {
                       </div>
                     ) : (
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-gray-900">{user.name}</span>
+                        <span className="text-gray-900">{profile.name || 'Nome não definido'}</span>
                         <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
                           Editar
                         </Button>
@@ -173,7 +273,7 @@ const Account = () => {
 
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" value={user.email} disabled className="mt-1" />
+                    <Input id="email" value={user.email || ''} disabled className="mt-1" />
                   </div>
 
                   <div>
@@ -201,8 +301,8 @@ const Account = () => {
                 <CardTitle>Plano Atual</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getPlanColor(currentPlan)}`}>
-                  {currentPlan}
+                <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getPlanColor(profile.plan_type)}`}>
+                  {getPlanName(profile.plan_type)}
                 </div>
 
                 <div>
@@ -210,20 +310,20 @@ const Account = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold">{funnelsCount}</span>
                     <span className="text-sm text-gray-500">
-                      {typeof funnelsLimit === 'number' ? `de ${funnelsLimit}` : funnelsLimit}
+                      de {getFunnelLimit()}
                     </span>
                   </div>
-                  {typeof funnelsLimit === 'number' && (
+                  {profile.plan_type === 'free' && (
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                       <div 
                         className="bg-green-600 h-2 rounded-full" 
-                        style={{ width: `${(funnelsCount / funnelsLimit) * 100}%` }}
+                        style={{ width: `${(funnelsCount / 2) * 100}%` }}
                       ></div>
                     </div>
                   )}
                 </div>
 
-                {typeof funnelsLimit === 'number' && funnelsCount >= funnelsLimit && (
+                {profile.plan_type === 'free' && funnelsCount >= 2 && (
                   <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                     <p className="text-orange-800 text-sm">
                       Você atingiu o limite do seu plano. Faça upgrade para continuar criando funis.
@@ -233,7 +333,7 @@ const Account = () => {
 
                 <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700">
                   <CreditCard className="w-4 h-4 mr-2" />
-                  {currentPlan === 'Gratuito' ? 'Fazer Upgrade' : 'Gerenciar Plano'}
+                  {profile.plan_type === 'free' ? 'Fazer Upgrade' : 'Gerenciar Plano'}
                 </Button>
               </CardContent>
             </Card>

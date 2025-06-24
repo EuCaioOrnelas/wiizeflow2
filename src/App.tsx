@@ -5,11 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Sales from "./pages/Sales";
-import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Builder from "./pages/Builder";
+import Pricing from "./pages/Pricing";
 import Account from "./pages/Account";
+import Auth from "./pages/Auth";
+import Sales from "./pages/Sales";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
@@ -24,14 +25,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/builder/:funnelId" element={<Builder />} />
+          <Route path="/builder/:id" element={<Builder />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/sales" element={<Sales />} />
           <Route path="/account" element={<Account />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

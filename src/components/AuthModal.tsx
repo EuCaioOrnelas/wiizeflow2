@@ -1,9 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthModalProps {
@@ -14,37 +12,18 @@ interface AuthModalProps {
 }
 
 const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  useEffect(() => {
+    if (isOpen) {
+      // Redirecionar para a página de autenticação dedicada
+      window.location.href = '/auth';
+    }
+  }, [isOpen]);
 
-    // Simulate authentication
-    setTimeout(() => {
-      const userData = {
-        email,
-        name: mode === 'signup' ? name : email.split('@')[0],
-        id: Date.now().toString()
-      };
-      
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      toast({
-        title: mode === 'login' ? "Login realizado!" : "Conta criada!",
-        description: "Redirecionando para o dashboard...",
-      });
-      
-      setLoading(false);
-      onClose();
-      
-      // Redirect to dashboard
-      window.location.href = '/dashboard';
-    }, 1000);
+  const handleRedirect = () => {
+    onClose();
+    window.location.href = '/auth';
   };
 
   return (
@@ -56,65 +35,17 @@ const AuthModal = ({ isOpen, onClose, mode, onSwitchMode }: AuthModalProps) => {
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {mode === 'signup' && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Seu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-          )}
-          
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Sua senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+        <div className="text-center space-y-4 py-6">
+          <p className="text-gray-600">
+            Redirecionando para a página de autenticação...
+          </p>
           
           <Button 
-            type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={loading}
+            onClick={handleRedirect}
+            className="w-full bg-green-600 hover:bg-green-700"
           >
-            {loading ? 'Carregando...' : (mode === 'login' ? 'Entrar' : 'Criar Conta')}
+            {mode === 'login' ? 'Ir para Login' : 'Ir para Cadastro'}
           </Button>
-        </form>
-        
-        <div className="text-center mt-4">
-          <button
-            type="button"
-            onClick={() => onSwitchMode(mode === 'login' ? 'signup' : 'login')}
-            className="text-blue-600 hover:text-blue-700 text-sm"
-          >
-            {mode === 'login' 
-              ? 'Não tem conta? Criar conta' 
-              : 'Já tem conta? Fazer login'
-            }
-          </button>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +9,11 @@ const Index = () => {
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
 
   const handleGetStarted = () => {
-    setAuthMode('signup');
-    setShowAuthModal(true);
+    window.location.href = '/auth';
   };
 
   const handleLogin = () => {
-    setAuthMode('login');
-    setShowAuthModal(true);
+    window.location.href = '/auth';
   };
 
   const plans = [
@@ -52,7 +49,7 @@ const Index = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => window.location.href = '/pricing',
+      buttonAction: () => window.location.href = '/sales',
       popular: false
     },
     {
@@ -73,7 +70,7 @@ const Index = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => window.location.href = '/pricing',
+      buttonAction: () => window.location.href = '/sales',
       popular: true
     }
   ];
@@ -323,7 +320,6 @@ const Index = () => {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* About */}
             <div className="col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <Target className="w-8 h-8 text-green-400" />
@@ -343,7 +339,6 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Quick Links */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Links Rápidos</h3>
               <ul className="space-y-2">
@@ -353,7 +348,7 @@ const Index = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="/pricing" className="text-gray-300 hover:text-green-400 transition-colors">
+                  <a href="/sales" className="text-gray-300 hover:text-green-400 transition-colors">
                     Planos
                   </a>
                 </li>
@@ -370,7 +365,6 @@ const Index = () => {
               </ul>
             </div>
 
-            {/* Legal */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Legal</h3>
               <ul className="space-y-2">
@@ -388,7 +382,6 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Copyright */}
           <div className="border-t border-gray-700 pt-8 text-center">
             <p className="text-gray-400">
               © {new Date().getFullYear()} FunnelWiize. Todos os direitos reservados.

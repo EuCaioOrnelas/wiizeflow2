@@ -51,10 +51,10 @@
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 217.2 32.6% 17.5%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 217.2 32.6% 17.5%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 142.1 70.6% 45.3%;
@@ -92,12 +92,16 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 
 .funnel-block {
   @apply bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-move;
+}
+
+.dark .funnel-block {
+  @apply bg-gray-800 border-gray-700 text-white;
 }
 
 .funnel-block:hover {
@@ -106,4 +110,87 @@
 
 .funnel-block.dragging {
   @apply shadow-lg opacity-75;
+}
+
+/* Fix for arrow visibility in dark mode */
+.dark .arrow-marker {
+  fill: #ffffff !important;
+}
+
+/* Green color overrides for buttons and elements */
+.bg-blue-500, .bg-blue-600, .bg-blue-700 {
+  @apply bg-green-500;
+}
+
+.hover\:bg-blue-600:hover, .hover\:bg-blue-700:hover {
+  @apply hover:bg-green-600;
+}
+
+.text-blue-600 {
+  @apply text-green-600;
+}
+
+.border-blue-500 {
+  @apply border-green-500;
+}
+
+.ring-blue-500 {
+  @apply ring-green-500;
+}
+
+/* Dark theme specific styles */
+.dark {
+  color-scheme: dark;
+}
+
+.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+.dark .bg-white {
+  @apply bg-gray-800 text-white;
+}
+
+.dark .text-gray-900 {
+  @apply text-white;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-300;
+}
+
+.dark .text-gray-500 {
+  @apply text-gray-400;
+}
+
+.dark .border-gray-200 {
+  @apply border-gray-700;
+}
+
+.dark .border-b {
+  @apply border-gray-700;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-gray-700;
+}
+
+.dark .bg-gray-200 {
+  @apply bg-gray-600;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  @apply hover:bg-gray-700;
+}
+
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -1px rgba(255, 255, 255, 0.06);
+}
+
+.dark .hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
 }

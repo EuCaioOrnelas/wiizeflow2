@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,7 @@ const Dashboard = () => {
   const [funnels, setFunnels] = useState<any[]>([]);
   const [funnelsLimit, setFunnelsLimit] = useState<number | string>(2);
   const [currentPlan, setCurrentPlan] = useState('Free');
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -35,6 +35,12 @@ const Dashboard = () => {
       setCurrentPlan(plan.name);
       setFunnelsLimit(plan.funnelLimit);
     }
+
+    // Load theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const darkMode = savedTheme === 'dark';
+    setIsDarkMode(darkMode);
+    document.documentElement.classList.toggle('dark', darkMode);
   }, []);
 
   const handleLogout = () => {
@@ -86,11 +92,11 @@ const Dashboard = () => {
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'Free': return 'text-gray-600 bg-gray-100';
-      case 'Start': return 'text-blue-600 bg-blue-100';
-      case 'Pro': return 'text-purple-600 bg-purple-100';
-      case 'Wiize Max': return 'text-gold-600 bg-yellow-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'Free': return isDarkMode ? 'text-gray-300 bg-gray-700' : 'text-gray-600 bg-gray-100';
+      case 'Start': return isDarkMode ? 'text-green-400 bg-green-900' : 'text-green-600 bg-green-100';
+      case 'Pro': return isDarkMode ? 'text-purple-400 bg-purple-900' : 'text-purple-600 bg-purple-100';
+      case 'Wiize Max': return isDarkMode ? 'text-yellow-400 bg-yellow-900' : 'text-yellow-600 bg-yellow-100';
+      default: return isDarkMode ? 'text-gray-300 bg-gray-700' : 'text-gray-600 bg-gray-100';
     }
   };
 
@@ -103,7 +109,7 @@ const Dashboard = () => {
 
   const getProgressPercentage = () => {
     if (typeof funnelsLimit === 'string') {
-      return 0; // Don't show progress for unlimited
+      return 0;
     }
     return (funnels.length / funnelsLimit) * 100;
   };
@@ -117,12 +123,12 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 transition-colors duration-300">
       {/* Header */}
-      <header className="bg-white border-b">
+      <header className="bg-white border-b transition-colors duration-300">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Target className="w-8 h-8 text-blue-600" />
+            <Target className="w-8 h-8 text-green-600" />
             <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
           </div>
           
@@ -158,7 +164,7 @@ const Dashboard = () => {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full" 
+                  className="bg-green-600 h-2 rounded-full" 
                   style={{ width: `${getProgressPercentage()}%` }}
                 ></div>
               </div>
@@ -206,7 +212,7 @@ const Dashboard = () => {
           
           <Button 
             onClick={createNewFunnel} 
-            className={`${isAtLimit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+            className={`${isAtLimit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
             disabled={isAtLimit()}
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -216,7 +222,7 @@ const Dashboard = () => {
 
         {/* Upgrade Banner */}
         {isAtLimit() && (
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg mb-8">
+          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg mb-8">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold mb-2">Upgrade seu plano</h3>
@@ -239,7 +245,7 @@ const Dashboard = () => {
             <p className="text-gray-500 mb-6">
               Comece criando seu primeiro funil de vendas
             </p>
-            <Button onClick={createNewFunnel} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={createNewFunnel} className="bg-green-600 hover:bg-green-700">
               <Plus className="w-5 h-5 mr-2" />
               Criar Primeiro Funil
             </Button>
@@ -263,7 +269,7 @@ const Dashboard = () => {
                   </p>
                   <Button 
                     onClick={() => openFunnel(funnel.id)}
-                    className="w-full"
+                    className="w-full bg-green-600 hover:bg-green-700"
                     variant="outline"
                   >
                     Abrir Funil

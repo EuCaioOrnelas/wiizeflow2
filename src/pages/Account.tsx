@@ -93,6 +93,14 @@ const Account = () => {
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    
+    // Force a re-render by updating the document class immediately
+    if (newTheme === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+    
     toast({
       title: "Tema alterado",
       description: `Tema ${newTheme === 'dark' ? 'escuro' : 'claro'} ativado.`,
@@ -118,12 +126,12 @@ const Account = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 transition-colors duration-300">
       {/* Header */}
-      <header className="bg-white border-b">
+      <header className="bg-white border-b transition-colors duration-300">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Target className="w-8 h-8 text-blue-600" />
+            <Target className="w-8 h-8 text-green-600" />
             <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
           </div>
           
@@ -174,7 +182,7 @@ const Account = () => {
                           value={newName}
                           onChange={(e) => setNewName(e.target.value)}
                         />
-                        <Button onClick={handleSaveProfile} size="sm">Salvar</Button>
+                        <Button onClick={handleSaveProfile} size="sm" className="bg-green-600 hover:bg-green-700">Salvar</Button>
                         <Button onClick={() => setIsEditing(false)} variant="outline" size="sm">
                           Cancelar
                         </Button>
@@ -204,7 +212,7 @@ const Account = () => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
-                      <Button onClick={handleChangePassword} size="sm">
+                      <Button onClick={handleChangePassword} size="sm" className="bg-green-600 hover:bg-green-700">
                         Alterar
                       </Button>
                     </div>
@@ -231,7 +239,7 @@ const Account = () => {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div 
-                      className="bg-blue-600 h-2 rounded-full" 
+                      className="bg-green-600 h-2 rounded-full" 
                       style={{ width: `${(funnelsCount / funnelsLimit) * 100}%` }}
                     ></div>
                   </div>
@@ -245,7 +253,7 @@ const Account = () => {
                   </div>
                 )}
 
-                <Button onClick={handleUpgrade} className="w-full" variant="outline">
+                <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700" variant="outline">
                   <CreditCard className="w-4 h-4 mr-2" />
                   Fazer Upgrade
                 </Button>

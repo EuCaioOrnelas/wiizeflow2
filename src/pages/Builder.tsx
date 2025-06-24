@@ -317,16 +317,16 @@ const Builder = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex transition-colors duration-300">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r shadow-sm">
+      <div className="w-80 bg-white border-r shadow-sm transition-colors duration-300">
         {/* Header */}
         <div className="p-6 border-b">
           <div className="flex items-center justify-between mb-4">
             <Button variant="ghost" onClick={goBack} className="p-2">
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <Button onClick={saveFunnel} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={saveFunnel} className="bg-green-600 hover:bg-green-700">
               <Save className="w-4 h-4 mr-2" />
               Salvar
             </Button>
@@ -364,6 +364,7 @@ const Builder = () => {
                   variant="outline" 
                   size="sm"
                   onClick={() => startConnection(selectedBlock)}
+                  className="border-green-500 text-green-600 hover:bg-green-50"
                 >
                   Conectar
                 </Button>
@@ -456,7 +457,7 @@ const Builder = () => {
       <div className="flex-1 p-6">
         <div
           ref={canvasRef}
-          className="w-full h-full bg-white rounded-lg border-2 border-dashed border-gray-200 relative overflow-hidden"
+          className="w-full h-full bg-white rounded-lg border-2 border-dashed border-gray-200 relative overflow-hidden transition-colors duration-300"
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onMouseMove={handleMouseMove}
@@ -480,39 +481,54 @@ const Builder = () => {
 
           {/* Render Connections */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none">
-            {connections.map((connection) => (
-              <g key={connection.id}>
-                <defs>
-                  <marker
-                    id={`arrowhead-${connection.id}`}
-                    markerWidth="10"
-                    markerHeight="7"
-                    refX="9"
-                    refY="3.5"
-                    orient="auto"
-                  >
-                    <polygon
-                      points="0 0, 10 3.5, 0 7"
-                      fill="#374151"
-                    />
-                  </marker>
-                </defs>
-                <line
-                  x1={connection.fromPosition.x}
-                  y1={connection.fromPosition.y}
-                  x2={connection.toPosition.x}
-                  y2={connection.toPosition.y}
-                  stroke="#374151"
-                  strokeWidth="2"
-                  markerEnd={`url(#arrowhead-${connection.id})`}
-                  className="pointer-events-auto cursor-pointer hover:stroke-red-500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteConnection(connection.id);
-                  }}
+            <defs>
+              <marker
+                id="arrowhead-default"
+                markerWidth="12"
+                markerHeight="8"
+                refX="11"
+                refY="4"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon
+                  points="0,0 0,8 12,4"
+                  fill="#374151"
+                  className="arrow-marker"
                 />
-              </g>
-            ))}
+              </marker>
+            </defs>
+            {connections.map((connection) => {
+              const fromBlock = blocks.find(b => b.id === connection.from);
+              const toBlock = blocks.find(b => b.id === connection.to);
+              
+              if (!fromBlock || !toBlock) return null;
+
+              // Calculate connection points on the edges of blocks
+              const fromX = fromBlock.position.x + 160; // right edge of from block
+              const fromY = fromBlock.position.y + 40; // center height of from block
+              const toX = toBlock.position.x; // left edge of to block
+              const toY = toBlock.position.y + 40; // center height of to block
+
+              return (
+                <g key={connection.id}>
+                  <line
+                    x1={fromX}
+                    y1={fromY}
+                    x2={toX - 10} // Stop before the target block to show arrow
+                    y2={toY}
+                    stroke="#374151"
+                    strokeWidth="2"
+                    markerEnd="url(#arrowhead-default)"
+                    className="pointer-events-auto cursor-pointer hover:stroke-red-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteConnection(connection.id);
+                    }}
+                  />
+                </g>
+              );
+            })}
           </svg>
 
           {/* Render Blocks */}
@@ -521,7 +537,7 @@ const Builder = () => {
               key={block.id}
               className={`absolute p-4 bg-white border-2 rounded-lg shadow-sm cursor-pointer transition-all ${
                 selectedBlock === block.id 
-                  ? 'border-blue-500 shadow-lg' 
+                  ? 'border-green-500 shadow-lg' 
                   : connectingFrom === block.id
                   ? 'border-green-500 shadow-lg'
                   : 'border-gray-200 hover:border-gray-300'
@@ -575,7 +591,7 @@ const Builder = () => {
             <div
               key={textElement.id}
               className={`absolute cursor-pointer ${
-                selectedText === textElement.id ? 'ring-2 ring-blue-500' : ''
+                selectedText === textElement.id ? 'ring-2 ring-green-500' : ''
               }`}
               style={{
                 left: textElement.position.x,

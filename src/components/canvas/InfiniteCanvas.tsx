@@ -172,6 +172,12 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
         type: currentEdgeType,
         animated: true,
         style: { stroke: '#10b981', strokeWidth: 2 },
+        markerEnd: {
+          type: 'arrowclosed',
+          width: 20,
+          height: 20,
+          color: '#10b981',
+        },
       };
       setEdges((eds) => addEdge(newEdge, eds));
       saveToHistory();
@@ -311,7 +317,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
               position="bottom-right"
             />
             <Background 
-              variant={BackgroundVariant.Lines} 
+              variant="dots"
               gap={20} 
               size={1}
               color="#e5e7eb"

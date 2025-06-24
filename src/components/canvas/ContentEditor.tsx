@@ -90,12 +90,12 @@ export const ContentEditor = ({ node, isOpen, onClose, onSave }: ContentEditorPr
           {/* Content Items */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">Conteúdo Estruturado</h3>
+              <h3 className="text-lg font-medium">Conteúdo em Linha</h3>
               <ContentItemButtons onAddItem={addContentItem} />
             </div>
 
             {/* Content Items List */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               {contentItems.map((item) => (
                 <ContentItemCard
                   key={item.id}

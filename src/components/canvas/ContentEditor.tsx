@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,7 @@ import {
   X,
   Plus
 } from 'lucide-react';
+import { CustomNodeData, NodeContent } from '@/types/canvas';
 
 interface ContentItem {
   id: string;
@@ -37,14 +37,8 @@ interface ContentItem {
   items?: { id: string; text: string; checked?: boolean }[]; // For lists and checklists
 }
 
-interface NodeContent {
-  title?: string;
-  description?: string;
-  items?: ContentItem[];
-}
-
 interface ContentEditorProps {
-  node: Node;
+  node: Node<CustomNodeData>;
   isOpen: boolean;
   onClose: () => void;
   onSave: (content: NodeContent) => void;

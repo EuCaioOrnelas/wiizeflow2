@@ -1,0 +1,150 @@
+
+import { useCallback, useState } from 'react';
+import { Node, Edge } from '@xyflow/react';
+import { CustomNodeData, NodeContent } from '@/types/canvas';
+import { useToast } from '@/hooks/use-toast';
+
+interface UseCanvasOperationsProps {
+  nodes: Node<CustomNodeData>[];
+  edges: Edge[];
+  setNodes: (nodes: Node<CustomNodeData>[]) => void;
+  setEdges: (edges: Edge[]) => void;
+  saveToHistory: () => void;
+}
+
+export const useCanvasOperations = ({
+  nodes,
+  edges,
+  setNodes,
+  setEdges,
+  saveToHistory
+}: UseCanvasOperationsProps) => {
+  const [clipboard, setClipboard] = useState<{ nodes: Node<CustomNodeData>[]; edges: Edge[] } | null>(null);
+  const { toast } = useToast();
+
+  const addNode = useCallback((type: string, position: { x: number; y: number }) => {
+    const newNode: Node<CustomNodeData> = {
+      id: `node-${Date.now()}`,
+      type: 'custom',
+      position,
+      data: {
+        label: `${type} Node`,
+        type,
+        content: null,
+        hasContent: false,
+      },
+    };
+    setNodes([...nodes, newNode]);
+    saveToHistory();
+  }, [nodes, setNodes, saveToHistory]);
+
+  const duplicateNode = useCallback((nodeId: string) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      const newNode: Node<CustomNodeData> = {
+        ...node,
+        id: `node-${Date.now()}`,
+        position: {
+          x: node.position.x + 50,
+          y: node.position.y + 50,
+        },
+      };
+      setNodes([...nodes, newNode]);
+      saveToHistory();
+    }
+  }, [nodes, setNodes, saveToHistory]);
+
+  const deleteNode = useCallback((nodeId: string) => {
+    setNodes(nodes.filter(n => n.id !== nodeId));
+    setEdges(edges.filter(e => e.source !== nodeId && e.target !== nodeId));
+    saveToHistory();
+  }, [nodes, edges, setNodes, setEdges, saveToHistory]);
+
+  const copyNodes = useCallback(() => {
+    const selectedNodes = nodes.filter(node => node.selected);
+    const selectedNodeIds = selectedNodes.map(node => node.id);
+    const selectedEdges = edges.filter(edge => 
+      selectedNodeIds.includes(edge.source) && selectedNodeIds.includes(edge.target)
+    );
+    
+    if (selectedNodes.length > 0) {
+      setClipboard({ nodes: selectedNodes, edges: selectedEdges });
+      toast({
+        title: "Copiado!",
+        description: `${selectedNodes.length} nó(s) copiado(s)`,
+      });
+    }
+  }, [nodes, edges, toast]);
+
+  const pasteNodes = useCallback(() => {
+    if (clipboard) {
+      const idMap = new Map();
+      const newNodes: Node<CustomNodeData>[] = clipboard.nodes.map(node => {
+        const newId = `node-${Date.now()}-${Math.random()}`;
+        idMap.set(node.id, newId);
+        return {
+          ...node,
+          id: newId,
+          position: {
+            x: node.position.x + 50,
+            y: node.position.y + 50,
+          },
+          selected: false,
+        };
+      });
+
+      const newEdges = clipboard.edges.map(edge => ({
+        ...edge,
+        id: `edge-${Date.now()}-${Math.random()}`,
+        source: idMap.get(edge.source),
+        target: idMap.get(edge.target),
+      }));
+
+      setNodes([...nodes, ...newNodes]);
+      setEdges([...edges, ...newEdges]);
+      saveToHistory();
+      
+      toast({
+        title: "Colado!",
+        description: `${newNodes.length} nó(s) colado(s)`,
+      });
+    }
+  }, [clipboard, nodes, edges, setNodes, setEdges, saveToHistory, toast]);
+
+  const deleteSelected = useCallback(() => {
+    const selectedNodes = nodes.filter(node => node.selected);
+    const selectedNodeIds = selectedNodes.map(node => node.id);
+    
+    setNodes(nodes.filter(node => !node.selected));
+    setEdges(edges.filter(edge => 
+      !selectedNodeIds.includes(edge.source) && !selectedNodeIds.includes(edge.target)
+    ));
+    saveToHistory();
+  }, [nodes, edges, setNodes, setEdges, saveToHistory]);
+
+  const updateNodeContent = useCallback((nodeId: string, content: NodeContent) => {
+    setNodes(nodes.map(node => 
+      node.id === nodeId 
+        ? { 
+            ...node, 
+            data: { 
+              ...node.data, 
+              content,
+              hasContent: !!content && Object.keys(content).length > 0
+            }
+          }
+        : node
+    ));
+    saveToHistory();
+  }, [nodes, setNodes, saveToHistory]);
+
+  return {
+    addNode,
+    duplicateNode,
+    deleteNode,
+    copyNodes,
+    pasteNodes,
+    deleteSelected,
+    updateNodeContent
+  };
+};

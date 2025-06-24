@@ -15,6 +15,7 @@ import {
   Edit3,
   Circle
 } from 'lucide-react';
+import { CustomNodeData } from '@/types/canvas';
 
 const iconMap = {
   capture: MousePointer,
@@ -37,19 +38,6 @@ const colorMap = {
   other: 'bg-gray-500',
   text: 'bg-indigo-500',
 };
-
-interface NodeContent {
-  title?: string;
-  description?: string;
-  items?: any[];
-}
-
-interface CustomNodeData extends Record<string, unknown> {
-  label: string;
-  type: string;
-  content: NodeContent | null;
-  hasContent: boolean;
-}
 
 export const CustomNode = memo(({ data, selected }: NodeProps<CustomNodeData>) => {
   const [isHovered, setIsHovered] = useState(false);

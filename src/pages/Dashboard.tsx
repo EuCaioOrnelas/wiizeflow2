@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Target, LogOut, Edit3, User, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
-import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -14,9 +14,42 @@ const Dashboard = () => {
   const [funnels, setFunnels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
-  const loadUserProfile = useCallback(async (userId: string) => {
+  useEffect(() => {
+    // Configurar listener de mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (!session?.user) {
+          window.location.href = '/auth';
+        } else {
+          // Carregar perfil do usuário
+          setTimeout(() => {
+            loadUserProfile(session.user.id);
+          }, 0);
+        }
+      }
+    );
+
+    // Verificar sessão existente
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (!session?.user) {
+        window.location.href = '/auth';
+      } else {
+        loadUserProfile(session.user.id);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const loadUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -31,85 +64,24 @@ const Dashboard = () => {
 
       setProfile(data);
       
-      // Carregar funis salvos no localStorage
+      // Carregar funis salvos no localStorage por enquanto
       const savedFunnels = localStorage.getItem('funnels');
       if (savedFunnels) {
-        try {
-          const parsedFunnels = JSON.parse(savedFunnels);
-          setFunnels(parsedFunnels);
-        } catch (error) {
-          console.error('Error parsing funnels:', error);
-          setFunnels([]);
-        }
+        setFunnels(JSON.parse(savedFunnels));
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    let mounted = true;
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem('funnels');
+    localStorage.removeItem('userPlan');
+    window.location.href = '/';
+  };
 
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
-        if (session?.user) {
-          setSession(session);
-          setUser(session.user);
-          await loadUserProfile(session.user.id);
-        } else {
-          navigate('/auth');
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
-        if (mounted) {
-          navigate('/auth');
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session?.user) {
-          navigate('/auth');
-        } else {
-          await loadUserProfile(session.user.id);
-        }
-      }
-    );
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, loadUserProfile]);
-
-  const handleLogout = useCallback(async () => {
-    try {
-      await supabase.auth.signOut();
-      localStorage.removeItem('funnels');
-      localStorage.removeItem('userPlan');
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }, [navigate]);
-
-  const createNewFunnel = useCallback(() => {
+  const createNewFunnel = () => {
     const funnelLimit = profile?.plan_type === 'free' ? 2 : 'unlimited';
     const isLimitReached = funnelLimit === 2 && funnels.length >= 2;
     
@@ -127,39 +99,28 @@ const Dashboard = () => {
       name: `Funil ${funnels.length + 1}`,
       createdAt: new Date().toISOString(),
       blocks: [],
-      connections: [],
-      canvasData: { nodes: [], edges: [] }
+      connections: []
     };
     
-    try {
-      const updatedFunnels = [...funnels, newFunnel];
-      setFunnels(updatedFunnels);
-      localStorage.setItem('funnels', JSON.stringify(updatedFunnels));
-      
-      // Usar navigate em vez de window.location.href
-      navigate(`/builder/${newFunnel.id}`);
-    } catch (error) {
-      console.error('Error creating funnel:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao criar funil. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  }, [funnels, profile?.plan_type, toast, navigate]);
+    const updatedFunnels = [...funnels, newFunnel];
+    setFunnels(updatedFunnels);
+    localStorage.setItem('funnels', JSON.stringify(updatedFunnels));
+    
+    // Redirect to builder
+    window.location.href = `/builder/${newFunnel.id}`;
+  };
 
-  const openFunnel = useCallback((funnelId: string) => {
-    // Usar navigate em vez de window.location.href
-    navigate(`/builder/${funnelId}`);
-  }, [navigate]);
+  const openFunnel = (funnelId: string) => {
+    window.location.href = `/builder/${funnelId}`;
+  };
 
-  const handleUpgrade = useCallback(() => {
-    navigate('/sales');
-  }, [navigate]);
+  const handleUpgrade = () => {
+    window.location.href = '/sales';
+  };
 
-  const handleAccount = useCallback(() => {
-    navigate('/account');
-  }, [navigate]);
+  const handleAccount = () => {
+    window.location.href = '/account';
+  };
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
@@ -215,12 +176,7 @@ const Dashboard = () => {
   }
 
   if (!user || !profile) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <Target className="w-12 h-12 text-green-600 mx-auto mb-4" />
-        <p className="text-gray-600">Carregando perfil...</p>
-      </div>
-    </div>;
+    return <div>Carregando...</div>;
   }
 
   return (

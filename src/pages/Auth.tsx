@@ -4,12 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { Target, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from '@supabase/supabase-js';
-import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,13 +15,10 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Validação de senha forte
   const passwordValidation = {
@@ -37,85 +32,43 @@ const Auth = () => {
   const isPasswordValid = Object.values(passwordValidation).every(Boolean);
 
   useEffect(() => {
-    let isMounted = true;
-    
-    const initializeAuth = async () => {
-      try {
-        // Configurar listener de mudanças de autenticação
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          (event, session) => {
-            if (!isMounted) return;
-            
-            console.log('Auth state changed:', event, session?.user?.id);
-            setSession(session);
-            setUser(session?.user ?? null);
-            
-            if (session?.user && event !== 'SIGNED_OUT') {
-              console.log('User authenticated, redirecting to dashboard');
-              navigate('/dashboard', { replace: true });
-            }
-          }
-        );
-
-        // Verificar sessão existente
-        const { data: { session }, error } = await supabase.auth.getSession();
+    // Configurar listener de mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
         
-        if (!isMounted) return;
-        
-        if (error) {
-          console.error('Error getting session:', error);
-        } else if (session?.user) {
-          console.log('Existing session found, redirecting to dashboard');
-          setSession(session);
-          setUser(session.user);
-          navigate('/dashboard', { replace: true });
-          return;
-        }
-        
-        setIsInitializing(false);
-        
-        return () => {
-          isMounted = false;
-          subscription.unsubscribe();
-        };
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        if (isMounted) {
-          setIsInitializing(false);
+        if (session?.user) {
+          // Redirecionar para dashboard quando autenticado
+          window.location.href = '/dashboard';
         }
       }
-    };
+    );
 
-    initializeAuth();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [navigate]);
+    // Verificar sessão existente
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        window.location.href = '/dashboard';
+      }
+    });
 
-  const updateProgress = (progress: number) => {
-    setLoadingProgress(progress);
-  };
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setLoadingProgress(0);
 
     try {
-      updateProgress(20);
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      updateProgress(60);
-
       if (error) {
-        updateProgress(100);
-        setLoading(false);
-        
         if (error.message.includes('Invalid login credentials')) {
           toast({
             title: "Erro de Login",
@@ -138,32 +91,19 @@ const Auth = () => {
         return;
       }
 
-      updateProgress(80);
-
-      if (data.user) {
-        updateProgress(90);
-        toast({
-          title: "Login realizado!",
-          description: "Redirecionando para o dashboard...",
-        });
-        
-        updateProgress(100);
-        
-        // Aguardar um pouco para mostrar o progresso completo
-        setTimeout(() => {
-          navigate('/dashboard', { replace: true });
-        }, 500);
-      }
+      toast({
+        title: "Login realizado!",
+        description: "Redirecionando para o dashboard...",
+      });
       
     } catch (error: any) {
-      console.error('Login error:', error);
-      updateProgress(100);
-      setLoading(false);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro inesperado. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -180,14 +120,9 @@ const Auth = () => {
     }
 
     setLoading(true);
-    setLoadingProgress(0);
 
     try {
-      updateProgress(20);
-      
       const redirectUrl = `${window.location.origin}/`;
-      
-      updateProgress(40);
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -200,12 +135,7 @@ const Auth = () => {
         }
       });
 
-      updateProgress(80);
-
       if (error) {
-        updateProgress(100);
-        setLoading(false);
-        
         if (error.message.includes('User already registered')) {
           toast({
             title: "Email já cadastrado",
@@ -228,8 +158,6 @@ const Auth = () => {
         return;
       }
 
-      updateProgress(100);
-
       toast({
         title: "Conta criada com sucesso!",
         description: "Verifique seu email para confirmar sua conta e fazer login.",
@@ -240,35 +168,17 @@ const Auth = () => {
       setPassword("");
       setName("");
       setIsLogin(true);
-      setLoading(false);
       
     } catch (error: any) {
-      console.error('Signup error:', error);
-      updateProgress(100);
-      setLoading(false);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro inesperado. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
-
-  if (isInitializing) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-6">
-        <div className="text-center">
-          <Target className="w-12 h-12 text-green-600 mx-auto mb-4 animate-spin" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Inicializando...
-          </h2>
-          <p className="text-gray-600">
-            Verificando sua sessão de autenticação.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-6">
@@ -277,7 +187,7 @@ const Auth = () => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Target className="w-10 h-10 text-green-600" />
-            <span className="text-3xl font-bold text-gray-900">Wiizeflow</span>
+            <span className="text-3xl font-bold text-gray-900">FunnelWiize</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             {isLogin ? 'Fazer Login' : 'Criar Conta Gratuita'}
@@ -308,7 +218,6 @@ const Auth = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    disabled={loading}
                   />
                 </div>
               )}
@@ -322,7 +231,6 @@ const Auth = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  disabled={loading}
                 />
               </div>
               
@@ -336,7 +244,6 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    disabled={loading}
                   />
                   <Button
                     type="button"
@@ -344,7 +251,6 @@ const Auth = () => {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
-                    disabled={loading}
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4 text-gray-400" />
@@ -412,31 +318,13 @@ const Auth = () => {
                   </div>
                 )}
               </div>
-
-              {/* Barra de progresso durante carregamento */}
-              {loading && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>{isLogin ? 'Fazendo login...' : 'Criando conta...'}</span>
-                    <span>{loadingProgress}%</span>
-                  </div>
-                  <Progress value={loadingProgress} className="w-full" />
-                </div>
-              )}
               
               <Button 
                 type="submit" 
                 className="w-full bg-green-600 hover:bg-green-700"
                 disabled={loading || (!isLogin && !isPasswordValid)}
               >
-                {loading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                    <span>{isLogin ? 'Entrando...' : 'Criando...'}</span>
-                  </div>
-                ) : (
-                  isLogin ? 'Entrar' : 'Criar Conta Gratuita'
-                )}
+                {loading ? 'Carregando...' : (isLogin ? 'Entrar' : 'Criar Conta Gratuita')}
               </Button>
             </form>
             
@@ -444,15 +332,12 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={() => {
-                  if (loading) return;
                   setIsLogin(!isLogin);
                   setEmail("");
                   setPassword("");
                   setName("");
-                  setLoadingProgress(0);
                 }}
-                className="text-green-600 hover:text-green-700 text-sm font-medium disabled:opacity-50"
-                disabled={loading}
+                className="text-green-600 hover:text-green-700 text-sm font-medium"
               >
                 {isLogin 
                   ? 'Não tem conta? Criar conta gratuita' 
@@ -464,9 +349,8 @@ const Auth = () => {
             <div className="text-center mt-4">
               <button
                 type="button"
-                onClick={() => navigate('/')}
-                className="text-gray-500 hover:text-gray-700 text-sm disabled:opacity-50"
-                disabled={loading}
+                onClick={() => window.location.href = '/'}
+                className="text-gray-500 hover:text-gray-700 text-sm"
               >
                 Voltar para página inicial
               </button>

@@ -127,16 +127,16 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     [setEdges, saveToHistory]
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node as Node<CustomNodeData>);
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node<CustomNodeData>) => {
+    setSelectedNode(node);
   }, []);
 
-  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node as Node<CustomNodeData>);
+  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node<CustomNodeData>) => {
+    setSelectedNode(node);
     setIsEditorOpen(true);
   }, []);
 
-  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node<CustomNodeData>) => {
     event.preventDefault();
     setContextMenu({
       x: event.clientX,

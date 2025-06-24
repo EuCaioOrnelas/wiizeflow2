@@ -1,8 +1,14 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Target, Crown } from "lucide-react";
+import { usePayment } from "@/hooks/usePayment";
+import { useState } from "react";
 
 const Pricing = () => {
+  const { createPayment, loading } = usePayment();
+  const [customerEmail, setCustomerEmail] = useState("");
+
   const plans = [
     {
       name: "Gratuito",
@@ -22,7 +28,8 @@ const Pricing = () => {
       buttonText: "Começar grátis",
       buttonAction: () => window.location.href = '/',
       popular: false,
-      color: "gray"
+      color: "gray",
+      priceId: null
     },
     {
       name: "Mensal", 
@@ -40,9 +47,10 @@ const Pricing = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => alert("Integração com pagamento em breve"),
+      buttonAction: () => createPayment("price_1RdfWZQFkphRyjSA3oNlNfiK", customerEmail),
       popular: false,
-      color: "blue"
+      color: "blue",
+      priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
     },
     {
       name: "Anual",
@@ -65,9 +73,10 @@ const Pricing = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => alert("Integração com pagamento em breve"),
+      buttonAction: () => createPayment("price_1RdfX2QFkphRyjSANdSPAZUq", customerEmail),
       popular: true,
-      color: "green"
+      color: "green",
+      priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
     }
   ];
 
@@ -116,6 +125,22 @@ const Pricing = () => {
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
           Comece grátis e escale conforme seu negócio cresce. Todos os planos incluem suporte em português.
         </p>
+
+        {/* Email Input for Payment */}
+        <div className="max-w-md mx-auto mb-8">
+          <div className="bg-blue-50 p-4 rounded-lg mb-4">
+            <p className="text-sm text-blue-700 mb-2">
+              📧 Opcional: Informe seu email para receber o recibo
+            </p>
+            <input
+              type="email"
+              placeholder="seu@email.com"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
       </section>
 
       {/* Pricing Cards */}
@@ -174,9 +199,10 @@ const Pricing = () => {
 
                 <Button 
                   onClick={plan.buttonAction}
+                  disabled={loading && plan.priceId}
                   className={`w-full ${getButtonStyle(plan)}`}
                 >
-                  {plan.buttonText}
+                  {loading && plan.priceId ? "Processando..." : plan.buttonText}
                 </Button>
               </CardContent>
             </Card>
@@ -198,7 +224,7 @@ const Pricing = () => {
             ✨ Todos os planos pagos incluem acesso completo aos templates e funcionalidades avançadas
           </p>
           <p className="text-gray-600">
-            🔒 Pagamento seguro • Cancele a qualquer momento • Suporte em português • Garantia de 30 dias
+            🔒 Pagamento seguro • Processamento via Stripe • Suporte em português • Garantia de 30 dias
           </p>
         </div>
       </section>

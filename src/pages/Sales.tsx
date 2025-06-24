@@ -1,11 +1,15 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
          MousePointer, Palette, Download, Eye, Lightbulb, Trophy, Shield, 
          Crown, PlayCircle, TrendingUp, Clock, DollarSign } from "lucide-react";
+import { usePayment } from "@/hooks/usePayment";
+import { useState } from "react";
 
 const Sales = () => {
+  const { createPayment, loading } = usePayment();
+  const [customerEmail, setCustomerEmail] = useState("");
+
   const handleGetStarted = () => {
     window.location.href = '/pricing';
   };
@@ -31,7 +35,8 @@ const Sales = () => {
       buttonText: "Começar Grátis",
       buttonAction: () => window.location.href = '/',
       popular: false,
-      color: "gray"
+      color: "gray",
+      priceId: null
     },
     {
       name: "Mensal",
@@ -51,9 +56,10 @@ const Sales = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => alert("Integração com pagamento em breve"),
+      buttonAction: () => createPayment("price_1RdfWZQFkphRyjSA3oNlNfiK", customerEmail),
       popular: false,
-      color: "blue"
+      color: "blue",
+      priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
     },
     {
       name: "Anual",
@@ -76,9 +82,10 @@ const Sales = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => alert("Integração com pagamento em breve"),
+      buttonAction: () => createPayment("price_1RdfX2QFkphRyjSANdSPAZUq", customerEmail),
       popular: true,
-      color: "green"
+      color: "green",
+      priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
     }
   ];
 
@@ -431,6 +438,22 @@ const Sales = () => {
             <p className="text-xl text-gray-600">
               Comece grátis e escale conforme seu negócio cresce
             </p>
+            
+            {/* Email Input for Payment */}
+            <div className="max-w-md mx-auto mt-8">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <p className="text-sm text-blue-700 mb-2">
+                  📧 Opcional: Informe seu email para receber o recibo
+                </p>
+                <input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -487,9 +510,10 @@ const Sales = () => {
 
                   <Button 
                     onClick={plan.buttonAction}
+                    disabled={loading && plan.priceId}
                     className={`w-full py-3 text-lg font-medium ${getButtonStyle(plan)} shadow-lg hover:shadow-xl transition-all`}
                   >
-                    {plan.buttonText}
+                    {loading && plan.priceId ? "Processando..." : plan.buttonText}
                   </Button>
                 </CardContent>
               </Card>

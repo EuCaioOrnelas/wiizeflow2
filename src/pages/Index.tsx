@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
@@ -11,7 +12,7 @@ import { usePayment } from "@/hooks/usePayment";
 const Index = () => {
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' as 'login' | 'signup' });
   const [user, setUser] = useState<any>(null);
-  const { hasActiveSubscription, isLoading: isPaymentLoading } = usePayment();
+  const { createPayment, loading } = usePayment();
 
   useEffect(() => {
     const checkUser = async () => {

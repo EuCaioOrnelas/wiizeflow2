@@ -35,6 +35,7 @@ import { EdgeTypeSelector } from './EdgeTypeSelector';
 import { EdgeType } from '@/types/canvas';
 import { Button } from '@/components/ui/button';
 import { Minimize, Maximize } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -51,7 +52,6 @@ const nodeTypes = {
     <CustomNode 
       {...props} 
       onUpdateNode={(nodeId: string, updates: Partial<CustomNodeData>) => {
-        // Esta função será definida no componente interno
         if (props.onUpdateNode) {
           props.onUpdateNode(nodeId, updates);
         }
@@ -86,10 +86,39 @@ const InfiniteCanvasInner = ({
   const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [lastSaved, setLastSaved] = useState<string>('');
+  const [userPlan, setUserPlan] = useState<string>('free');
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { screenToFlowPosition, getViewport } = useReactFlow();
+
+  // Load user plan
+  useEffect(() => {
+    const loadUserPlan = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          const { data: profileData, error } = await supabase
+            .from('profiles')
+            .select('plan_type')
+            .eq('id', session.user.id)
+            .single();
+
+          if (error) {
+            console.error('Error loading user plan:', error);
+            return;
+          }
+
+          setUserPlan(profileData.plan_type || 'free');
+        }
+      } catch (error) {
+        console.error('Error loading user plan:', error);
+      }
+    };
+
+    loadUserPlan();
+  }, []);
 
   // Custom hooks
   const {
@@ -130,16 +159,6 @@ const InfiniteCanvasInner = ({
     const timeoutId = setTimeout(autoSave, 2000); // Auto-save after 2 seconds of inactivity
     return () => clearTimeout(timeoutId);
   }, [nodes, edges, lastSaved, onSave]);
-
-  // Função para atualizar dados do nó
-  const handleUpdateNode = useCallback((nodeId: string, updates: Partial<CustomNodeData>) => {
-    setNodes(nodes => nodes.map(node => 
-      node.id === nodeId 
-        ? { ...node, data: { ...node.data, ...updates } }
-        : node
-    ));
-    saveToHistory();
-  }, [setNodes, saveToHistory]);
 
   // Modificar os nodeTypes para incluir a função de atualização
   const customNodeTypes = {
@@ -247,7 +266,6 @@ const InfiniteCanvasInner = ({
         type: currentEdgeType,
         animated: true,
         style: { stroke: '#10b981', strokeWidth: 2 },
-        // Removido markerEnd para tirar as setas
       };
       setEdges((eds) => addEdge(newEdge, eds));
       saveToHistory();
@@ -511,7 +529,7 @@ const InfiniteCanvasInner = ({
             onExportAsImage={exportAsImage}
             onExportAsPDF={exportAsPDF}
             onSave={saveFunnel}
-            onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
+            onOpenTemplateManager={userPlan !== 'free' ? () => setIsTemplateManagerOpen(true) : undefined}
           />
         )}
 
@@ -609,13 +627,15 @@ const InfiniteCanvasInner = ({
         />
       )}
 
-      {/* Template Manager */}
-      <TemplateManager
-        isOpen={isTemplateManagerOpen}
-        onClose={() => setIsTemplateManagerOpen(false)}
-        onLoadTemplate={handleLoadTemplate}
-        onSaveTemplate={handleSaveTemplate}
-      />
+      {/* Template Manager - só renderiza se o usuário não for free */}
+      {userPlan !== 'free' && (
+        <TemplateManager
+          isOpen={isTemplateManagerOpen}
+          onClose={() => setIsTemplateManagerOpen(false)}
+          onLoadTemplate={handleLoadTemplate}
+          onSaveTemplate={handleSaveTemplate}
+        />
+      )}
 
       {/* Alert Dialog para confirmar exclusão de conexão */}
       <AlertDialog open={!!edgeToDelete} onOpenChange={() => setEdgeToDelete(null)}>

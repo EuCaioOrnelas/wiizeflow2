@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +13,6 @@ const Account = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [funnelsCount, setFunnelsCount] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -71,12 +69,6 @@ const Account = () => {
       setProfile(data);
       setNewName(data.name || '');
       
-      // Carregar funis salvos no localStorage por enquanto
-      const savedFunnels = localStorage.getItem('funnels');
-      if (savedFunnels) {
-        const funnels = JSON.parse(savedFunnels);
-        setFunnelsCount(funnels.length);
-      }
     } catch (error) {
       console.error('Error loading user profile:', error);
     }
@@ -180,10 +172,6 @@ const Account = () => {
       case 'annual': return 'Anual';
       default: return 'Gratuito';
     }
-  };
-
-  const getFunnelLimit = () => {
-    return profile?.plan_type === 'free' ? 2 : 'Ilimitados';
   };
 
   if (loading) {
@@ -295,7 +283,7 @@ const Account = () => {
               </CardContent>
             </Card>
 
-            {/* Plan & Usage Card */}
+            {/* Plan Card */}
             <Card>
               <CardHeader>
                 <CardTitle>Plano Atual</CardTitle>
@@ -306,30 +294,9 @@ const Account = () => {
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">Funis criados</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold">{funnelsCount}</span>
-                    <span className="text-sm text-gray-500">
-                      de {getFunnelLimit()}
-                    </span>
-                  </div>
-                  {profile.plan_type === 'free' && (
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div 
-                        className="bg-green-600 h-2 rounded-full" 
-                        style={{ width: `${(funnelsCount / 2) * 100}%` }}
-                      ></div>
-                    </div>
-                  )}
+                  <p className="text-sm text-gray-600 mb-2">Status</p>
+                  <span className="text-lg font-semibold text-green-600">Ativo</span>
                 </div>
-
-                {profile.plan_type === 'free' && funnelsCount >= 2 && (
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                    <p className="text-orange-800 text-sm">
-                      Você atingiu o limite do seu plano. Faça upgrade para continuar criando funis.
-                    </p>
-                  </div>
-                )}
 
                 <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700">
                   <CreditCard className="w-4 h-4 mr-2" />

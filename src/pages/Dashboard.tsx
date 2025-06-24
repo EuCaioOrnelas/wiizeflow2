@@ -1,12 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Target, LogOut, Edit3, User, CreditCard } from "lucide-react";
+import { Plus, Target, LogOut, Edit3, User, CreditCard, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import { useNavigate } from "react-router-dom";
+import { DeleteFunnelDialog } from "@/components/DeleteFunnelDialog";
 
 interface Funnel {
   id: string;
@@ -23,11 +23,13 @@ const Dashboard = () => {
   const [funnels, setFunnels] = useState<Funnel[]>([]);
   const [loading, setLoading] = useState(true);
   const [creatingFunnel, setCreatingFunnel] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [funnelToDelete, setFunnelToDelete] = useState<Funnel | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Configurar listener de mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -41,7 +43,6 @@ const Dashboard = () => {
       }
     );
 
-    // Verificar sessão existente
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -59,7 +60,6 @@ const Dashboard = () => {
 
   const loadUserData = async (userId: string) => {
     try {
-      // Carregar perfil do usuário
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -78,7 +78,6 @@ const Dashboard = () => {
 
       setProfile(profileData);
 
-      // Carregar funis do usuário
       const { data: funnelsData, error: funnelsError } = await supabase
         .from('funnels')
         .select('*')
@@ -150,7 +149,6 @@ const Dashboard = () => {
         return;
       }
 
-      // Atualizar lista de funis
       setFunnels(prev => [newFunnel, ...prev]);
 
       toast({
@@ -158,7 +156,6 @@ const Dashboard = () => {
         description: "Novo funil criado com sucesso.",
       });
 
-      // Redirecionar para o builder
       navigate(`/builder/${newFunnel.id}`);
 
     } catch (error) {
@@ -170,6 +167,55 @@ const Dashboard = () => {
       });
     } finally {
       setCreatingFunnel(false);
+    }
+  };
+
+  const handleDeleteFunnel = (funnel: Funnel) => {
+    setFunnelToDelete(funnel);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteFunnel = async () => {
+    if (!funnelToDelete || !user) return;
+
+    setIsDeleting(true);
+
+    try {
+      const { error } = await supabase
+        .from('funnels')
+        .delete()
+        .eq('id', funnelToDelete.id)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error deleting funnel:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao excluir funil.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setFunnels(prev => prev.filter(f => f.id !== funnelToDelete.id));
+
+      toast({
+        title: "Funil excluído!",
+        description: `O funil "${funnelToDelete.name}" foi excluído permanentemente.`,
+      });
+
+      setDeleteDialogOpen(false);
+      setFunnelToDelete(null);
+
+    } catch (error) {
+      console.error('Error deleting funnel:', error);
+      toast({
+        title: "Erro",
+        description: "Erro inesperado ao excluir funil.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -271,8 +317,8 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {/* Usage Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Usage Stats - Agora com 3 cards em vez de 4 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-gray-600">Funis Criados</CardTitle>
@@ -322,17 +368,6 @@ const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-gray-600">Suporte</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <span className="text-lg font-bold">
-                {profile.plan_type === 'free' ? 'Email básico' : profile.plan_type === 'monthly' ? 'Prioritário' : 'VIP + Consultoria'}
-              </span>
-            </CardContent>
-          </Card>
         </div>
 
         <div className="flex justify-between items-center mb-8">
@@ -351,7 +386,6 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Upgrade Banner for Free Plan */}
         {profile.plan_type === 'free' && (
           <div className="bg-gradient-to-r from-blue-500 to-green-600 text-white p-6 rounded-lg mb-8">
             <div className="flex items-center justify-between">
@@ -378,7 +412,6 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Upgrade Banner for Limit Reached */}
         {isAtLimit() && (
           <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white p-6 rounded-lg mb-8">
             <div className="flex items-center justify-between">
@@ -393,7 +426,6 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Funnels Grid */}
         {funnels.length === 0 ? (
           <div className="text-center py-16">
             <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -415,11 +447,24 @@ const Dashboard = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {funnels.map((funnel) => (
-              <Card key={funnel.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card key={funnel.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>{funnel.name}</span>
-                    <Edit3 className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center space-x-2">
+                      <Edit3 className="w-4 h-4 text-gray-400" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteFunnel(funnel);
+                        }}
+                        className="p-1 h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -442,6 +487,18 @@ const Dashboard = () => {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteFunnelDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setFunnelToDelete(null);
+        }}
+        onConfirm={confirmDeleteFunnel}
+        funnelName={funnelToDelete?.name || ''}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

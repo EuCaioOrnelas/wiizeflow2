@@ -18,7 +18,7 @@ export const EdgeTypeSelector = ({ currentType, onTypeChange }: EdgeTypeSelector
       description: 'Linha reta' 
     },
     { 
-      type: 'smoothstep', 
+      type: 'default', 
       name: 'Curvado', 
       icon: <Workflow className="w-4 h-4" />, 
       description: 'Linha curva suave' 

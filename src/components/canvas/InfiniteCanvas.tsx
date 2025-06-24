@@ -1,3 +1,4 @@
+
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -22,10 +23,11 @@ import { ContentEditor } from './ContentEditor';
 import { CanvasSidebar } from './CanvasSidebar';
 import { ContextMenu } from './ContextMenu';
 import { CanvasHeader } from './CanvasHeader';
+import { TemplateManager } from './TemplateManager';
 import { useCanvasHistory } from '@/hooks/useCanvasHistory';
 import { useCanvasHotkeys } from '@/hooks/useCanvasHotkeys';
 import { useCanvasOperations } from '@/hooks/useCanvasOperations';
-import { CustomNodeData, InfiniteCanvasProps } from '@/types/canvas';
+import { CustomNodeData, InfiniteCanvasProps, Template } from '@/types/canvas';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { EdgeTypeSelector } from './EdgeTypeSelector';
@@ -63,6 +65,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
   const [currentEdgeType, setCurrentEdgeType] = useState<EdgeType>('straight');
   const [edgeToDelete, setEdgeToDelete] = useState<string | null>(null);
+  const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -110,6 +113,42 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
       <CustomNode {...props} onUpdateNode={handleUpdateNode} />
     ),
   };
+
+  // Template operations
+  const handleLoadTemplate = useCallback((template: Template) => {
+    // Generate new IDs for nodes and edges to avoid conflicts
+    const idMap = new Map();
+    
+    const newNodes = template.nodes.map(node => {
+      const newId = `node-${Date.now()}-${Math.random()}`;
+      idMap.set(node.id, newId);
+      return {
+        ...node,
+        id: newId,
+        selected: false,
+      };
+    });
+
+    const newEdges = template.edges.map(edge => ({
+      ...edge,
+      id: `edge-${Date.now()}-${Math.random()}`,
+      source: idMap.get(edge.source) || edge.source,
+      target: idMap.get(edge.target) || edge.target,
+    }));
+
+    setNodes(newNodes);
+    setEdges(newEdges);
+    saveToHistory();
+    
+    toast({
+      title: "Template carregado!",
+      description: `Template "${template.name}" foi carregado com sucesso.`,
+    });
+  }, [setNodes, setEdges, saveToHistory, toast]);
+
+  const handleSaveTemplate = useCallback(() => {
+    return { nodes, edges };
+  }, [nodes, edges]);
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
@@ -309,6 +348,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
           onExportAsImage={exportAsImage}
           onExportAsPDF={exportAsPDF}
           onSave={saveFunnel}
+          onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
         />
 
         {/* Canvas */}
@@ -386,6 +426,14 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
           onSave={(content, elementName) => updateNodeContent(selectedNode.id, content, elementName)}
         />
       )}
+
+      {/* Template Manager */}
+      <TemplateManager
+        isOpen={isTemplateManagerOpen}
+        onClose={() => setIsTemplateManagerOpen(false)}
+        onLoadTemplate={handleLoadTemplate}
+        onSaveTemplate={handleSaveTemplate}
+      />
 
       {/* Alert Dialog para confirmar exclusão de conexão */}
       <AlertDialog open={!!edgeToDelete} onOpenChange={() => setEdgeToDelete(null)}>

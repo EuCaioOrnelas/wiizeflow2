@@ -28,4 +28,13 @@ export interface InfiniteCanvasProps {
   onFunnelNameChange: (name: string) => void;
 }
 
-export type EdgeType = 'straight' | 'smoothstep';
+export type EdgeType = 'straight' | 'default';
+
+export interface Template {
+  id: string;
+  name: string;
+  description: string;
+  nodes: Node<CustomNodeData>[];
+  edges: Edge[];
+  createdAt: string;
+}

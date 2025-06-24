@@ -18,6 +18,10 @@ const Index = () => {
     setShowAuthModal(true);
   };
 
+  const handleSalesPage = () => {
+    window.location.href = '/sales';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
@@ -25,15 +29,24 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">FunnelBuilder</span>
+            <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={handleLogin}
-            className="hover:bg-blue-50"
-          >
-            Fazer Login
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleSalesPage}
+              className="hover:bg-blue-50"
+            >
+              Página de Vendas
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleLogin}
+              className="hover:bg-blue-50"
+            >
+              Fazer Login
+            </Button>
+          </div>
         </div>
       </header>
 

@@ -26,6 +26,8 @@ export interface InfiniteCanvasProps {
   funnelId: string;
   funnelName: string;
   onFunnelNameChange: (name: string) => void;
+  initialCanvasData?: { nodes: Node<CustomNodeData>[]; edges: Edge[] };
+  onSave?: (canvasData: { nodes: Node<CustomNodeData>[]; edges: Edge[] }) => void;
 }
 
 export type EdgeType = 'straight' | 'default';

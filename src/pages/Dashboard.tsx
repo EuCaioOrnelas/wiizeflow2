@@ -6,14 +6,25 @@ import { Plus, Target, LogOut, Edit3, User, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { useNavigate } from "react-router-dom";
+
+interface Funnel {
+  id: string;
+  name: string;
+  canvas_data: any;
+  created_at: string;
+  updated_at: string;
+}
 
 const Dashboard = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any>(null);
-  const [funnels, setFunnels] = useState<any[]>([]);
+  const [funnels, setFunnels] = useState<Funnel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [creatingFunnel, setCreatingFunnel] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Configurar listener de mudanças de autenticação
@@ -23,12 +34,9 @@ const Dashboard = () => {
         setUser(session?.user ?? null);
         
         if (!session?.user) {
-          window.location.href = '/auth';
+          navigate('/auth');
         } else {
-          // Carregar perfil do usuário
-          setTimeout(() => {
-            loadUserProfile(session.user.id);
-          }, 0);
+          loadUserData(session.user.id);
         }
       }
     );
@@ -39,50 +47,75 @@ const Dashboard = () => {
       setUser(session?.user ?? null);
       
       if (!session?.user) {
-        window.location.href = '/auth';
+        navigate('/auth');
       } else {
-        loadUserProfile(session.user.id);
+        loadUserData(session.user.id);
       }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
-  const loadUserProfile = async (userId: string) => {
+  const loadUserData = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Carregar perfil do usuário
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error) {
-        console.error('Error loading profile:', error);
+      if (profileError) {
+        console.error('Error loading profile:', profileError);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar perfil do usuário.",
+          variant: "destructive",
+        });
         return;
       }
 
-      setProfile(data);
-      
-      // Carregar funis salvos no localStorage por enquanto
-      const savedFunnels = localStorage.getItem('funnels');
-      if (savedFunnels) {
-        setFunnels(JSON.parse(savedFunnels));
+      setProfile(profileData);
+
+      // Carregar funis do usuário
+      const { data: funnelsData, error: funnelsError } = await supabase
+        .from('funnels')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (funnelsError) {
+        console.error('Error loading funnels:', funnelsError);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar funis.",
+          variant: "destructive",
+        });
+        return;
       }
+
+      setFunnels(funnelsData || []);
+
     } catch (error) {
-      console.error('Error loading user profile:', error);
+      console.error('Error loading user data:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar dados do usuário.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem('funnels');
-    localStorage.removeItem('userPlan');
-    window.location.href = '/';
+    navigate('/');
   };
 
-  const createNewFunnel = () => {
-    const funnelLimit = profile?.plan_type === 'free' ? 2 : 'unlimited';
+  const createNewFunnel = async () => {
+    if (!user || !profile) return;
+
+    const funnelLimit = profile.plan_type === 'free' ? 2 : 'unlimited';
     const isLimitReached = funnelLimit === 2 && funnels.length >= 2;
     
     if (isLimitReached) {
@@ -94,32 +127,62 @@ const Dashboard = () => {
       return;
     }
 
-    const newFunnel = {
-      id: Date.now().toString(),
-      name: `Funil ${funnels.length + 1}`,
-      createdAt: new Date().toISOString(),
-      blocks: [],
-      connections: []
-    };
-    
-    const updatedFunnels = [...funnels, newFunnel];
-    setFunnels(updatedFunnels);
-    localStorage.setItem('funnels', JSON.stringify(updatedFunnels));
-    
-    // Redirect to builder
-    window.location.href = `/builder/${newFunnel.id}`;
+    setCreatingFunnel(true);
+
+    try {
+      const { data: newFunnel, error } = await supabase
+        .from('funnels')
+        .insert({
+          user_id: user.id,
+          name: `Funil ${funnels.length + 1}`,
+          canvas_data: { nodes: [], edges: [] }
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating funnel:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao criar novo funil.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Atualizar lista de funis
+      setFunnels(prev => [newFunnel, ...prev]);
+
+      toast({
+        title: "Sucesso!",
+        description: "Novo funil criado com sucesso.",
+      });
+
+      // Redirecionar para o builder
+      navigate(`/builder/${newFunnel.id}`);
+
+    } catch (error) {
+      console.error('Error creating funnel:', error);
+      toast({
+        title: "Erro",
+        description: "Erro inesperado ao criar funil.",
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingFunnel(false);
+    }
   };
 
   const openFunnel = (funnelId: string) => {
-    window.location.href = `/builder/${funnelId}`;
+    navigate(`/builder/${funnelId}`);
   };
 
   const handleUpgrade = () => {
-    window.location.href = '/sales';
+    navigate('/sales');
   };
 
   const handleAccount = () => {
-    window.location.href = '/account';
+    navigate('/account');
   };
 
   const getPlanColor = (plan: string) => {
@@ -281,10 +344,10 @@ const Dashboard = () => {
           <Button 
             onClick={createNewFunnel} 
             className={`${isAtLimit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
-            disabled={isAtLimit()}
+            disabled={isAtLimit() || creatingFunnel}
           >
             <Plus className="w-5 h-5 mr-2" />
-            Novo Funil
+            {creatingFunnel ? 'Criando...' : 'Novo Funil'}
           </Button>
         </div>
 
@@ -340,9 +403,13 @@ const Dashboard = () => {
             <p className="text-gray-500 mb-6">
               Comece criando seu primeiro funil de vendas
             </p>
-            <Button onClick={createNewFunnel} className="bg-green-600 hover:bg-green-700">
+            <Button 
+              onClick={createNewFunnel} 
+              className="bg-green-600 hover:bg-green-700"
+              disabled={creatingFunnel}
+            >
               <Plus className="w-5 h-5 mr-2" />
-              Criar Primeiro Funil
+              {creatingFunnel ? 'Criando...' : 'Criar Primeiro Funil'}
             </Button>
           </div>
         ) : (
@@ -357,10 +424,10 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 text-sm mb-4">
-                    Criado em {new Date(funnel.createdAt).toLocaleDateString('pt-BR')}
+                    Criado em {new Date(funnel.created_at).toLocaleDateString('pt-BR')}
                   </p>
                   <p className="text-gray-500 text-sm mb-4">
-                    {funnel.blocks?.length || 0} blocos
+                    {funnel.canvas_data?.nodes?.length || 0} blocos
                   </p>
                   <Button 
                     onClick={() => openFunnel(funnel.id)}

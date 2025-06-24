@@ -59,9 +59,24 @@ const nodeTypes = {
   ),
 };
 
-const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: InfiniteCanvasProps) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<CustomNodeData>>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+interface ExtendedInfiniteCanvasProps extends InfiniteCanvasProps {
+  initialCanvasData?: { nodes: Node<CustomNodeData>[]; edges: Edge[] };
+  onSave?: (canvasData: { nodes: Node<CustomNodeData>[]; edges: Edge[] }) => void;
+}
+
+const InfiniteCanvasInner = ({ 
+  funnelId, 
+  funnelName, 
+  onFunnelNameChange, 
+  initialCanvasData,
+  onSave 
+}: ExtendedInfiniteCanvasProps) => {
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<CustomNodeData>>(
+    initialCanvasData?.nodes || []
+  );
+  const [edges, setEdges, onEdgesChange] = useEdgesState(
+    initialCanvasData?.edges || []
+  );
   const [selectedNode, setSelectedNode] = useState<Node<CustomNodeData> | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
@@ -69,6 +84,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const [edgeToDelete, setEdgeToDelete] = useState<string | null>(null);
   const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string>('');
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -99,6 +115,20 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     setEdges,
     saveToHistory
   });
+
+  // Auto-save functionality
+  useEffect(() => {
+    const autoSave = () => {
+      const currentData = JSON.stringify({ nodes, edges });
+      if (currentData !== lastSaved && onSave) {
+        onSave({ nodes, edges });
+        setLastSaved(currentData);
+      }
+    };
+
+    const timeoutId = setTimeout(autoSave, 2000); // Auto-save after 2 seconds of inactivity
+    return () => clearTimeout(timeoutId);
+  }, [nodes, edges, lastSaved, onSave]);
 
   // Função para atualizar dados do nó
   const handleUpdateNode = useCallback((nodeId: string, updates: Partial<CustomNodeData>) => {
@@ -172,19 +202,6 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     }
   }, [redo, setNodes, setEdges, setHistoryIndex]);
 
-  // Load saved data
-  useEffect(() => {
-    const savedFunnels = localStorage.getItem('funnels');
-    if (savedFunnels) {
-      const funnels = JSON.parse(savedFunnels);
-      const currentFunnel = funnels.find((f: any) => f.id === funnelId);
-      if (currentFunnel && currentFunnel.canvasData) {
-        setNodes(currentFunnel.canvasData.nodes || []);
-        setEdges(currentFunnel.canvasData.edges || []);
-      }
-    }
-  }, [funnelId, setNodes, setEdges]);
-
   // Hotkeys
   useCanvasHotkeys({
     onUndo: handleUndo,
@@ -192,7 +209,11 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     onCopy: copyNodes,
     onPaste: pasteNodes,
     onDelete: deleteSelected,
-    onSave: () => saveFunnel()
+    onSave: () => {
+      if (onSave) {
+        onSave({ nodes, edges });
+      }
+    }
   });
 
   // Drag and Drop handlers
@@ -278,27 +299,10 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   }, []);
 
   const saveFunnel = useCallback(() => {
-    const savedFunnels = localStorage.getItem('funnels');
-    if (savedFunnels) {
-      const funnels = JSON.parse(savedFunnels);
-      const updatedFunnels = funnels.map((f: any) => 
-        f.id === funnelId 
-          ? { 
-              ...f, 
-              name: funnelName,
-              canvasData: { nodes, edges },
-              updatedAt: new Date().toISOString() 
-            }
-          : f
-      );
-      localStorage.setItem('funnels', JSON.stringify(updatedFunnels));
-      
-      toast({
-        title: "Funil salvo!",
-        description: "Suas alterações foram salvas com sucesso.",
-      });
+    if (onSave) {
+      onSave({ nodes, edges });
     }
-  }, [funnelId, funnelName, nodes, edges, toast]);
+  }, [nodes, edges, onSave]);
 
   const exportAsImage = useCallback(async () => {
     if (reactFlowWrapper.current) {
@@ -475,13 +479,13 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
               Remover
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogFooter>
       </AlertDialog>
     </div>
   );
 };
 
-export const InfiniteCanvas = (props: InfiniteCanvasProps) => (
+export const InfiniteCanvas = (props: ExtendedInfiniteCanvasProps) => (
   <ReactFlowProvider>
     <InfiniteCanvasInner {...props} />
   </ReactFlowProvider>

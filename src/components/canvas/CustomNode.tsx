@@ -1,4 +1,3 @@
-
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -85,11 +84,13 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     if (onUpdateNode) {
       onUpdateNode(id, { customIcon: icon });
     }
+    setShowCustomizer(false);
   };
 
   const handleNameSave = () => {
     if (onUpdateNode && tempName.trim()) {
       onUpdateNode(id, { label: tempName.trim() });
+      setShowCustomizer(false);
     }
   };
 
@@ -207,11 +208,19 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
             {/* Configurações */}
             <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowCustomizer(!showCustomizer);
+                  }}
+                >
                   <Settings className="w-3 h-3" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-80 m-4 p-6">
+              <PopoverContent className="w-80 p-4" side="top" align="end">
                 <div className="space-y-4">
                   
                   {/* Campo para editar o nome */}
@@ -222,8 +231,14 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                         id="element-name"
                         value={tempName}
                         onChange={(e) => setTempName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleNameSave();
+                          }
+                        }}
                         className="flex-1"
                         placeholder="Nome do elemento"
+                        onClick={(e) => e.stopPropagation()}
                       />
                       <Button onClick={handleNameSave} size="sm">
                         Salvar
@@ -238,7 +253,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                         {emojis.map((emoji) => (
                           <button
                             key={emoji}
-                            onClick={() => handleCustomIconChange(emoji)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCustomIconChange(emoji);
+                            }}
                             className="w-8 h-8 text-lg hover:bg-gray-100 rounded flex items-center justify-center"
                           >
                             {emoji}

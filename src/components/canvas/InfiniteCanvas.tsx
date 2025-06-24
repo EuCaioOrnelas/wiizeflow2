@@ -43,6 +43,21 @@ const nodeTypes = {
   custom: CustomNode,
 };
 
+interface NodeContent {
+  title?: string;
+  description?: string;
+  items?: any[];
+}
+
+interface CustomNodeData {
+  label: string;
+  type: string;
+  content: NodeContent | null;
+  hasContent: boolean;
+}
+
+type CustomNode = Node<CustomNodeData>;
+
 interface InfiniteCanvasProps {
   funnelId: string;
   funnelName: string;
@@ -50,14 +65,14 @@ interface InfiniteCanvasProps {
 }
 
 const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: InfiniteCanvasProps) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<CustomNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedNode, setSelectedNode] = useState<CustomNode | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [clipboard, setClipboard] = useState<{ nodes: Node[]; edges: Edge[] } | null>(null);
-  const [history, setHistory] = useState<{ nodes: Node[]; edges: Edge[] }[]>([]);
+  const [clipboard, setClipboard] = useState<{ nodes: CustomNode[]; edges: Edge[] } | null>(null);
+  const [history, setHistory] = useState<{ nodes: CustomNode[]; edges: Edge[] }[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -79,7 +94,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
 
   // Save to history
   const saveToHistory = useCallback(() => {
-    const currentState = { nodes: getNodes(), edges: getEdges() };
+    const currentState = { nodes: getNodes() as CustomNode[], edges: getEdges() };
     setHistory(prev => {
       const newHistory = prev.slice(0, historyIndex + 1);
       newHistory.push(currentState);
@@ -132,16 +147,16 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     [setEdges, saveToHistory]
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeClick = useCallback((event: React.MouseEvent, node: CustomNode) => {
     setSelectedNode(node);
   }, []);
 
-  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: CustomNode) => {
     setSelectedNode(node);
     setIsEditorOpen(true);
   }, []);
 
-  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: CustomNode) => {
     event.preventDefault();
     setContextMenu({
       x: event.clientX,
@@ -159,7 +174,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   }, []);
 
   const addNode = useCallback((type: string, position: { x: number; y: number }) => {
-    const newNode: Node = {
+    const newNode: CustomNode = {
       id: `node-${Date.now()}`,
       type: 'custom',
       position,
@@ -177,7 +192,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const duplicateNode = useCallback((nodeId: string) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      const newNode = {
+      const newNode: CustomNode = {
         ...node,
         id: `node-${Date.now()}`,
         position: {
@@ -215,7 +230,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const pasteNodes = useCallback(() => {
     if (clipboard) {
       const idMap = new Map();
-      const newNodes = clipboard.nodes.map(node => {
+      const newNodes: CustomNode[] = clipboard.nodes.map(node => {
         const newId = `node-${Date.now()}-${Math.random()}`;
         idMap.set(node.id, newId);
         return {
@@ -317,7 +332,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     }
   }, [funnelName]);
 
-  const updateNodeContent = useCallback((nodeId: string, content: any) => {
+  const updateNodeContent = useCallback((nodeId: string, content: NodeContent) => {
     setNodes((nds) => nds.map(node => 
       node.id === nodeId 
         ? { 

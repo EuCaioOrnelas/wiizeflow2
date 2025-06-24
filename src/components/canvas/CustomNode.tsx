@@ -44,14 +44,14 @@ interface NodeContent {
   items?: any[];
 }
 
-interface NodeData {
+interface CustomNodeData {
   label: string;
   type: string;
   content: NodeContent | null;
   hasContent: boolean;
 }
 
-export const CustomNode = memo(({ data, selected }: NodeProps<NodeData>) => {
+export const CustomNode = memo(({ data, selected }: NodeProps<CustomNodeData>) => {
   const [isHovered, setIsHovered] = useState(false);
   const Icon = iconMap[data.type as keyof typeof iconMap] || FileText;
   const bgColor = colorMap[data.type as keyof typeof colorMap] || 'bg-gray-500';

@@ -1,3 +1,4 @@
+
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -16,7 +17,17 @@ import {
   Plus,
   Settings,
   Edit3,
-  Circle
+  Circle,
+  TrendingUp,
+  TrendingDown,
+  Instagram,
+  Youtube,
+  Play,
+  Megaphone,
+  Globe,
+  Building2,
+  Clock,
+  Phone
 } from 'lucide-react';
 
 interface CustomNodeComponentProps extends NodeProps {
@@ -37,6 +48,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         return <MousePointer className="w-4 h-4 text-white" />;
       case 'sales':
         return <Target className="w-4 h-4 text-white" />;
+      case 'upsell':
+        return <TrendingUp className="w-4 h-4 text-white" />;
+      case 'downsell':
+        return <TrendingDown className="w-4 h-4 text-white" />;
       case 'thankyou':
         return <Heart className="w-4 h-4 text-white" />;
       case 'checkout':
@@ -45,8 +60,30 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         return <Mail className="w-4 h-4 text-white" />;
       case 'whatsapp':
         return <MessageCircle className="w-4 h-4 text-white" />;
+      case 'sms':
+        return <MessageCircle className="w-4 h-4 text-white" />;
+      case 'call':
+        return <Phone className="w-4 h-4 text-white" />;
+      case 'dminstagram':
+        return <Instagram className="w-4 h-4 text-white" />;
+      case 'instagram':
+        return <Instagram className="w-4 h-4 text-white" />;
+      case 'youtube':
+        return <Youtube className="w-4 h-4 text-white" />;
+      case 'tiktok':
+        return <Play className="w-4 h-4 text-white" />;
+      case 'metaads':
+        return <Megaphone className="w-4 h-4 text-white" />;
+      case 'googleads':
+        return <Target className="w-4 h-4 text-white" />;
+      case 'blog':
+        return <FileText className="w-4 h-4 text-white" />;
+      case 'googlebusiness':
+        return <Building2 className="w-4 h-4 text-white" />;
       case 'text':
         return <FileText className="w-4 h-4 text-white" />;
+      case 'wait':
+        return <Clock className="w-4 h-4 text-white" />;
       case 'other':
         if (data.customIcon) {
           return <span className="text-white text-sm">{data.customIcon}</span>;
@@ -63,6 +100,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         return 'bg-blue-500';
       case 'sales':
         return 'bg-green-500';
+      case 'upsell':
+        return 'bg-emerald-500';
+      case 'downsell':
+        return 'bg-orange-500';
       case 'thankyou':
         return 'bg-purple-500';
       case 'checkout':
@@ -71,8 +112,30 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         return 'bg-yellow-500';
       case 'whatsapp':
         return 'bg-green-600';
+      case 'sms':
+        return 'bg-blue-400';
+      case 'call':
+        return 'bg-indigo-500';
+      case 'dminstagram':
+        return 'bg-pink-400';
+      case 'instagram':
+        return 'bg-pink-500';
+      case 'youtube':
+        return 'bg-red-600';
+      case 'tiktok':
+        return 'bg-black';
+      case 'metaads':
+        return 'bg-blue-600';
+      case 'googleads':
+        return 'bg-yellow-500';
+      case 'blog':
+        return 'bg-slate-600';
+      case 'googlebusiness':
+        return 'bg-green-600';
       case 'text':
         return 'bg-indigo-500';
+      case 'wait':
+        return 'bg-amber-500';
       case 'other':
         return 'bg-gray-500';
       default:
@@ -274,11 +337,24 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         <div className="text-xs opacity-75 capitalize mb-2">
           {data.type === 'capture' ? 'Captura' : 
            data.type === 'sales' ? 'Vendas' :
+           data.type === 'upsell' ? 'Upsell' :
+           data.type === 'downsell' ? 'Downsell' :
            data.type === 'thankyou' ? 'Obrigado' :
            data.type === 'checkout' ? 'Checkout' :
            data.type === 'email' ? 'E-mail' :
            data.type === 'whatsapp' ? 'WhatsApp' :
+           data.type === 'sms' ? 'SMS' :
+           data.type === 'call' ? 'Ligação' :
+           data.type === 'dminstagram' ? 'DM Instagram' :
+           data.type === 'instagram' ? 'Instagram' :
+           data.type === 'youtube' ? 'Youtube' :
+           data.type === 'tiktok' ? 'Tik Tok' :
+           data.type === 'metaads' ? 'Meta Ads' :
+           data.type === 'googleads' ? 'Google Ads' :
+           data.type === 'blog' ? 'Blog' :
+           data.type === 'googlebusiness' ? 'Google meu negócio' :
            data.type === 'text' ? 'Anotação' :
+           data.type === 'wait' ? 'Tempo de espera' :
            data.type === 'other' ? 'Customizado' : data.type}
         </div>
 

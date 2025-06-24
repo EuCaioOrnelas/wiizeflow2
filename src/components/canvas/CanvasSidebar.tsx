@@ -13,7 +13,18 @@ import {
   Plus,
   Search,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  Instagram,
+  Youtube,
+  Play,
+  Megaphone,
+  Globe,
+  Building2,
+  Clock,
+  Phone,
+  X
 } from 'lucide-react';
 
 const blockCategories = [
@@ -23,8 +34,23 @@ const blockCategories = [
     blocks: [
       { type: 'capture', name: 'Página de Captura', icon: MousePointer, color: 'bg-blue-500' },
       { type: 'sales', name: 'Página de Vendas', icon: Target, color: 'bg-green-500' },
+      { type: 'upsell', name: 'Página de Upsell', icon: TrendingUp, color: 'bg-emerald-500' },
+      { type: 'downsell', name: 'Página de Downsell', icon: TrendingDown, color: 'bg-orange-500' },
       { type: 'thankyou', name: 'Página de Obrigado', icon: Heart, color: 'bg-purple-500' },
       { type: 'checkout', name: 'Checkout', icon: ShoppingCart, color: 'bg-red-500' },
+    ]
+  },
+  {
+    name: 'Tráfego',
+    expanded: true,
+    blocks: [
+      { type: 'instagram', name: 'Instagram', icon: Instagram, color: 'bg-pink-500' },
+      { type: 'youtube', name: 'Youtube', icon: Youtube, color: 'bg-red-600' },
+      { type: 'tiktok', name: 'Tik Tok', icon: Play, color: 'bg-black' },
+      { type: 'metaads', name: 'Meta Ads', icon: Megaphone, color: 'bg-blue-600' },
+      { type: 'googleads', name: 'Google Ads', icon: Target, color: 'bg-yellow-500' },
+      { type: 'blog', name: 'Blog', icon: FileText, color: 'bg-slate-600' },
+      { type: 'googlebusiness', name: 'Google meu negócio', icon: Building2, color: 'bg-green-600' },
     ]
   },
   {
@@ -33,6 +59,9 @@ const blockCategories = [
     blocks: [
       { type: 'email', name: 'E-mail', icon: Mail, color: 'bg-yellow-500' },
       { type: 'whatsapp', name: 'WhatsApp', icon: MessageCircle, color: 'bg-green-600' },
+      { type: 'sms', name: 'SMS', icon: MessageCircle, color: 'bg-blue-400' },
+      { type: 'call', name: 'Ligação', icon: Phone, color: 'bg-indigo-500' },
+      { type: 'dminstagram', name: 'DM Instagram', icon: Instagram, color: 'bg-pink-400' },
     ]
   },
   {
@@ -40,6 +69,7 @@ const blockCategories = [
     expanded: true,
     blocks: [
       { type: 'text', name: 'Anotação', icon: FileText, color: 'bg-indigo-500' },
+      { type: 'wait', name: 'Tempo de espera', icon: Clock, color: 'bg-amber-500' },
       { type: 'other', name: 'Customizado', icon: Plus, color: 'bg-gray-500' },
     ]
   }
@@ -51,8 +81,10 @@ interface CanvasSidebarProps {
 
 export const CanvasSidebar = ({ onAddNode }: CanvasSidebarProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showInstructions, setShowInstructions] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     'Páginas': true,
+    'Tráfego': true,
     'Comunicação': true,
     'Outros': true,
   });
@@ -144,19 +176,27 @@ export const CanvasSidebar = ({ onAddNode }: CanvasSidebarProps) => {
       </div>
 
       {/* Instructions */}
-      <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">
-            Como usar:
-          </h3>
-          <ul className="text-xs text-green-700 dark:text-green-400 space-y-1">
-            <li>• Arraste elementos para o canvas</li>
-            <li>• Duplo-clique para editar conteúdo</li>
-            <li>• Clique direito para menu contextual</li>
-            <li>• Use Ctrl+Z/Y para desfazer/refazer</li>
-          </ul>
+      {showInstructions && (
+        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 relative">
+            <button
+              onClick={() => setShowInstructions(false)}
+              className="absolute top-2 right-2 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-sm font-medium text-green-800 dark:text-green-300 mb-2">
+              Como usar:
+            </h3>
+            <ul className="text-xs text-green-700 dark:text-green-400 space-y-1 pr-6">
+              <li>• Arraste elementos para o canvas</li>
+              <li>• Duplo-clique para editar conteúdo</li>
+              <li>• Clique direito para menu contextual</li>
+              <li>• Use Ctrl+Z/Y para desfazer/refazer</li>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

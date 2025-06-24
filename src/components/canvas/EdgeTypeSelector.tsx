@@ -46,30 +46,30 @@ export const EdgeTypeSelector = ({ currentType, onTypeChange }: EdgeTypeSelector
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Zap className="w-4 h-4 mr-2" />
-          Tipo de Linha
+        <Button variant="ghost" size="sm" className="h-8 px-2 text-xs opacity-60 hover:opacity-100">
+          <Zap className="w-3 h-3 mr-1" />
+          Linha
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-72 p-3" side="top">
         <div className="space-y-2">
-          <h4 className="font-medium text-sm mb-3">Escolher Tipo de Linha</h4>
+          <h4 className="font-medium text-xs mb-2 text-gray-600">Tipo de Linha</h4>
           {edgeTypes.map((edgeType) => (
             <button
               key={edgeType.type}
               onClick={() => onTypeChange(edgeType.type)}
-              className={`w-full p-3 text-left rounded-lg border transition-colors hover:bg-gray-50 ${
+              className={`w-full p-2 text-left rounded-md border transition-colors hover:bg-gray-50 ${
                 currentType === edgeType.type 
                   ? 'border-green-500 bg-green-50' 
                   : 'border-gray-200'
               }`}
             >
-              <div className="flex items-center space-x-3">
-                <div className="flex-shrink-0">
+              <div className="flex items-center space-x-2">
+                <div className="flex-shrink-0 opacity-60">
                   {edgeType.icon}
                 </div>
                 <div>
-                  <div className="font-medium text-sm">{edgeType.name}</div>
+                  <div className="font-medium text-xs">{edgeType.name}</div>
                   <div className="text-xs text-gray-500">{edgeType.description}</div>
                 </div>
               </div>

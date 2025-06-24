@@ -27,6 +27,10 @@ export const useCanvasOperations = ({
         return 'Página de Captura';
       case 'sales':
         return 'Página de Vendas';
+      case 'upsell':
+        return 'Página de Upsell';
+      case 'downsell':
+        return 'Página de Downsell';
       case 'thankyou':
         return 'Página de Obrigado';
       case 'checkout':
@@ -35,8 +39,30 @@ export const useCanvasOperations = ({
         return 'E-mail';
       case 'whatsapp':
         return 'WhatsApp';
+      case 'sms':
+        return 'SMS';
+      case 'call':
+        return 'Ligação';
+      case 'dminstagram':
+        return 'DM Instagram';
+      case 'instagram':
+        return 'Instagram';
+      case 'youtube':
+        return 'Youtube';
+      case 'tiktok':
+        return 'Tik Tok';
+      case 'metaads':
+        return 'Meta Ads';
+      case 'googleads':
+        return 'Google Ads';
+      case 'blog':
+        return 'Blog';
+      case 'googlebusiness':
+        return 'Google meu negócio';
       case 'text':
         return 'Anotação';
+      case 'wait':
+        return 'Tempo de espera';
       case 'other':
         return 'Customizado';
       default:

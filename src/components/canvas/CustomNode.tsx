@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { EmojiGallery } from './EmojiGallery';
 import { 
   Target, 
   MousePointer, 
@@ -36,10 +37,9 @@ interface CustomNodeComponentProps extends NodeProps {
   onOpenEditor?: (nodeId: string) => void;
 }
 
-const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆', '💻', '📱', '🌟', '🎪', '🎭', '🎨', '🎬', '🎮', '🎲', '🎯', '🎸', '🎺', '🎻'];
-
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
+  const [showEmojiGallery, setShowEmojiGallery] = useState(false);
   const [tempName, setTempName] = useState(data.label);
 
   const getNodeIcon = (type: string) => {
@@ -143,11 +143,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     }
   };
 
-  const handleCustomIconChange = (icon: string) => {
+  const handleEmojiSelect = (emoji: string) => {
     if (onUpdateNode) {
-      onUpdateNode(id, { customIcon: icon });
+      onUpdateNode(id, { customIcon: emoji });
     }
-    setShowCustomizer(false);
   };
 
   const handleNameSave = () => {
@@ -166,6 +165,13 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       cancelable: true,
     });
     e.currentTarget.parentElement?.dispatchEvent(event);
+  };
+
+  const handleIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (data.type === 'other') {
+      setShowEmojiGallery(true);
+    }
   };
 
   const hasContent = data.hasContent && data.content;
@@ -249,7 +255,12 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       >
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2 flex-1">
-            <div className={`w-6 h-6 ${iconBgClass} rounded flex items-center justify-center flex-shrink-0`}>
+            <div 
+              className={`w-6 h-6 ${iconBgClass} rounded flex items-center justify-center flex-shrink-0 ${
+                data.type === 'other' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''
+              }`}
+              onClick={handleIconClick}
+            >
               {getNodeIcon(data.type)}
             </div>
             <span className="font-medium text-sm select-none">
@@ -268,69 +279,112 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
               <Edit3 className="w-3 h-3" />
             </Button>
             
-            {/* Configurações */}
-            <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowCustomizer(!showCustomizer);
-                  }}
-                >
-                  <Settings className="w-3 h-3" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-4" side="top" align="end">
-                <div className="space-y-4">
-                  
-                  {/* Campo para editar o nome */}
-                  <div>
-                    <Label htmlFor="element-name" className="text-sm font-medium">Nome do Elemento</Label>
-                    <div className="flex space-x-2 mt-1">
-                      <Input
-                        id="element-name"
-                        value={tempName}
-                        onChange={(e) => setTempName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleNameSave();
-                          }
+            {/* Configurações - apenas para tipos não customizados */}
+            {data.type !== 'other' && (
+              <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowCustomizer(!showCustomizer);
+                    }}
+                  >
+                    <Settings className="w-3 h-3" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-4" side="top" align="end">
+                  <div className="space-y-4">
+                    {/* Campo para editar o nome */}
+                    <div>
+                      <Label htmlFor="element-name" className="text-sm font-medium">Nome do Elemento</Label>
+                      <div className="flex space-x-2 mt-1">
+                        <Input
+                          id="element-name"
+                          value={tempName}
+                          onChange={(e) => setTempName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleNameSave();
+                            }
+                          }}
+                          className="flex-1"
+                          placeholder="Nome do elemento"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <Button onClick={handleNameSave} size="sm">
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+
+            {/* Configurações especiais para elemento customizado */}
+            {data.type === 'other' && (
+              <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowCustomizer(!showCustomizer);
+                    }}
+                  >
+                    <Settings className="w-3 h-3" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-4" side="top" align="end">
+                  <div className="space-y-4">
+                    {/* Campo para editar o nome */}
+                    <div>
+                      <Label htmlFor="element-name" className="text-sm font-medium">Nome do Elemento</Label>
+                      <div className="flex space-x-2 mt-1">
+                        <Input
+                          id="element-name"
+                          value={tempName}
+                          onChange={(e) => setTempName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleNameSave();
+                            }
+                          }}
+                          className="flex-1"
+                          placeholder="Nome do elemento"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <Button onClick={handleNameSave} size="sm">
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Botão para abrir galeria de emojis */}
+                    <div>
+                      <Label className="text-sm font-medium">Ícone do Elemento</Label>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowEmojiGallery(true);
+                          setShowCustomizer(false);
                         }}
-                        className="flex-1"
-                        placeholder="Nome do elemento"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <Button onClick={handleNameSave} size="sm">
-                        Salvar
+                        variant="outline"
+                        className="w-full mt-1 flex items-center justify-center space-x-2"
+                      >
+                        <span className="text-lg">{data.customIcon || '📝'}</span>
+                        <span>Alterar Ícone</span>
                       </Button>
                     </div>
                   </div>
-
-                  {data.type === 'other' && (
-                    <div>
-                      <h4 className="font-medium text-sm mb-2">Escolher Emoji</h4>
-                      <div className="grid grid-cols-8 gap-1 max-h-32 overflow-y-auto">
-                        {emojis.map((emoji) => (
-                          <button
-                            key={emoji}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCustomIconChange(emoji);
-                            }}
-                            className="w-8 h-8 text-lg hover:bg-gray-100 rounded flex items-center justify-center"
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         </div>
         
@@ -366,6 +420,16 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
           </div>
         )}
       </div>
+
+      {/* Galeria de Emojis - exclusiva para elementos customizados */}
+      {data.type === 'other' && (
+        <EmojiGallery
+          isOpen={showEmojiGallery}
+          onClose={() => setShowEmojiGallery(false)}
+          onEmojiSelect={handleEmojiSelect}
+          currentEmoji={data.customIcon}
+        />
+      )}
     </div>
   );
 });

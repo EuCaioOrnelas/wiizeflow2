@@ -13,8 +13,8 @@ const Pricing = () => {
 
   const handlePlanClick = async (priceId: string | null) => {
     if (!priceId) {
-      // Plano gratuito - redirecionar para home
-      window.location.href = '/';
+      // Plano gratuito - redirecionar para página de cadastro/auth
+      window.location.href = '/auth';
       return;
     }
 

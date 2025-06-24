@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Download, Target } from "lucide-react";
@@ -51,7 +50,7 @@ const PaymentSuccess = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Acesse sua Conta</h3>
-                  <p className="text-gray-600">Faça login ou crie sua conta para começar a usar o WiizeFlow</p>
+                  <p className="text-gray-600">Use o mesmo email da compra para fazer login ou criar sua conta</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -85,6 +84,18 @@ const PaymentSuccess = () => {
               </p>
             </div>
           )}
+
+          <div className="bg-green-50 p-6 rounded-lg mb-8">
+            <h3 className="text-lg font-semibold text-green-800 mb-2">
+              📧 Dados de Acesso
+            </h3>
+            <p className="text-green-700 mb-2">
+              Use o mesmo email da compra para acessar sua conta premium!
+            </p>
+            <p className="text-sm text-green-600">
+              Se você ainda não tem conta, crie uma com o email usado na compra para ativar automaticamente seus benefícios.
+            </p>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 

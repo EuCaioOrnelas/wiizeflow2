@@ -50,7 +50,7 @@ const Index = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => alert("Integração com pagamento em breve"),
+      buttonAction: () => window.location.href = '/pricing',
       popular: false,
       color: "blue"
     },
@@ -75,7 +75,7 @@ const Index = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => alert("Integração com pagamento em breve"),
+      buttonAction: () => window.location.href = '/pricing',
       popular: true,
       color: "green"
     }

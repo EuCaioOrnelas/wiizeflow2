@@ -1,7 +1,9 @@
+
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   Target, 
@@ -12,7 +14,7 @@ import {
   Heart,
   FileText,
   Plus,
-  Palette,
+  Settings,
   Edit3,
   Circle
 } from 'lucide-react';
@@ -28,6 +30,8 @@ const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'
 
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [tempName, setTempName] = useState(data.label);
 
   const getNodeIcon = (type: string) => {
     switch (type) {
@@ -113,19 +117,33 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     if (onUpdateNode) {
       onUpdateNode(id, { customIcon: icon });
     }
-    setShowCustomizer(false);
   };
 
   const handleCustomColorChange = (color: string) => {
     if (onUpdateNode) {
       onUpdateNode(id, { customColor: color });
     }
-    setShowCustomizer(false);
   };
 
   const handleNodeColorChange = (color: string) => {
     if (onUpdateNode) {
       onUpdateNode(id, { nodeColor: color });
+    }
+  };
+
+  const handleNameChange = () => {
+    if (onUpdateNode && tempName.trim()) {
+      onUpdateNode(id, { label: tempName.trim() });
+    }
+    setEditingName(false);
+  };
+
+  const handleNameKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleNameChange();
+    } else if (e.key === 'Escape') {
+      setTempName(data.label);
+      setEditingName(false);
     }
   };
 
@@ -215,7 +233,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       
       <div 
         className={`
-          px-5 py-4 rounded-lg border-2 shadow-md min-w-[190px] max-w-[320px]
+          px-5 py-4 rounded-lg border-2 shadow-md min-w-[304px] max-w-[512px]
           ${nodeColor} ${selectedClass}
           transition-all duration-200 hover:shadow-lg
         `}
@@ -231,7 +249,23 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                  style={typeof iconBgClass === 'object' ? iconBgClass : {}}>
               {getNodeIcon(data.type)}
             </div>
-            <span className="font-medium text-sm">{data.label}</span>
+            {editingName ? (
+              <Input
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                onBlur={handleNameChange}
+                onKeyDown={handleNameKeyPress}
+                className="h-6 text-sm font-medium"
+                autoFocus
+              />
+            ) : (
+              <span 
+                className="font-medium text-sm cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
+                onClick={() => setEditingName(true)}
+              >
+                {data.label}
+              </span>
+            )}
           </div>
           
           <div className="flex items-center space-x-1">
@@ -245,11 +279,11 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
               <Edit3 className="w-3 h-3" />
             </Button>
             
-            {/* Personalizador */}
+            {/* Configurações */}
             <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100">
-                  <Palette className="w-3 h-3" />
+                  <Settings className="w-3 h-3" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 m-4 p-6">

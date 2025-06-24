@@ -10,7 +10,7 @@ const Terms = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-green-600" />
-            <span className="text-2xl font-bold text-gray-900">Wiizeflow</span>
+            <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
           </div>
           <Button 
             variant="outline" 
@@ -30,7 +30,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Aceitação dos Termos</h2>
             <p className="text-gray-700 leading-relaxed">
-              Ao acessar e usar o Wiizeflow, você concorda em cumprir e estar vinculado a estes Termos de Uso. 
+              Ao acessar e usar o FunnelWiize, você concorda em cumprir e estar vinculado a estes Termos de Uso. 
               Se você não concordar com qualquer parte destes termos, não deve usar nosso serviço.
             </p>
           </section>
@@ -38,7 +38,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Descrição do Serviço</h2>
             <p className="text-gray-700 leading-relaxed">
-              O Wiizeflow é uma plataforma online que permite aos usuários criar e gerenciar funis de vendas visuais 
+              O FunnelWiize é uma plataforma online que permite aos usuários criar e gerenciar funis de vendas visuais 
               para planejamento de estratégias de marketing. O serviço inclui ferramentas de design visual, 
               templates e funcionalidades de colaboração.
             </p>
@@ -47,7 +47,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">3. Conta do Usuário</h2>
             <div className="text-gray-700 leading-relaxed space-y-3">
-              <p>Para usar o Wiizeflow, você deve:</p>
+              <p>Para usar o FunnelWiize, você deve:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Fornecer informações precisas e atualizadas durante o registro</li>
                 <li>Manter a segurança de sua conta e senha</li>
@@ -60,7 +60,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. Planos e Pagamentos</h2>
             <div className="text-gray-700 leading-relaxed space-y-3">
-              <p>O Wiizeflow oferece diferentes planos de assinatura:</p>
+              <p>O FunnelWiize oferece diferentes planos de assinatura:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Plano Free: Acesso limitado com até 2 funis</li>
                 <li>Planos pagos: Diferentes níveis de acesso com recursos expandidos</li>
@@ -73,7 +73,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">5. Uso Aceitável</h2>
             <div className="text-gray-700 leading-relaxed space-y-3">
-              <p>Você concorda em não usar o Wiizeflow para:</p>
+              <p>Você concorda em não usar o FunnelWiize para:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Atividades ilegais ou que violem direitos de terceiros</li>
                 <li>Distribuir spam, malware ou conteúdo malicioso</li>
@@ -86,7 +86,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">6. Propriedade Intelectual</h2>
             <p className="text-gray-700 leading-relaxed">
-              O Wiizeflow e todo seu conteúdo, incluindo mas não limitado a software, texto, imagens e logos, 
+              O FunnelWiize e todo seu conteúdo, incluindo mas não limitado a software, texto, imagens e logos, 
               são propriedade da empresa e estão protegidos por leis de direitos autorais. 
               Você mantém os direitos sobre o conteúdo que criar usando nossa plataforma.
             </p>
@@ -95,7 +95,7 @@ const Terms = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">7. Limitação de Responsabilidade</h2>
             <p className="text-gray-700 leading-relaxed">
-              O Wiizeflow é fornecido "como está" sem garantias de qualquer tipo. 
+              O FunnelWiize é fornecido "como está" sem garantias de qualquer tipo. 
               Não seremos responsáveis por danos indiretos, incidentais ou consequenciais 
               decorrentes do uso ou incapacidade de usar nosso serviço.
             </p>
@@ -114,8 +114,8 @@ const Terms = () => {
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Contato</h2>
             <p className="text-gray-700 leading-relaxed">
               Para dúvidas sobre estes Termos de Uso, entre em contato conosco em: 
-              <a href="mailto:contato@wiizeflow.com" className="text-green-600 hover:text-green-700 ml-1">
-                contato@wiizeflow.com
+              <a href="mailto:contato@funnelwiize.com" className="text-green-600 hover:text-green-700 ml-1">
+                contato@funnelwiize.com
               </a>
             </p>
           </section>

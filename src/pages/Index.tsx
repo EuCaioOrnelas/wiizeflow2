@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,7 +82,7 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-green-600" />
-            <span className="text-2xl font-bold text-gray-900">Wiizeflow</span>
+            <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
           </div>
           <div className="flex items-center space-x-4">
             <Button 
@@ -155,7 +154,7 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold text-gray-900 mb-8">
-              Apresentamos o <span className="text-green-600">Wiizeflow</span>
+              Apresentamos o <span className="text-green-600">FunnelWiize</span>
             </h2>
             <p className="text-xl text-gray-600 mb-12">
               A ferramenta visual que ajuda empresários a planejar suas estratégias de marketing e 
@@ -324,7 +323,7 @@ const Index = () => {
             <div className="col-span-2">
               <div className="flex items-center space-x-2 mb-4">
                 <Target className="w-8 h-8 text-green-400" />
-                <span className="text-2xl font-bold">Wiizeflow</span>
+                <span className="text-2xl font-bold">FunnelWiize</span>
               </div>
               <p className="text-gray-300 mb-4">
                 A ferramenta visual que ajuda empresários a planejar estratégias de marketing e 
@@ -332,10 +331,10 @@ const Index = () => {
               </p>
               <div className="space-y-2">
                 <p className="text-gray-300">
-                  <strong>Contato:</strong> contato@wiizeflow.com
+                  <strong>Contato:</strong> contato@funnelwiize.com
                 </p>
                 <p className="text-gray-300">
-                  <strong>Suporte:</strong> suporte@wiizeflow.com
+                  <strong>Suporte:</strong> suporte@funnelwiize.com
                 </p>
               </div>
             </div>
@@ -385,7 +384,7 @@ const Index = () => {
 
           <div className="border-t border-gray-700 pt-8 text-center">
             <p className="text-gray-400">
-              © {new Date().getFullYear()} Wiizeflow. Todos os direitos reservados.
+              © {new Date().getFullYear()} FunnelWiize. Todos os direitos reservados.
             </p>
           </div>
         </div>

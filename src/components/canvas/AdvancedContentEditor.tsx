@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -313,7 +314,7 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col p-0 m-4">
+      <DialogContent className="max-w-5xl max-h-[90vh] flex flex-col p-0 m-4 [&>button]:hidden">
         {/* Header */}
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="flex items-center justify-between">

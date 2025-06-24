@@ -169,7 +169,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   };
 
   const hasContent = data.hasContent && data.content;
-  const selectedClass = selected ? 'ring-2 ring-blue-500 ring-opacity-50' : '';
+  const selectedClass = selected ? 'ring-2 ring-blue-500 ring-opacity-50 rounded-lg' : '';
   const iconBgClass = getIconBackgroundColor(data.type);
 
   return (

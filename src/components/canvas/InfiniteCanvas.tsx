@@ -182,23 +182,20 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     
     // Se temos handles específicos, use eles para determinar a direção
     if (sourceHandle && targetHandle) {
-      const sourceHandlePos = sourceHandle.includes('right') ? 'right' : 
-                             sourceHandle.includes('left') ? 'left' :
-                             sourceHandle.includes('top') ? 'top' : 'bottom';
       const targetHandlePos = targetHandle.includes('right') ? 'right' : 
                              targetHandle.includes('left') ? 'left' :
                              targetHandle.includes('top') ? 'top' : 'bottom';
       
-      // Baseado nas posições dos handles, determine a direção da seta
-      // A seta deve apontar na direção do target
+      // A seta deve apontar PARA DENTRO do target handle
+      // Se o target handle está na esquerda, a seta vem da direita e aponta para a esquerda
       if (targetHandlePos === 'left') {
-        return 'left';
+        return 'right'; // Seta aponta para a direita (para entrar no handle esquerdo)
       } else if (targetHandlePos === 'right') {
-        return 'right';
+        return 'left'; // Seta aponta para a esquerda (para entrar no handle direito)
       } else if (targetHandlePos === 'top') {
-        return 'up';
+        return 'down'; // Seta aponta para baixo (para entrar no handle de cima)
       } else if (targetHandlePos === 'bottom') {
-        return 'down';
+        return 'up'; // Seta aponta para cima (para entrar no handle de baixo)
       }
     }
     

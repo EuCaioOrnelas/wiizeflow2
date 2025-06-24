@@ -12,6 +12,8 @@ export interface CustomNodeData extends Record<string, unknown> {
   type: string;
   content: NodeContent | null;
   hasContent: boolean;
+  customIcon?: string; // For emoji
+  customColor?: string; // For color
 }
 
 export interface CanvasState {
@@ -24,3 +26,5 @@ export interface InfiniteCanvasProps {
   funnelName: string;
   onFunnelNameChange: (name: string) => void;
 }
+
+export type EdgeType = 'default' | 'straight' | 'step' | 'smoothstep' | 'simplebezier';

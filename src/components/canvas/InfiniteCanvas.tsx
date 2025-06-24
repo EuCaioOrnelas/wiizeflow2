@@ -1,4 +1,3 @@
-
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -29,6 +28,8 @@ import { useCanvasOperations } from '@/hooks/useCanvasOperations';
 import { CustomNodeData, InfiniteCanvasProps } from '@/types/canvas';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { EdgeTypeSelector } from './EdgeTypeSelector';
+import { EdgeType } from '@/types/canvas';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -40,6 +41,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const [selectedNode, setSelectedNode] = useState<Node<CustomNodeData> | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
+  const [currentEdgeType, setCurrentEdgeType] = useState<EdgeType>('smoothstep');
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -140,14 +142,14 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     (params: Connection) => {
       const newEdge = {
         ...params,
-        type: 'smoothstep',
+        type: currentEdgeType,
         animated: true,
         style: { stroke: '#10b981', strokeWidth: 2 },
       };
       setEdges((eds) => addEdge(newEdge, eds));
       saveToHistory();
     },
-    [setEdges, saveToHistory]
+    [setEdges, saveToHistory, currentEdgeType]
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node<CustomNodeData>) => {
@@ -282,17 +284,21 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
               position="bottom-right"
             />
             <Background 
-              variant={BackgroundVariant.Dots} 
+              variant={BackgroundVariant.Lines} 
               gap={20} 
               size={1}
               color="#e5e7eb"
             />
             
             <Panel position="top-center">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 flex items-center space-x-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 flex items-center space-x-4">
                 <span className="text-sm text-gray-600 dark:text-gray-300">
                   {nodes.length} nós • {edges.length} conexões
                 </span>
+                <EdgeTypeSelector 
+                  currentType={currentEdgeType}
+                  onTypeChange={setCurrentEdgeType}
+                />
               </div>
             </Panel>
           </ReactFlow>

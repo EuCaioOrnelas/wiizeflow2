@@ -1,52 +1,151 @@
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { 
+  Target, 
+  MousePointer, 
+  Mail, 
+  MessageCircle, 
+  ShoppingCart, 
+  Heart,
+  FileText,
+  Plus,
+  Palette
+} from 'lucide-react';
 
 interface CustomNodeComponentProps extends NodeProps {
   data: CustomNodeData;
 }
 
+const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆'];
+const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+
 export const CustomNode = memo(({ data, selected }: CustomNodeComponentProps) => {
+  const [showCustomizer, setShowCustomizer] = useState(false);
+
   const getNodeIcon = (type: string) => {
     switch (type) {
-      case 'start':
-        return '🚀';
-      case 'process':
-        return '⚙️';
-      case 'decision':
-        return '❓';
-      case 'end':
-        return '🏁';
+      case 'capture':
+        return <MousePointer className="w-4 h-4 text-white" />;
+      case 'sales':
+        return <Target className="w-4 h-4 text-white" />;
+      case 'thankyou':
+        return <Heart className="w-4 h-4 text-white" />;
+      case 'checkout':
+        return <ShoppingCart className="w-4 h-4 text-white" />;
+      case 'email':
+        return <Mail className="w-4 h-4 text-white" />;
+      case 'whatsapp':
+        return <MessageCircle className="w-4 h-4 text-white" />;
+      case 'text':
+        return <FileText className="w-4 h-4 text-white" />;
+      case 'other':
+        if (data.customIcon) {
+          return <span className="text-white text-sm">{data.customIcon}</span>;
+        }
+        return <Plus className="w-4 h-4 text-white" />;
       default:
-        return '📝';
+        return <FileText className="w-4 h-4 text-white" />;
     }
   };
 
   const getNodeColor = (type: string) => {
+    if (type === 'other' && data.customColor) {
+      return `border-2 text-gray-800`;
+    }
+    
     switch (type) {
-      case 'start':
-        return 'bg-green-100 border-green-300 text-green-800';
-      case 'process':
+      case 'capture':
         return 'bg-blue-100 border-blue-300 text-blue-800';
-      case 'decision':
-        return 'bg-yellow-100 border-yellow-300 text-yellow-800';
-      case 'end':
+      case 'sales':
+        return 'bg-green-100 border-green-300 text-green-800';
+      case 'thankyou':
+        return 'bg-purple-100 border-purple-300 text-purple-800';
+      case 'checkout':
         return 'bg-red-100 border-red-300 text-red-800';
+      case 'email':
+        return 'bg-yellow-100 border-yellow-300 text-yellow-800';
+      case 'whatsapp':
+        return 'bg-green-100 border-green-300 text-green-800';
+      case 'text':
+        return 'bg-indigo-100 border-indigo-300 text-indigo-800';
+      case 'other':
+        return 'bg-gray-100 border-gray-300 text-gray-800';
       default:
         return 'bg-gray-100 border-gray-300 text-gray-800';
+    }
+  };
+
+  const getIconBackgroundColor = (type: string) => {
+    if (type === 'other' && data.customColor) {
+      return { backgroundColor: data.customColor };
+    }
+    
+    switch (type) {
+      case 'capture':
+        return 'bg-blue-500';
+      case 'sales':
+        return 'bg-green-500';
+      case 'thankyou':
+        return 'bg-purple-500';
+      case 'checkout':
+        return 'bg-red-500';
+      case 'email':
+        return 'bg-yellow-500';
+      case 'whatsapp':
+        return 'bg-green-600';
+      case 'text':
+        return 'bg-indigo-500';
+      case 'other':
+        return 'bg-gray-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const handleCustomIconChange = (icon: string) => {
+    if (data.type === 'other') {
+      // Update node data - this would need to be handled by the parent component
+      console.log('Change icon to:', icon);
+    }
+  };
+
+  const handleCustomColorChange = (color: string) => {
+    if (data.type === 'other') {
+      // Update node data - this would need to be handled by the parent component
+      console.log('Change color to:', color);
     }
   };
 
   const hasContent = data.hasContent && data.content;
   const nodeColor = getNodeColor(data.type);
   const selectedClass = selected ? 'ring-2 ring-blue-500 ring-opacity-50' : '';
+  const iconBgClass = getIconBackgroundColor(data.type);
 
   return (
     <div className={`relative ${selectedClass}`}>
+      {/* Handles nas 4 direções */}
       <Handle
         type="target"
         position={Position.Top}
+        className="w-3 h-3 !bg-gray-400"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="w-3 h-3 !bg-gray-400"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-3 h-3 !bg-gray-400"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
         className="w-3 h-3 !bg-gray-400"
       />
       
@@ -56,12 +155,64 @@ export const CustomNode = memo(({ data, selected }: CustomNodeComponentProps) =>
         transition-all duration-200 hover:shadow-lg
       `}>
         <div className="flex items-center space-x-2 mb-1">
-          <span className="text-lg">{getNodeIcon(data.type)}</span>
+          <div className={`w-6 h-6 ${typeof iconBgClass === 'string' ? iconBgClass : ''} rounded flex items-center justify-center flex-shrink-0`}
+               style={typeof iconBgClass === 'object' ? iconBgClass : {}}>
+            {getNodeIcon(data.type)}
+          </div>
           <span className="font-medium text-sm">{data.label}</span>
+          
+          {data.type === 'other' && (
+            <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                  <Palette className="w-3 h-3" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">Escolher Emoji</h4>
+                    <div className="grid grid-cols-8 gap-1">
+                      {emojis.map((emoji) => (
+                        <button
+                          key={emoji}
+                          onClick={() => handleCustomIconChange(emoji)}
+                          className="w-8 h-8 text-lg hover:bg-gray-100 rounded flex items-center justify-center"
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-sm mb-2">Escolher Cor</h4>
+                    <div className="grid grid-cols-4 gap-2">
+                      {colors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => handleCustomColorChange(color)}
+                          className="w-8 h-8 rounded border-2 border-gray-200"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
         
         <div className="text-xs opacity-75 capitalize mb-2">
-          {data.type}
+          {data.type === 'capture' ? 'Captura' : 
+           data.type === 'sales' ? 'Vendas' :
+           data.type === 'thankyou' ? 'Obrigado' :
+           data.type === 'checkout' ? 'Checkout' :
+           data.type === 'email' ? 'E-mail' :
+           data.type === 'whatsapp' ? 'WhatsApp' :
+           data.type === 'text' ? 'Anotação' :
+           data.type === 'other' ? 'Customizado' : data.type}
         </div>
 
         {hasContent && (
@@ -72,12 +223,6 @@ export const CustomNode = memo(({ data, selected }: CustomNodeComponentProps) =>
           </div>
         )}
       </div>
-
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="w-3 h-3 !bg-gray-400"
-      />
     </div>
   );
 });

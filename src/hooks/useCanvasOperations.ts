@@ -22,16 +22,41 @@ export const useCanvasOperations = ({
   const [clipboard, setClipboard] = useState<{ nodes: Node<CustomNodeData>[]; edges: Edge[] } | null>(null);
   const { toast } = useToast();
 
+  const getNodeLabel = (type: string) => {
+    switch (type) {
+      case 'capture':
+        return 'Página de Captura';
+      case 'sales':
+        return 'Página de Vendas';
+      case 'thankyou':
+        return 'Página de Obrigado';
+      case 'checkout':
+        return 'Checkout';
+      case 'email':
+        return 'E-mail';
+      case 'whatsapp':
+        return 'WhatsApp';
+      case 'text':
+        return 'Anotação';
+      case 'other':
+        return 'Customizado';
+      default:
+        return `${type} Node`;
+    }
+  };
+
   const addNode = useCallback((type: string, position: { x: number; y: number }) => {
     const newNode: Node<CustomNodeData> = {
       id: `node-${Date.now()}`,
       type: 'custom',
       position,
       data: {
-        label: `${type} Node`,
+        label: getNodeLabel(type),
         type,
         content: null,
         hasContent: false,
+        customIcon: type === 'other' ? '📝' : undefined,
+        customColor: type === 'other' ? '#6B7280' : undefined,
       },
     };
     setNodes([...nodes, newNode]);

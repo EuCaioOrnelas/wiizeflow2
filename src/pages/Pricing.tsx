@@ -4,10 +4,37 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Target, Crown } from "lucide-react";
 import { usePayment } from "@/hooks/usePayment";
 import { useState } from "react";
+import EmailCaptureDialog from "@/components/EmailCaptureDialog";
 
 const Pricing = () => {
-  const { createPayment, loading } = usePayment();
-  const [customerEmail, setCustomerEmail] = useState("");
+  const { createPayment, getCurrentUser, loading } = usePayment();
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [selectedPriceId, setSelectedPriceId] = useState<string>("");
+
+  const handlePlanClick = async (priceId: string | null) => {
+    if (!priceId) {
+      // Plano gratuito - redirecionar para home
+      window.location.href = '/';
+      return;
+    }
+
+    // Verificar se usuário está logado
+    const user = await getCurrentUser();
+    if (user?.email) {
+      // Usuário logado - usar email da sessão
+      console.log('User logged in, using session email:', user.email);
+      createPayment(priceId, user.email);
+    } else {
+      // Usuário não logado - abrir popup para capturar email
+      setSelectedPriceId(priceId);
+      setEmailDialogOpen(true);
+    }
+  };
+
+  const handleEmailConfirm = (email: string) => {
+    createPayment(selectedPriceId, email);
+    setEmailDialogOpen(false);
+  };
 
   const plans = [
     {
@@ -26,7 +53,6 @@ const Pricing = () => {
         "Funcionalidades limitadas"
       ],
       buttonText: "Começar grátis",
-      buttonAction: () => window.location.href = '/',
       popular: false,
       color: "gray",
       priceId: null
@@ -47,7 +73,6 @@ const Pricing = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => createPayment("price_1RdfWZQFkphRyjSA3oNlNfiK", customerEmail),
       popular: false,
       color: "blue",
       priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
@@ -73,7 +98,6 @@ const Pricing = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => createPayment("price_1RdfX2QFkphRyjSANdSPAZUq", customerEmail),
       popular: true,
       color: "green",
       priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
@@ -125,22 +149,6 @@ const Pricing = () => {
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
           Comece grátis e escale conforme seu negócio cresce. Todos os planos incluem suporte em português.
         </p>
-
-        {/* Email Input for Payment */}
-        <div className="max-w-md mx-auto mb-8">
-          <div className="bg-blue-50 p-4 rounded-lg mb-4">
-            <p className="text-sm text-blue-700 mb-2">
-              📧 Opcional: Informe seu email para receber o recibo
-            </p>
-            <input
-              type="email"
-              placeholder="seu@email.com"
-              value={customerEmail}
-              onChange={(e) => setCustomerEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
       </section>
 
       {/* Pricing Cards */}
@@ -198,11 +206,11 @@ const Pricing = () => {
                 </ul>
 
                 <Button 
-                  onClick={plan.buttonAction}
-                  disabled={loading && plan.priceId}
+                  onClick={() => handlePlanClick(plan.priceId)}
+                  disabled={loading}
                   className={`w-full ${getButtonStyle(plan)}`}
                 >
-                  {loading && plan.priceId ? "Processando..." : plan.buttonText}
+                  {loading && plan.priceId === selectedPriceId ? "Processando..." : plan.buttonText}
                 </Button>
               </CardContent>
             </Card>
@@ -228,6 +236,14 @@ const Pricing = () => {
           </p>
         </div>
       </section>
+
+      {/* Email Capture Dialog */}
+      <EmailCaptureDialog
+        open={emailDialogOpen}
+        onClose={() => setEmailDialogOpen(false)}
+        onConfirm={handleEmailConfirm}
+        loading={loading}
+      />
     </div>
   );
 };

@@ -5,13 +5,40 @@ import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3,
          Crown, PlayCircle, TrendingUp, Clock, DollarSign } from "lucide-react";
 import { usePayment } from "@/hooks/usePayment";
 import { useState } from "react";
+import EmailCaptureDialog from "@/components/EmailCaptureDialog";
 
 const Sales = () => {
-  const { createPayment, loading } = usePayment();
-  const [customerEmail, setCustomerEmail] = useState("");
+  const { createPayment, getCurrentUser, loading } = usePayment();
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
   const handleGetStarted = () => {
     window.location.href = '/pricing';
+  };
+
+  const handlePlanClick = async (priceId: string | null) => {
+    if (!priceId) {
+      // Plano gratuito - redirecionar para home
+      window.location.href = '/';
+      return;
+    }
+
+    // Verificar se usuário está logado
+    const user = await getCurrentUser();
+    if (user?.email) {
+      // Usuário logado - usar email da sessão
+      console.log('User logged in, using session email:', user.email);
+      createPayment(priceId, user.email);
+    } else {
+      // Usuário não logado - abrir popup para capturar email
+      setSelectedPriceId(priceId);
+      setEmailDialogOpen(true);
+    }
+  };
+
+  const handleEmailConfirm = (email: string) => {
+    createPayment(selectedPriceId, email);
+    setEmailDialogOpen(false);
   };
 
   const plans = [
@@ -33,7 +60,6 @@ const Sales = () => {
         "Funcionalidades limitadas"
       ],
       buttonText: "Começar Grátis",
-      buttonAction: () => window.location.href = '/',
       popular: false,
       color: "gray",
       priceId: null
@@ -56,7 +82,6 @@ const Sales = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Mensal",
-      buttonAction: () => createPayment("price_1RdfWZQFkphRyjSA3oNlNfiK", customerEmail),
       popular: false,
       color: "blue",
       priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
@@ -82,7 +107,6 @@ const Sales = () => {
       ],
       restrictions: [],
       buttonText: "Assinar Anual",
-      buttonAction: () => createPayment("price_1RdfX2QFkphRyjSANdSPAZUq", customerEmail),
       popular: true,
       color: "green",
       priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
@@ -438,22 +462,6 @@ const Sales = () => {
             <p className="text-xl text-gray-600">
               Comece grátis e escale conforme seu negócio cresce
             </p>
-            
-            {/* Email Input for Payment */}
-            <div className="max-w-md mx-auto mt-8">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-sm text-blue-700 mb-2">
-                  📧 Opcional: Informe seu email para receber o recibo
-                </p>
-                <input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -509,11 +517,11 @@ const Sales = () => {
                   </ul>
 
                   <Button 
-                    onClick={plan.buttonAction}
-                    disabled={loading && plan.priceId}
+                    onClick={() => handlePlanClick(plan.priceId)}
+                    disabled={loading}
                     className={`w-full py-3 text-lg font-medium ${getButtonStyle(plan)} shadow-lg hover:shadow-xl transition-all`}
                   >
-                    {loading && plan.priceId ? "Processando..." : plan.buttonText}
+                    {loading && plan.priceId === selectedPriceId ? "Processando..." : plan.buttonText}
                   </Button>
                 </CardContent>
               </Card>
@@ -667,6 +675,14 @@ const Sales = () => {
           </div>
         </div>
       </footer>
+
+      {/* Email Capture Dialog */}
+      <EmailCaptureDialog
+        open={emailDialogOpen}
+        onClose={() => setEmailDialogOpen(false)}
+        onConfirm={handleEmailConfirm}
+        loading={loading}
+      />
     </div>
   );
 };

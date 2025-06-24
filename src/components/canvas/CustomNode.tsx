@@ -26,8 +26,7 @@ interface CustomNodeComponentProps extends NodeProps {
   onOpenEditor?: (nodeId: string) => void;
 }
 
-const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆'];
-const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16', '#6B7280', '#1F2937'];
+const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆', '💻', '📱', '🌟', '🎪', '🎭', '🎨', '🎬', '🎮', '🎲', '🎯', '🎸', '🎺', '🎻'];
 
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
@@ -59,38 +58,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     }
   };
 
-  const getNodeColor = (type: string) => {
-    if (data.nodeColor) {
-      return `border-2 text-gray-800 bg-opacity-10`;
-    }
-    
-    switch (type) {
-      case 'capture':
-        return 'bg-blue-100 border-blue-300 text-blue-800';
-      case 'sales':
-        return 'bg-green-100 border-green-300 text-green-800';
-      case 'thankyou':
-        return 'bg-purple-100 border-purple-300 text-purple-800';
-      case 'checkout':
-        return 'bg-red-100 border-red-300 text-red-800';
-      case 'email':
-        return 'bg-yellow-100 border-yellow-300 text-yellow-800';
-      case 'whatsapp':
-        return 'bg-green-100 border-green-300 text-green-800';
-      case 'text':
-        return 'bg-indigo-100 border-indigo-300 text-indigo-800';
-      case 'other':
-        return 'bg-gray-100 border-gray-300 text-gray-800';
-      default:
-        return 'bg-gray-100 border-gray-300 text-gray-800';
-    }
-  };
-
   const getIconBackgroundColor = (type: string) => {
-    if (data.customColor) {
-      return { backgroundColor: data.customColor };
-    }
-    
     switch (type) {
       case 'capture':
         return 'bg-blue-500';
@@ -119,18 +87,6 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     }
   };
 
-  const handleCustomColorChange = (color: string) => {
-    if (onUpdateNode) {
-      onUpdateNode(id, { customColor: color });
-    }
-  };
-
-  const handleNodeColorChange = (color: string) => {
-    if (onUpdateNode) {
-      onUpdateNode(id, { nodeColor: color });
-    }
-  };
-
   const handleNameSave = () => {
     if (onUpdateNode && tempName.trim()) {
       onUpdateNode(id, { label: tempName.trim() });
@@ -149,7 +105,6 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   };
 
   const hasContent = data.hasContent && data.content;
-  const nodeColor = getNodeColor(data.type);
   const selectedClass = selected ? 'ring-2 ring-blue-500 ring-opacity-50' : '';
   const iconBgClass = getIconBackgroundColor(data.type);
 
@@ -163,7 +118,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         </div>
       )}
 
-      {/* Handles nas 4 direções - agora menores e mais suaves - todos como source e target */}
+      {/* Handles nas 4 direções */}
       <Handle
         type="source"
         position={Position.Top}
@@ -224,19 +179,13 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       <div 
         className={`
           px-5 py-4 rounded-lg border-2 shadow-md min-w-[304px] max-w-[512px]
-          ${nodeColor} ${selectedClass}
+          bg-white border-gray-300 text-gray-800 ${selectedClass}
           transition-all duration-200 hover:shadow-lg
         `}
-        style={data.nodeColor ? { 
-          backgroundColor: `${data.nodeColor}20`, 
-          borderColor: data.nodeColor,
-          color: data.nodeColor 
-        } : {}}
       >
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center space-x-2 flex-1">
-            <div className={`w-6 h-6 ${typeof iconBgClass === 'string' ? iconBgClass : ''} rounded flex items-center justify-center flex-shrink-0`}
-                 style={typeof iconBgClass === 'object' ? iconBgClass : {}}>
+            <div className={`w-6 h-6 ${iconBgClass} rounded flex items-center justify-center flex-shrink-0`}>
               {getNodeIcon(data.type)}
             </div>
             <span className="font-medium text-sm select-none">
@@ -285,7 +234,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                   {data.type === 'other' && (
                     <div>
                       <h4 className="font-medium text-sm mb-2">Escolher Emoji</h4>
-                      <div className="grid grid-cols-8 gap-1">
+                      <div className="grid grid-cols-8 gap-1 max-h-32 overflow-y-auto">
                         {emojis.map((emoji) => (
                           <button
                             key={emoji}
@@ -298,36 +247,6 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                       </div>
                     </div>
                   )}
-                  
-                  {data.type === 'other' && (
-                    <div>
-                      <h4 className="font-medium text-sm mb-2">Cor do Ícone</h4>
-                      <div className="grid grid-cols-5 gap-2">
-                        {colors.map((color) => (
-                          <button
-                            key={color}
-                            onClick={() => handleCustomColorChange(color)}
-                            className="w-8 h-8 rounded border-2 border-gray-200"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Cor do Elemento</h4>
-                    <div className="grid grid-cols-5 gap-2">
-                      {colors.map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => handleNodeColorChange(color)}
-                          className="w-8 h-8 rounded border-2 border-gray-200"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </PopoverContent>
             </Popover>
@@ -346,7 +265,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         </div>
 
         {hasContent && (
-          <div className="text-xs bg-white bg-opacity-50 rounded p-1 mt-2">
+          <div className="text-xs bg-gray-100 rounded p-1 mt-2">
             {data.content && data.content.title && (
               <div className="font-medium truncate">{data.content.title}</div>
             )}

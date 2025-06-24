@@ -38,7 +38,20 @@ const colorMap = {
   text: 'bg-indigo-500',
 };
 
-export const CustomNode = memo(({ data, selected }: NodeProps) => {
+interface NodeContent {
+  title?: string;
+  description?: string;
+  items?: any[];
+}
+
+interface NodeData {
+  label: string;
+  type: string;
+  content: NodeContent | null;
+  hasContent: boolean;
+}
+
+export const CustomNode = memo(({ data, selected }: NodeProps<NodeData>) => {
   const [isHovered, setIsHovered] = useState(false);
   const Icon = iconMap[data.type as keyof typeof iconMap] || FileText;
   const bgColor = colorMap[data.type as keyof typeof colorMap] || 'bg-gray-500';

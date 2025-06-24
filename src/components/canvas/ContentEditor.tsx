@@ -18,15 +18,9 @@ import {
   Type,
   Palette,
   Save,
-  X
+  X,
+  Plus
 } from 'lucide-react';
-
-interface ContentEditorProps {
-  node: Node;
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (content: any) => void;
-}
 
 interface ContentItem {
   id: string;
@@ -43,6 +37,19 @@ interface ContentItem {
   items?: { id: string; text: string; checked?: boolean }[]; // For lists and checklists
 }
 
+interface NodeContent {
+  title?: string;
+  description?: string;
+  items?: ContentItem[];
+}
+
+interface ContentEditorProps {
+  node: Node;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (content: NodeContent) => void;
+}
+
 export const ContentEditor = ({ node, isOpen, onClose, onSave }: ContentEditorProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -51,9 +58,10 @@ export const ContentEditor = ({ node, isOpen, onClose, onSave }: ContentEditorPr
 
   useEffect(() => {
     if (node.data.content) {
-      setTitle(node.data.content.title || '');
-      setDescription(node.data.content.description || '');
-      setContentItems(node.data.content.items || []);
+      const content = node.data.content as NodeContent;
+      setTitle(content.title || '');
+      setDescription(content.description || '');
+      setContentItems(content.items || []);
     }
   }, [node]);
 
@@ -145,7 +153,7 @@ export const ContentEditor = ({ node, isOpen, onClose, onSave }: ContentEditorPr
   };
 
   const handleSave = () => {
-    const content = {
+    const content: NodeContent = {
       title,
       description,
       items: contentItems,

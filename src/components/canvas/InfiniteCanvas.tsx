@@ -29,7 +29,7 @@ import {
   Undo,
   Redo,
   Copy,
-  Paste,
+  Plus,
   Trash2
 } from 'lucide-react';
 import { CustomNode } from './CustomNode';
@@ -62,7 +62,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { project, getNodes, getEdges } = useReactFlow();
+  const { getNodes, getEdges, screenToFlowPosition } = useReactFlow();
 
   // Load saved data
   useEffect(() => {

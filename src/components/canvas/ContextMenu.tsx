@@ -5,12 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
   Copy,
-  Paste,
   Trash2,
   Edit3,
   Link,
   Group,
-  Duplicate
+  Plus
 } from 'lucide-react';
 
 interface ContextMenuProps {
@@ -81,7 +80,7 @@ export const ContextMenu = ({
               className="w-full justify-start"
               onClick={() => handleAction(() => onDuplicate(nodeId))}
             >
-              <Duplicate className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 mr-2" />
               Duplicar
             </Button>
             <Button
@@ -112,7 +111,7 @@ export const ContextMenu = ({
               className="w-full justify-start"
               onClick={() => handleAction(onPaste)}
             >
-              <Paste className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 mr-2" />
               Colar
             </Button>
           </>

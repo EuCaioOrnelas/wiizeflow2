@@ -1,5 +1,3 @@
-
-
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -148,7 +146,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     }
   };
 
-  const handleNameClick = (e: React.MouseEvent) => {
+  const handleNameEdit = (e: React.PointerEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setEditingName(true);
@@ -264,12 +262,12 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                 onKeyDown={handleNameKeyPress}
                 className="h-6 text-sm font-medium"
                 autoFocus
-                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
               />
             ) : (
               <span 
-                className="font-medium text-sm cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded"
-                onClick={handleNameClick}
+                className="font-medium text-sm cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded select-none"
+                onPointerDown={handleNameEdit}
               >
                 {data.label}
               </span>
@@ -372,4 +370,3 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
 });
 
 CustomNode.displayName = 'CustomNode';
-

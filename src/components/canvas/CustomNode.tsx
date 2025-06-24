@@ -1,4 +1,3 @@
-
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -217,7 +216,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       
       <div 
         className={`
-          px-4 py-3 rounded-lg border-2 shadow-md min-w-[120px] max-w-[200px]
+          px-5 py-4 rounded-lg border-2 shadow-md min-w-[190px] max-w-[320px]
           ${nodeColor} ${selectedClass}
           transition-all duration-200 hover:shadow-lg
         `}
@@ -254,7 +253,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                   <Palette className="w-3 h-3" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-80">
+              <PopoverContent className="w-80 m-4 p-6">
                 <div className="space-y-4">
                   {data.type === 'other' && (
                     <div>

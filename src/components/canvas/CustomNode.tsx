@@ -1,8 +1,10 @@
+
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   Target, 
@@ -29,7 +31,6 @@ const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'
 
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
-  const [editingName, setEditingName] = useState(false);
   const [tempName, setTempName] = useState(data.label);
 
   const getNodeIcon = (type: string) => {
@@ -130,26 +131,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     }
   };
 
-  const handleNameChange = () => {
+  const handleNameSave = () => {
     if (onUpdateNode && tempName.trim()) {
       onUpdateNode(id, { label: tempName.trim() });
     }
-    setEditingName(false);
-  };
-
-  const handleNameKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleNameChange();
-    } else if (e.key === 'Escape') {
-      setTempName(data.label);
-      setEditingName(false);
-    }
-  };
-
-  const handleNameEdit = (e: React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setEditingName(true);
   };
 
   const handleOpenEditor = (e: React.MouseEvent) => {
@@ -254,24 +239,9 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                  style={typeof iconBgClass === 'object' ? iconBgClass : {}}>
               {getNodeIcon(data.type)}
             </div>
-            {editingName ? (
-              <Input
-                value={tempName}
-                onChange={(e) => setTempName(e.target.value)}
-                onBlur={handleNameChange}
-                onKeyDown={handleNameKeyPress}
-                className="h-6 text-sm font-medium"
-                autoFocus
-                onPointerDown={(e) => e.stopPropagation()}
-              />
-            ) : (
-              <span 
-                className="font-medium text-sm cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded select-none"
-                onPointerDown={handleNameEdit}
-              >
-                {data.label}
-              </span>
-            )}
+            <span className="font-medium text-sm select-none">
+              {data.label}
+            </span>
           </div>
           
           <div className="flex items-center space-x-1">
@@ -294,6 +264,24 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
               </PopoverTrigger>
               <PopoverContent className="w-80 m-4 p-6">
                 <div className="space-y-4">
+                  
+                  {/* Campo para editar o nome */}
+                  <div>
+                    <Label htmlFor="element-name" className="text-sm font-medium">Nome do Elemento</Label>
+                    <div className="flex space-x-2 mt-1">
+                      <Input
+                        id="element-name"
+                        value={tempName}
+                        onChange={(e) => setTempName(e.target.value)}
+                        className="flex-1"
+                        placeholder="Nome do elemento"
+                      />
+                      <Button onClick={handleNameSave} size="sm">
+                        Salvar
+                      </Button>
+                    </div>
+                  </div>
+
                   {data.type === 'other' && (
                     <div>
                       <h4 className="font-medium text-sm mb-2">Escolher Emoji</h4>

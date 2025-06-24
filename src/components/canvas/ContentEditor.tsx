@@ -193,7 +193,7 @@ export const ContentEditor = ({ node, isOpen, onClose, onSave }: ContentEditorPr
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span>Editar Conteúdo - {node.data.label}</span>
+            <span>Editar Conteúdo - {String(node.data.label || 'Node')}</span>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>

@@ -1,8 +1,11 @@
 
+import { ContentItem } from '@/types/contentEditor';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { StyleButtons } from './StyleButtons';
 import { ListItemEditor } from './ListItemEditor';
-import { ContentItem } from '@/types/contentEditor';
+import { Trash2, Plus } from 'lucide-react';
 
 interface ContentItemCardProps {
   item: ContentItem;
@@ -21,60 +24,163 @@ export const ContentItemCard = ({
   onUpdateListItem,
   onToggleChecklist,
 }: ContentItemCardProps) => {
-  const toggleStyle = (styleKey: keyof ContentItem['style']) => {
-    onUpdate({
-      style: {
-        ...item.style,
-        [styleKey]: !item.style?.[styleKey]
-      }
-    });
+  const getTypeLabel = (type: ContentItem['type']) => {
+    const labels = {
+      h1: 'Título Principal',
+      h2: 'Subtítulo',
+      subtitle: 'Legendas',
+      paragraph: 'Parágrafo',
+      list: 'Lista',
+      checklist: 'Lista de Verificação',
+      link: 'Link'
+    };
+    return labels[type];
+  };
+
+  const renderContent = () => {
+    switch (item.type) {
+      case 'h1':
+      case 'h2':
+      case 'subtitle':
+        return (
+          <div className="flex items-center space-x-3">
+            <span className="text-sm font-medium text-gray-600 min-w-[120px]">
+              {getTypeLabel(item.type)}:
+            </span>
+            <Input
+              value={item.content}
+              onChange={(e) => onUpdate({ content: e.target.value })}
+              placeholder={`Digite o ${getTypeLabel(item.type).toLowerCase()}...`}
+              className="flex-1"
+            />
+            <StyleButtons
+              style={item.style || {}}
+              onStyleChange={(style) => onUpdate({ style })}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRemove}
+              className="text-red-500 hover:text-red-700"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        );
+
+      case 'paragraph':
+        return (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">
+                {getTypeLabel(item.type)}:
+              </span>
+              <div className="flex items-center space-x-2">
+                <StyleButtons
+                  style={item.style || {}}
+                  onStyleChange={(style) => onUpdate({ style })}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onRemove}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            <Textarea
+              value={item.content}
+              onChange={(e) => onUpdate({ content: e.target.value })}
+              placeholder="Digite o parágrafo..."
+              rows={3}
+              className="w-full"
+            />
+          </div>
+        );
+
+      case 'link':
+        return (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">
+                {getTypeLabel(item.type)}:
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRemove}
+                className="text-red-500 hover:text-red-700"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                value={item.content}
+                onChange={(e) => onUpdate({ content: e.target.value })}
+                placeholder="Texto do link..."
+              />
+              <Input
+                value={item.url || ''}
+                onChange={(e) => onUpdate({ url: e.target.value })}
+                placeholder="URL do link..."
+              />
+            </div>
+          </div>
+        );
+
+      case 'list':
+      case 'checklist':
+        return (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">
+                {getTypeLabel(item.type)}:
+              </span>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onAddListItem}
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Adicionar Item
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onRemove}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="space-y-1 pl-4">
+              {item.items?.map((listItem) => (
+                <ListItemEditor
+                  key={listItem.id}
+                  item={listItem}
+                  isChecklist={item.type === 'checklist'}
+                  onUpdate={(text) => onUpdateListItem(listItem.id, text)}
+                  onToggle={() => onToggleChecklist(listItem.id)}
+                />
+              ))}
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 capitalize">
-          {item.type}
-        </span>
-        <StyleButtons
-          item={item}
-          onToggleStyle={toggleStyle}
-          onRemove={onRemove}
-        />
-      </div>
-
-      {/* Content input based on type */}
-      {(item.type === 'h1' || item.type === 'h2' || item.type === 'subtitle' || item.type === 'paragraph') && (
-        <Input
-          value={item.content}
-          onChange={(e) => onUpdate({ content: e.target.value })}
-          placeholder={`Digite o ${item.type}...`}
-        />
-      )}
-
-      {item.type === 'link' && (
-        <div className="space-y-2">
-          <Input
-            value={item.content}
-            onChange={(e) => onUpdate({ content: e.target.value })}
-            placeholder="Texto do link..."
-          />
-          <Input
-            value={item.url || ''}
-            onChange={(e) => onUpdate({ url: e.target.value })}
-            placeholder="URL do link..."
-          />
-        </div>
-      )}
-
-      {(item.type === 'list' || item.type === 'checklist') && (
-        <ListItemEditor
-          item={item}
-          onAddListItem={onAddListItem}
-          onUpdateListItem={onUpdateListItem}
-          onToggleChecklist={item.type === 'checklist' ? onToggleChecklist : undefined}
-        />
-      )}
+    <div className="py-3 border-b border-gray-200 last:border-b-0">
+      {renderContent()}
     </div>
   );
 };

@@ -18,12 +18,13 @@ import {
 
 interface CustomNodeComponentProps extends NodeProps {
   data: CustomNodeData;
+  onUpdateNode?: (nodeId: string, updates: Partial<CustomNodeData>) => void;
 }
 
 const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆'];
 const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
 
-export const CustomNode = memo(({ data, selected }: CustomNodeComponentProps) => {
+export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
 
   const getNodeIcon = (type: string) => {
@@ -107,17 +108,17 @@ export const CustomNode = memo(({ data, selected }: CustomNodeComponentProps) =>
   };
 
   const handleCustomIconChange = (icon: string) => {
-    if (data.type === 'other') {
-      // Update node data - this would need to be handled by the parent component
-      console.log('Change icon to:', icon);
+    if (data.type === 'other' && onUpdateNode) {
+      onUpdateNode(id, { customIcon: icon });
     }
+    setShowCustomizer(false);
   };
 
   const handleCustomColorChange = (color: string) => {
-    if (data.type === 'other') {
-      // Update node data - this would need to be handled by the parent component
-      console.log('Change color to:', color);
+    if (data.type === 'other' && onUpdateNode) {
+      onUpdateNode(id, { customColor: color });
     }
+    setShowCustomizer(false);
   };
 
   const hasContent = data.hasContent && data.content;
@@ -127,26 +128,34 @@ export const CustomNode = memo(({ data, selected }: CustomNodeComponentProps) =>
 
   return (
     <div className={`relative ${selectedClass}`}>
-      {/* Handles nas 4 direções */}
+      {/* Handles nas 4 direções - com posicionamento correto */}
       <Handle
         type="target"
         position={Position.Top}
-        className="w-3 h-3 !bg-gray-400"
+        id="top"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600"
+        style={{ top: -6 }}
       />
       <Handle
         type="target"
         position={Position.Left}
-        className="w-3 h-3 !bg-gray-400"
+        id="left"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600"
+        style={{ left: -6 }}
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="w-3 h-3 !bg-gray-400"
+        id="right"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600"
+        style={{ right: -6 }}
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        className="w-3 h-3 !bg-gray-400"
+        id="bottom"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600"
+        style={{ bottom: -6 }}
       />
       
       <div className={`

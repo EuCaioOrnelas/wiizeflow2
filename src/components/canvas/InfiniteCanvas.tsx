@@ -32,7 +32,17 @@ import { EdgeTypeSelector } from './EdgeTypeSelector';
 import { EdgeType } from '@/types/canvas';
 
 const nodeTypes = {
-  custom: CustomNode,
+  custom: (props: any) => (
+    <CustomNode 
+      {...props} 
+      onUpdateNode={(nodeId: string, updates: Partial<CustomNodeData>) => {
+        // Esta função será definida no componente interno
+        if (props.onUpdateNode) {
+          props.onUpdateNode(nodeId, updates);
+        }
+      }} 
+    />
+  ),
 };
 
 const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: InfiniteCanvasProps) => {
@@ -72,6 +82,23 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     setEdges,
     saveToHistory
   });
+
+  // Função para atualizar dados do nó
+  const handleUpdateNode = useCallback((nodeId: string, updates: Partial<CustomNodeData>) => {
+    setNodes(nodes => nodes.map(node => 
+      node.id === nodeId 
+        ? { ...node, data: { ...node.data, ...updates } }
+        : node
+    ));
+    saveToHistory();
+  }, [setNodes, saveToHistory]);
+
+  // Modificar os nodeTypes para incluir a função de atualização
+  const customNodeTypes = {
+    custom: (props: any) => (
+      <CustomNode {...props} onUpdateNode={handleUpdateNode} />
+    ),
+  };
 
   // Undo/Redo handlers
   const handleUndo = useCallback(() => {
@@ -268,7 +295,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
             onPaneContextMenu={onPaneContextMenu}
             onDragOver={onDragOver}
             onDrop={onDrop}
-            nodeTypes={nodeTypes}
+            nodeTypes={customNodeTypes}
             fitView
             snapToGrid
             snapGrid={[20, 20]}

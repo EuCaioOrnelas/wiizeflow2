@@ -14,6 +14,8 @@ import {
   Panel,
   useReactFlow,
   ReactFlowProvider,
+  getNodesBounds,
+  getViewportForBounds,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useToast } from '@/hooks/use-toast';
@@ -87,7 +89,7 @@ const InfiniteCanvasInner = ({
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, getViewport } = useReactFlow();
 
   // Custom hooks
   const {
@@ -303,41 +305,147 @@ const InfiniteCanvasInner = ({
     }
   }, [nodes, edges, onSave]);
 
+  // Função melhorada para exportar como imagem
   const exportAsImage = useCallback(async () => {
     if (reactFlowWrapper.current) {
-      const canvas = await html2canvas(reactFlowWrapper.current);
-      const link = document.createElement('a');
-      link.download = `${funnelName}-funnel.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-    }
-  }, [funnelName]);
+      try {
+        // Criar um estilo temporário para garantir que os SVGs sejam capturados
+        const style = document.createElement('style');
+        style.textContent = `
+          .react-flow__edges svg {
+            position: relative !important;
+            z-index: 1 !important;
+          }
+          .react-flow__edge path {
+            stroke: #10b981 !important;
+            stroke-width: 2 !important;
+          }
+        `;
+        document.head.appendChild(style);
 
+        const canvas = await html2canvas(reactFlowWrapper.current, {
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          allowTaint: true,
+          scale: 2,
+          logging: false,
+          ignoreElements: (element) => {
+            // Não ignorar elementos SVG das conexões
+            return element.classList.contains('react-flow__minimap') ||
+                   element.classList.contains('react-flow__controls');
+          },
+          onclone: (clonedDoc) => {
+            // Garantir que os SVGs sejam visíveis no clone
+            const svgElements = clonedDoc.querySelectorAll('.react-flow__edges svg');
+            svgElements.forEach((svg: any) => {
+              svg.style.position = 'absolute';
+              svg.style.zIndex = '1';
+            });
+            
+            const pathElements = clonedDoc.querySelectorAll('.react-flow__edge path');
+            pathElements.forEach((path: any) => {
+              path.style.stroke = '#10b981';
+              path.style.strokeWidth = '2';
+            });
+          }
+        });
+
+        // Remover o estilo temporário
+        document.head.removeChild(style);
+
+        const link = document.createElement('a');
+        link.download = `${funnelName}-funnel.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        toast({
+          title: "Imagem exportada!",
+          description: "O funil foi exportado como PNG com sucesso.",
+        });
+      } catch (error) {
+        console.error('Erro ao exportar imagem:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao exportar imagem.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [funnelName, toast]);
+
+  // Função melhorada para exportar como PDF
   const exportAsPDF = useCallback(async () => {
     if (reactFlowWrapper.current) {
-      const canvas = await html2canvas(reactFlowWrapper.current);
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
+      try {
+        // Criar um estilo temporário para garantir que os SVGs sejam capturados
+        const style = document.createElement('style');
+        style.textContent = `
+          .react-flow__edges svg {
+            position: relative !important;
+            z-index: 1 !important;
+          }
+          .react-flow__edge path {
+            stroke: #10b981 !important;
+            stroke-width: 2 !important;
+          }
+        `;
+        document.head.appendChild(style);
 
-      let position = 0;
+        const canvas = await html2canvas(reactFlowWrapper.current, {
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          allowTaint: true,
+          scale: 2,
+          logging: false,
+          ignoreElements: (element) => {
+            return element.classList.contains('react-flow__minimap') ||
+                   element.classList.contains('react-flow__controls');
+          },
+          onclone: (clonedDoc) => {
+            const svgElements = clonedDoc.querySelectorAll('.react-flow__edges svg');
+            svgElements.forEach((svg: any) => {
+              svg.style.position = 'absolute';
+              svg.style.zIndex = '1';
+            });
+            
+            const pathElements = clonedDoc.querySelectorAll('.react-flow__edge path');
+            pathElements.forEach((path: any) => {
+              path.style.stroke = '#10b981';
+              path.style.strokeWidth = '2';
+            });
+          }
+        });
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+        // Remover o estilo temporário
+        document.head.removeChild(style);
 
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
+
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = pdf.internal.pageSize.getHeight();
+
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        pdf.save(`${funnelName}-funnel.pdf`);
+
+        toast({
+          title: "PDF exportado!",
+          description: "O funil foi exportado como PDF com sucesso.",
+        });
+      } catch (error) {
+        console.error('Erro ao exportar PDF:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao exportar PDF.",
+          variant: "destructive",
+        });
       }
-
-      pdf.save(`${funnelName}-funnel.pdf`);
     }
-  }, [funnelName]);
+  }, [funnelName, toast]);
 
   return (
     <div className="w-full h-screen flex bg-gray-50 dark:bg-gray-900">

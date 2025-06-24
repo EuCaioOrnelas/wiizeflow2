@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -194,7 +195,7 @@ const Account = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-green-600" />
-            <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
+            <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           
           <div className="flex items-center space-x-4">

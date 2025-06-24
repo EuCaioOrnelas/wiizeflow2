@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import { Node, Edge } from '@xyflow/react';
 import { CustomNodeData, NodeContent } from '@/types/canvas';
@@ -147,7 +146,7 @@ export const useCanvasOperations = ({
     saveToHistory();
   }, [nodes, edges, setNodes, setEdges, saveToHistory]);
 
-  const updateNodeContent = useCallback((nodeId: string, content: NodeContent) => {
+  const updateNodeContent = useCallback((nodeId: string, content: NodeContent, elementName?: string) => {
     setNodes(nodes.map(node => 
       node.id === nodeId 
         ? { 
@@ -155,7 +154,8 @@ export const useCanvasOperations = ({
             data: { 
               ...node.data, 
               content,
-              hasContent: !!content && Object.keys(content).length > 0
+              hasContent: !!content && Object.keys(content).length > 0,
+              ...(elementName && { label: elementName })
             }
           }
         : node

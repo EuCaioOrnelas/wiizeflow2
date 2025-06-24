@@ -1,4 +1,3 @@
-
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -384,7 +383,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
           node={selectedNode}
           isOpen={isEditorOpen}
           onClose={() => setIsEditorOpen(false)}
-          onSave={(content) => updateNodeContent(selectedNode.id, content)}
+          onSave={(content, elementName) => updateNodeContent(selectedNode.id, content, elementName)}
         />
       )}
 

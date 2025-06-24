@@ -7,7 +7,7 @@ interface ContentEditorProps {
   node: Node<CustomNodeData>;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (content: NodeContent) => void;
+  onSave: (content: NodeContent, elementName?: string) => void;
 }
 
 export const ContentEditor = ({ node, isOpen, onClose, onSave }: ContentEditorProps) => {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ interface AdvancedContentEditorProps {
   node: Node<CustomNodeData>;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (content: NodeContent) => void;
+  onSave: (content: NodeContent, elementName?: string) => void;
 }
 
 interface ContentBlock {
@@ -178,13 +177,13 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
       items: blocks,
     };
     
-    onSave(content);
+    onSave(content, elementName);
     toast({
       title: "Conteúdo salvo!",
       description: "As alterações foram salvas com sucesso.",
     });
     onClose();
-  }, [title, blocks, onSave, onClose, toast]);
+  }, [title, blocks, elementName, onSave, onClose, toast]);
 
   const getBlockStyle = (block: ContentBlock) => {
     const style: React.CSSProperties = {};
@@ -319,6 +318,14 @@ export const AdvancedContentEditor = ({ node, isOpen, onClose, onSave }: Advance
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="flex items-center justify-between">
             <span>Editor de Conteúdo - {elementName}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="h-6 w-6 p-0 hover:bg-gray-200"
+            >
+              <X className="w-4 h-4" />
+            </Button>
           </DialogTitle>
         </DialogHeader>
 

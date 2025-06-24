@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [funnels, setFunnels] = useState<any[]>([]);
-  const [funnelsLimit, setFunnelsLimit] = useState(2);
+  const [funnelsLimit, setFunnelsLimit] = useState<number | string>(2);
   const [currentPlan, setCurrentPlan] = useState('Free');
   const { toast } = useToast();
 
@@ -45,7 +45,9 @@ const Dashboard = () => {
   };
 
   const createNewFunnel = () => {
-    if (funnels.length >= funnelsLimit) {
+    const isLimitReached = typeof funnelsLimit === 'number' && funnels.length >= funnelsLimit;
+    
+    if (isLimitReached) {
       toast({
         title: "Limite atingido",
         description: "Você atingiu o limite do seu plano. Faça upgrade para continuar criando funis.",
@@ -90,6 +92,24 @@ const Dashboard = () => {
       case 'Wiize Max': return 'text-gold-600 bg-yellow-100';
       default: return 'text-gray-600 bg-gray-100';
     }
+  };
+
+  const getRemainingFunnels = () => {
+    if (typeof funnelsLimit === 'string') {
+      return "∞";
+    }
+    return Math.max(0, funnelsLimit - funnels.length);
+  };
+
+  const getProgressPercentage = () => {
+    if (typeof funnelsLimit === 'string') {
+      return 0; // Don't show progress for unlimited
+    }
+    return (funnels.length / funnelsLimit) * 100;
+  };
+
+  const isAtLimit = () => {
+    return typeof funnelsLimit === 'number' && funnels.length >= funnelsLimit;
   };
 
   if (!user) {
@@ -139,10 +159,10 @@ const Dashboard = () => {
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div 
                   className="bg-blue-600 h-2 rounded-full" 
-                  style={{ width: `${(funnels.length / funnelsLimit) * 100}%` }}
+                  style={{ width: `${getProgressPercentage()}%` }}
                 ></div>
               </div>
-              {funnels.length >= funnelsLimit && (
+              {isAtLimit() && (
                 <p className="text-xs text-orange-600 mt-2">Limite atingido</p>
               )}
             </CardContent>
@@ -169,10 +189,10 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <span className="text-2xl font-bold">
-                {funnelsLimit === "Ilimitados" ? "∞" : Math.max(0, funnelsLimit - funnels.length)}
+                {getRemainingFunnels()}
               </span>
               <p className="text-xs text-gray-500 mt-1">
-                {funnelsLimit === "Ilimitados" ? "Sem limites" : "Você ainda pode criar"}
+                {typeof funnelsLimit === "string" ? "Sem limites" : "Você ainda pode criar"}
               </p>
             </CardContent>
           </Card>
@@ -186,8 +206,8 @@ const Dashboard = () => {
           
           <Button 
             onClick={createNewFunnel} 
-            className={`${funnels.length >= funnelsLimit ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-            disabled={funnels.length >= funnelsLimit}
+            className={`${isAtLimit() ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+            disabled={isAtLimit()}
           >
             <Plus className="w-5 h-5 mr-2" />
             Novo Funil
@@ -195,7 +215,7 @@ const Dashboard = () => {
         </div>
 
         {/* Upgrade Banner */}
-        {funnels.length >= funnelsLimit && (
+        {isAtLimit() && (
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg mb-8">
             <div className="flex items-center justify-between">
               <div>

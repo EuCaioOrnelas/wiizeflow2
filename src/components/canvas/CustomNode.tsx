@@ -1,4 +1,3 @@
-
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { CustomNodeData } from '@/types/canvas';
@@ -147,9 +146,14 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     if (onUpdateNode) {
       onUpdateNode(id, { customIcon: emoji });
     }
+    setShowEmojiGallery(false);
   };
 
-  const handleNameSave = () => {
+  const handleNameSave = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (onUpdateNode && tempName.trim()) {
       onUpdateNode(id, { label: tempName.trim() });
       setShowCustomizer(false);
@@ -158,6 +162,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
 
   const handleOpenEditor = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     // Trigger double click event to open content editor
     const event = new MouseEvent('dblclick', {
       view: window,
@@ -169,9 +174,36 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
 
   const handleIconClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (data.type === 'other') {
       setShowEmojiGallery(true);
     }
+  };
+
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setShowCustomizer(!showCustomizer);
+  };
+
+  const handleInputClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleNameSave();
+    }
+  };
+
+  const handleEmojiButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setShowEmojiGallery(true);
+    setShowCustomizer(false);
   };
 
   const hasContent = data.hasContent && data.content;
@@ -287,10 +319,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                     variant="ghost" 
                     size="sm" 
                     className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowCustomizer(!showCustomizer);
-                    }}
+                    onClick={handleSettingsClick}
                   >
                     <Settings className="w-3 h-3" />
                   </Button>
@@ -305,14 +334,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                           id="element-name"
                           value={tempName}
                           onChange={(e) => setTempName(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              handleNameSave();
-                            }
-                          }}
+                          onKeyDown={handleInputKeyDown}
                           className="flex-1"
                           placeholder="Nome do elemento"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={handleInputClick}
                         />
                         <Button onClick={handleNameSave} size="sm">
                           Salvar
@@ -332,10 +357,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                     variant="ghost" 
                     size="sm" 
                     className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowCustomizer(!showCustomizer);
-                    }}
+                    onClick={handleSettingsClick}
                   >
                     <Settings className="w-3 h-3" />
                   </Button>
@@ -350,14 +372,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                           id="element-name"
                           value={tempName}
                           onChange={(e) => setTempName(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              handleNameSave();
-                            }
-                          }}
+                          onKeyDown={handleInputKeyDown}
                           className="flex-1"
                           placeholder="Nome do elemento"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={handleInputClick}
                         />
                         <Button onClick={handleNameSave} size="sm">
                           Salvar
@@ -369,11 +387,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                     <div>
                       <Label className="text-sm font-medium">Ícone do Elemento</Label>
                       <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowEmojiGallery(true);
-                          setShowCustomizer(false);
-                        }}
+                        onClick={handleEmojiButtonClick}
                         variant="outline"
                         className="w-full mt-1 flex items-center justify-center space-x-2"
                       >

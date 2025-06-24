@@ -119,14 +119,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         </div>
       )}
 
-      {/* Handles nas 4 direções */}
-      <Handle
-        type="source"
-        position={Position.Top}
-        id="top"
-        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ top: -3 }}
-      />
+      {/* Handles nas 4 direções - corrigindo direções */}
       <Handle
         type="target"
         position={Position.Top}
@@ -136,10 +129,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       />
       <Handle
         type="source"
-        position={Position.Left}
-        id="left"
+        position={Position.Top}
+        id="top"
         className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ left: -3 }}
+        style={{ top: -3 }}
       />
       <Handle
         type="target"
@@ -150,10 +143,10 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       />
       <Handle
         type="source"
-        position={Position.Right}
-        id="right"
+        position={Position.Left}
+        id="left"
         className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ right: -3 }}
+        style={{ left: -3 }}
       />
       <Handle
         type="target"
@@ -164,15 +157,22 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       />
       <Handle
         type="source"
-        position={Position.Bottom}
-        id="bottom"
+        position={Position.Right}
+        id="right"
         className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
-        style={{ bottom: -3 }}
+        style={{ right: -3 }}
       />
       <Handle
         type="target"
         position={Position.Bottom}
         id="bottom-target"
+        className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
+        style={{ bottom: -3 }}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
         className="w-1.5 h-1.5 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-60"
         style={{ bottom: -3 }}
       />

@@ -10,7 +10,7 @@ const Privacy = () => {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-green-600" />
-            <span className="text-2xl font-bold text-gray-900">FunnelWiize</span>
+            <span className="text-2xl font-bold text-gray-900">Wiizeflow</span>
           </div>
           <Button 
             variant="outline" 
@@ -135,8 +135,8 @@ const Privacy = () => {
             <p className="text-gray-700 leading-relaxed">
               Para dúvidas sobre esta Política de Privacidade ou para exercer seus direitos, 
               entre em contato conosco em: 
-              <a href="mailto:privacidade@funnelwiize.com" className="text-green-600 hover:text-green-700 ml-1">
-                privacidade@funnelwiize.com
+              <a href="mailto:privacidade@wiizeflow.com" className="text-green-600 hover:text-green-700 ml-1">
+                privacidade@wiizeflow.com
               </a>
             </p>
           </section>

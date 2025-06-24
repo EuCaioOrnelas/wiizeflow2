@@ -317,7 +317,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
               position="bottom-right"
             />
             <Background 
-              variant="dots"
+              variant={BackgroundVariant.Dots}
               gap={20} 
               size={1}
               color="#e5e7eb"

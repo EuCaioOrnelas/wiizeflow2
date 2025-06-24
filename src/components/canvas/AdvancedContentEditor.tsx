@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,8 @@ import {
   Heading1,
   Heading2,
   Type,
-  Highlighter
+  Highlighter,
+  X
 } from 'lucide-react';
 import { CustomNodeData, NodeContent } from '@/types/canvas';
 

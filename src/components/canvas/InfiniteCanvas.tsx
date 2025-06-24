@@ -30,6 +30,16 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { EdgeTypeSelector } from './EdgeTypeSelector';
 import { EdgeType } from '@/types/canvas';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const nodeTypes = {
   custom: (props: any) => (
@@ -52,6 +62,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
   const [currentEdgeType, setCurrentEdgeType] = useState<EdgeType>('smoothstep');
+  const [edgeToDelete, setEdgeToDelete] = useState<string | null>(null);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -165,8 +176,51 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     addNode(type, position);
   }, [screenToFlowPosition, addNode]);
 
+  const getArrowDirection = useCallback((sourceNode: Node, targetNode: Node, sourceHandle: string, targetHandle: string) => {
+    const sourcePos = sourceNode.position;
+    const targetPos = targetNode.position;
+    
+    // Se temos handles específicos, use eles para determinar a direção
+    if (sourceHandle && targetHandle) {
+      const sourceHandlePos = sourceHandle.includes('right') ? 'right' : 
+                             sourceHandle.includes('left') ? 'left' :
+                             sourceHandle.includes('top') ? 'top' : 'bottom';
+      const targetHandlePos = targetHandle.includes('right') ? 'right' : 
+                             targetHandle.includes('left') ? 'left' :
+                             targetHandle.includes('top') ? 'top' : 'bottom';
+      
+      // Baseado nas posições dos handles, determine a direção da seta
+      if (sourceHandlePos === 'right' || targetHandlePos === 'left') {
+        return 'right';
+      } else if (sourceHandlePos === 'left' || targetHandlePos === 'right') {
+        return 'left';
+      } else if (sourceHandlePos === 'bottom' || targetHandlePos === 'top') {
+        return 'down';
+      } else {
+        return 'up';
+      }
+    }
+    
+    // Fallback baseado na posição dos nós
+    const deltaX = targetPos.x - sourcePos.x;
+    const deltaY = targetPos.y - sourcePos.y;
+    
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      return deltaX > 0 ? 'right' : 'left';
+    } else {
+      return deltaY > 0 ? 'down' : 'up';
+    }
+  }, []);
+
   const onConnect = useCallback(
     (params: Connection) => {
+      const sourceNode = nodes.find(n => n.id === params.source);
+      const targetNode = nodes.find(n => n.id === params.target);
+      
+      if (!sourceNode || !targetNode) return;
+      
+      const direction = getArrowDirection(sourceNode, targetNode, params.sourceHandle || '', params.targetHandle || '');
+      
       const newEdge = {
         ...params,
         type: currentEdgeType,
@@ -177,24 +231,32 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
           width: 20,
           height: 20,
           color: '#10b981',
+          orient: 'auto-start-reverse', // Isso corrige a direção da seta
         },
       };
       setEdges((eds) => addEdge(newEdge, eds));
       saveToHistory();
     },
-    [setEdges, saveToHistory, currentEdgeType]
+    [setEdges, saveToHistory, currentEdgeType, nodes, getArrowDirection]
   );
 
-  // Função para deletar edge ao clicar
+  // Função para deletar edge ao clicar com confirmação
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
     event.stopPropagation();
-    setEdges((edges) => edges.filter((e) => e.id !== edge.id));
-    saveToHistory();
-    toast({
-      title: "Conexão removida!",
-      description: "A conexão foi deletada com sucesso.",
-    });
-  }, [setEdges, saveToHistory, toast]);
+    setEdgeToDelete(edge.id);
+  }, []);
+
+  const confirmDeleteEdge = useCallback(() => {
+    if (edgeToDelete) {
+      setEdges((edges) => edges.filter((e) => e.id !== edgeToDelete));
+      saveToHistory();
+      toast({
+        title: "Conexão removida!",
+        description: "A conexão foi deletada com sucesso.",
+      });
+      setEdgeToDelete(null);
+    }
+  }, [edgeToDelete, setEdges, saveToHistory, toast]);
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node<CustomNodeData>) => {
     setSelectedNode(node);
@@ -373,6 +435,26 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
           onSave={(content) => updateNodeContent(selectedNode.id, content)}
         />
       )}
+
+      {/* Alert Dialog para confirmar exclusão de conexão */}
+      <AlertDialog open={!!edgeToDelete} onOpenChange={() => setEdgeToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover Conexão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover esta conexão? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setEdgeToDelete(null)}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteEdge}>
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -44,7 +44,7 @@ interface NodeContent {
   items?: any[];
 }
 
-interface CustomNodeData {
+interface CustomNodeData extends Record<string, unknown> {
   label: string;
   type: string;
   content: NodeContent | null;

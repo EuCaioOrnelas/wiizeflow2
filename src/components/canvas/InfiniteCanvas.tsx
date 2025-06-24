@@ -49,14 +49,12 @@ interface NodeContent {
   items?: any[];
 }
 
-interface CustomNodeData {
+interface CustomNodeData extends Record<string, unknown> {
   label: string;
   type: string;
   content: NodeContent | null;
   hasContent: boolean;
 }
-
-type CustomNode = Node<CustomNodeData>;
 
 interface InfiniteCanvasProps {
   funnelId: string;
@@ -65,14 +63,14 @@ interface InfiniteCanvasProps {
 }
 
 const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: InfiniteCanvasProps) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState<CustomNode>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<CustomNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [selectedNode, setSelectedNode] = useState<CustomNode | null>(null);
+  const [selectedNode, setSelectedNode] = useState<Node<CustomNodeData> | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [clipboard, setClipboard] = useState<{ nodes: CustomNode[]; edges: Edge[] } | null>(null);
-  const [history, setHistory] = useState<{ nodes: CustomNode[]; edges: Edge[] }[]>([]);
+  const [clipboard, setClipboard] = useState<{ nodes: Node<CustomNodeData>[]; edges: Edge[] } | null>(null);
+  const [history, setHistory] = useState<{ nodes: Node<CustomNodeData>[]; edges: Edge[] }[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -94,7 +92,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
 
   // Save to history
   const saveToHistory = useCallback(() => {
-    const currentState = { nodes: getNodes() as CustomNode[], edges: getEdges() };
+    const currentState = { nodes: getNodes() as Node<CustomNodeData>[], edges: getEdges() };
     setHistory(prev => {
       const newHistory = prev.slice(0, historyIndex + 1);
       newHistory.push(currentState);
@@ -147,16 +145,16 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     [setEdges, saveToHistory]
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: CustomNode) => {
-    setSelectedNode(node);
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node as Node<CustomNodeData>);
   }, []);
 
-  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: CustomNode) => {
-    setSelectedNode(node);
+  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedNode(node as Node<CustomNodeData>);
     setIsEditorOpen(true);
   }, []);
 
-  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: CustomNode) => {
+  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
     event.preventDefault();
     setContextMenu({
       x: event.clientX,
@@ -174,7 +172,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   }, []);
 
   const addNode = useCallback((type: string, position: { x: number; y: number }) => {
-    const newNode: CustomNode = {
+    const newNode: Node<CustomNodeData> = {
       id: `node-${Date.now()}`,
       type: 'custom',
       position,
@@ -192,7 +190,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const duplicateNode = useCallback((nodeId: string) => {
     const node = nodes.find(n => n.id === nodeId);
     if (node) {
-      const newNode: CustomNode = {
+      const newNode: Node<CustomNodeData> = {
         ...node,
         id: `node-${Date.now()}`,
         position: {
@@ -230,7 +228,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const pasteNodes = useCallback(() => {
     if (clipboard) {
       const idMap = new Map();
-      const newNodes: CustomNode[] = clipboard.nodes.map(node => {
+      const newNodes: Node<CustomNodeData>[] = clipboard.nodes.map(node => {
         const newId = `node-${Date.now()}-${Math.random()}`;
         idMap.set(node.id, newId);
         return {

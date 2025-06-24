@@ -38,9 +38,13 @@ serve(async (req) => {
 
     console.log('Creating checkout session for price:', priceId);
 
+    // Use the provided email or fall back to a guest email
+    const checkoutEmail = customerEmail && customerEmail.trim() !== "" ? customerEmail : "guest@wiizeflow.com";
+    console.log('Using email for checkout:', checkoutEmail);
+
     // Create a one-time payment session
     const session = await stripe.checkout.sessions.create({
-      customer_email: customerEmail || "guest@wiizeflow.com",
+      customer_email: checkoutEmail,
       line_items: [
         {
           price: priceId,

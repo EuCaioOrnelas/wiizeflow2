@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -193,4 +192,30 @@
 
 .dark .hover\:shadow-lg:hover {
   box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
+}
+
+/* Handles que aparecem sempre mas ficam transparentes até o hover */
+.react-flow__handle {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.react-flow__handle:hover,
+.react-flow__handle.connectionindicator {
+  opacity: 1 !important;
+}
+
+/* Conectando - handles ficam visíveis durante a conexão */
+.react-flow__handle.connectingfrom,
+.react-flow__handle.connectingto {
+  opacity: 1 !important;
+}
+
+/* Estilo das setas nas conexões */
+.react-flow__edge .react-flow__edge-path {
+  stroke: #10b981;
+  stroke-width: 2;
+}
+
+.react-flow__edge-arrow {
+  fill: #10b981;
 }

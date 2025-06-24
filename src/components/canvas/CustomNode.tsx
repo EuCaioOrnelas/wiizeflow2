@@ -128,39 +128,35 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
 
   return (
     <div className={`relative ${selectedClass}`}>
-      {/* Handles nas 4 direções - aparecem apenas quando selecionado */}
-      {selected && (
-        <>
-          <Handle
-            type="target"
-            position={Position.Top}
-            id="top"
-            className="w-3 h-3 !bg-gray-400 !border-gray-600"
-            style={{ top: -6 }}
-          />
-          <Handle
-            type="target"
-            position={Position.Left}
-            id="left"
-            className="w-3 h-3 !bg-gray-400 !border-gray-600"
-            style={{ left: -6 }}
-          />
-          <Handle
-            type="source"
-            position={Position.Right}
-            id="right"
-            className="w-3 h-3 !bg-gray-400 !border-gray-600"
-            style={{ right: -6 }}
-          />
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id="bottom"
-            className="w-3 h-3 !bg-gray-400 !border-gray-600"
-            style={{ bottom: -6 }}
-          />
-        </>
-      )}
+      {/* Handles nas 4 direções - agora aparecem sempre para permitir conexões */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        id="top"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-100"
+        style={{ top: -6 }}
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-100"
+        style={{ left: -6 }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="right"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-100"
+        style={{ right: -6 }}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
+        className="w-3 h-3 !bg-gray-400 !border-gray-600 opacity-0 hover:opacity-100"
+        style={{ bottom: -6 }}
+      />
       
       <div className={`
         px-4 py-3 rounded-lg border-2 shadow-md min-w-[120px] max-w-[200px]

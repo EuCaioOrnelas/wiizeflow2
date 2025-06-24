@@ -113,6 +113,29 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
     onSave: () => saveFunnel()
   });
 
+  // Drag and Drop handlers
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+
+    const type = event.dataTransfer.getData('application/reactflow');
+    
+    if (typeof type === 'undefined' || !type) {
+      return;
+    }
+
+    const position = screenToFlowPosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
+
+    addNode(type, position);
+  }, [screenToFlowPosition, addNode]);
+
   const onConnect = useCallback(
     (params: Connection) => {
       const newEdge = {
@@ -241,6 +264,8 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
             onNodeDoubleClick={onNodeDoubleClick}
             onNodeContextMenu={onNodeContextMenu}
             onPaneContextMenu={onPaneContextMenu}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
             nodeTypes={nodeTypes}
             fitView
             snapToGrid

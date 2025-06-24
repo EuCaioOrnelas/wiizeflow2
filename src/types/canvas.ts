@@ -13,7 +13,8 @@ export interface CustomNodeData extends Record<string, unknown> {
   content: NodeContent | null;
   hasContent: boolean;
   customIcon?: string; // For emoji
-  customColor?: string; // For color
+  customColor?: string; // For icon color
+  nodeColor?: string; // For node background color
 }
 
 export interface CanvasState {

@@ -25,11 +25,10 @@ interface CustomNodeComponentProps extends NodeProps {
 }
 
 const emojis = ['📝', '🚀', '⚙️', '💡', '🎯', '📊', '💰', '🔥', '✨', '⭐', '🎨', '📈', '🔔', '🎉', '💎', '🏆'];
-const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16', '#6B7280', '#1F2937'];
 
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
-  const [showEditButton, setShowEditButton] = useState(false);
 
   const getNodeIcon = (type: string) => {
     switch (type) {
@@ -58,8 +57,8 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   };
 
   const getNodeColor = (type: string) => {
-    if (type === 'other' && data.customColor) {
-      return `border-2 text-gray-800`;
+    if (data.nodeColor) {
+      return `border-2 text-gray-800 bg-opacity-10`;
     }
     
     switch (type) {
@@ -85,7 +84,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   };
 
   const getIconBackgroundColor = (type: string) => {
-    if (type === 'other' && data.customColor) {
+    if (data.customColor) {
       return { backgroundColor: data.customColor };
     }
     
@@ -112,15 +111,22 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   };
 
   const handleCustomIconChange = (icon: string) => {
-    if (data.type === 'other' && onUpdateNode) {
+    if (onUpdateNode) {
       onUpdateNode(id, { customIcon: icon });
     }
     setShowCustomizer(false);
   };
 
   const handleCustomColorChange = (color: string) => {
-    if (data.type === 'other' && onUpdateNode) {
+    if (onUpdateNode) {
       onUpdateNode(id, { customColor: color });
+    }
+    setShowCustomizer(false);
+  };
+
+  const handleNodeColorChange = (color: string) => {
+    if (onUpdateNode) {
+      onUpdateNode(id, { nodeColor: color });
     }
     setShowCustomizer(false);
   };
@@ -142,28 +148,12 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   const iconBgClass = getIconBackgroundColor(data.type);
 
   return (
-    <div className={`relative ${selectedClass}`} 
-         onMouseEnter={() => setShowEditButton(true)}
-         onMouseLeave={() => setShowEditButton(false)}>
+    <div className={`relative ${selectedClass}`}>
       
       {/* Indicador de conteúdo */}
       {hasContent && (
         <div className="absolute -top-1 -right-1 z-10">
           <Circle className="w-3 h-3 text-blue-500 fill-blue-500" />
-        </div>
-      )}
-
-      {/* Botão de edição */}
-      {showEditButton && (
-        <div className="absolute -top-2 -right-8 z-10">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 w-6 p-0 bg-white shadow-md hover:bg-gray-50"
-            onClick={handleOpenEditor}
-          >
-            <Edit3 className="w-3 h-3" />
-          </Button>
         </div>
       )}
 
@@ -225,49 +215,87 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
         style={{ bottom: -3 }}
       />
       
-      <div className={`
-        px-4 py-3 rounded-lg border-2 shadow-md min-w-[120px] max-w-[200px]
-        ${nodeColor} ${selectedClass}
-        transition-all duration-200 hover:shadow-lg
-      `}>
-        <div className="flex items-center space-x-2 mb-1">
-          <div className={`w-6 h-6 ${typeof iconBgClass === 'string' ? iconBgClass : ''} rounded flex items-center justify-center flex-shrink-0`}
-               style={typeof iconBgClass === 'object' ? iconBgClass : {}}>
-            {getNodeIcon(data.type)}
+      <div 
+        className={`
+          px-4 py-3 rounded-lg border-2 shadow-md min-w-[120px] max-w-[200px]
+          ${nodeColor} ${selectedClass}
+          transition-all duration-200 hover:shadow-lg
+        `}
+        style={data.nodeColor ? { 
+          backgroundColor: `${data.nodeColor}20`, 
+          borderColor: data.nodeColor,
+          color: data.nodeColor 
+        } : {}}
+      >
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center space-x-2 flex-1">
+            <div className={`w-6 h-6 ${typeof iconBgClass === 'string' ? iconBgClass : ''} rounded flex items-center justify-center flex-shrink-0`}
+                 style={typeof iconBgClass === 'object' ? iconBgClass : {}}>
+              {getNodeIcon(data.type)}
+            </div>
+            <span className="font-medium text-sm">{data.label}</span>
           </div>
-          <span className="font-medium text-sm">{data.label}</span>
           
-          {data.type === 'other' && (
+          <div className="flex items-center space-x-1">
+            {/* Botão de edição */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100"
+              onClick={handleOpenEditor}
+            >
+              <Edit3 className="w-3 h-3" />
+            </Button>
+            
+            {/* Personalizador */}
             <Popover open={showCustomizer} onOpenChange={setShowCustomizer}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-200 opacity-70 hover:opacity-100">
                   <Palette className="w-3 h-3" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80">
                 <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Escolher Emoji</h4>
-                    <div className="grid grid-cols-8 gap-1">
-                      {emojis.map((emoji) => (
-                        <button
-                          key={emoji}
-                          onClick={() => handleCustomIconChange(emoji)}
-                          className="w-8 h-8 text-lg hover:bg-gray-100 rounded flex items-center justify-center"
-                        >
-                          {emoji}
-                        </button>
-                      ))}
+                  {data.type === 'other' && (
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Escolher Emoji</h4>
+                      <div className="grid grid-cols-8 gap-1">
+                        {emojis.map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => handleCustomIconChange(emoji)}
+                            className="w-8 h-8 text-lg hover:bg-gray-100 rounded flex items-center justify-center"
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
+                  
+                  {data.type === 'other' && (
+                    <div>
+                      <h4 className="font-medium text-sm mb-2">Cor do Ícone</h4>
+                      <div className="grid grid-cols-5 gap-2">
+                        {colors.map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => handleCustomColorChange(color)}
+                            className="w-8 h-8 rounded border-2 border-gray-200"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Escolher Cor</h4>
-                    <div className="grid grid-cols-4 gap-2">
+                    <h4 className="font-medium text-sm mb-2">Cor do Elemento</h4>
+                    <div className="grid grid-cols-5 gap-2">
                       {colors.map((color) => (
                         <button
                           key={color}
-                          onClick={() => handleCustomColorChange(color)}
+                          onClick={() => handleNodeColorChange(color)}
                           className="w-8 h-8 rounded border-2 border-gray-200"
                           style={{ backgroundColor: color }}
                         />
@@ -277,7 +305,7 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                 </div>
               </PopoverContent>
             </Popover>
-          )}
+          </div>
         </div>
         
         <div className="text-xs opacity-75 capitalize mb-2">

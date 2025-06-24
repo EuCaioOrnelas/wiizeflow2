@@ -36,6 +36,22 @@ interface CustomNodeComponentProps extends NodeProps {
   onOpenEditor?: (nodeId: string) => void;
 }
 
+// Cores predefinidas para o background do ícone
+const iconBackgroundColors = [
+  { name: 'Azul', value: 'bg-blue-500' },
+  { name: 'Verde', value: 'bg-green-500' },
+  { name: 'Vermelho', value: 'bg-red-500' },
+  { name: 'Amarelo', value: 'bg-yellow-500' },
+  { name: 'Roxo', value: 'bg-purple-500' },
+  { name: 'Rosa', value: 'bg-pink-500' },
+  { name: 'Laranja', value: 'bg-orange-500' },
+  { name: 'Índigo', value: 'bg-indigo-500' },
+  { name: 'Cinza', value: 'bg-gray-500' },
+  { name: 'Esmeralda', value: 'bg-emerald-500' },
+  { name: 'Ciano', value: 'bg-cyan-500' },
+  { name: 'Âmbar', value: 'bg-amber-500' }
+];
+
 export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNodeComponentProps) => {
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [showEmojiGallery, setShowEmojiGallery] = useState(false);
@@ -94,6 +110,11 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
   };
 
   const getIconBackgroundColor = (type: string) => {
+    // Para elementos customizados, usar a cor customizada se disponível
+    if (type === 'other' && data.customColor) {
+      return data.customColor;
+    }
+
     switch (type) {
       case 'capture':
         return 'bg-blue-500';
@@ -147,6 +168,12 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
       onUpdateNode(id, { customIcon: emoji });
     }
     setShowEmojiGallery(false);
+  };
+
+  const handleColorSelect = (color: string) => {
+    if (onUpdateNode) {
+      onUpdateNode(id, { customColor: color });
+    }
   };
 
   const handleNameSave = (e?: React.MouseEvent) => {
@@ -394,6 +421,31 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
                         <span className="text-lg">{data.customIcon || '📝'}</span>
                         <span>Alterar Ícone</span>
                       </Button>
+                    </div>
+
+                    {/* Seletor de cor do background do ícone */}
+                    <div>
+                      <Label className="text-sm font-medium">Cor do Fundo do Ícone</Label>
+                      <div className="grid grid-cols-6 gap-2 mt-2">
+                        {iconBackgroundColors.map((color) => (
+                          <button
+                            key={color.value}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleColorSelect(color.value);
+                            }}
+                            className={`w-8 h-8 rounded ${color.value} border-2 transition-all ${
+                              data.customColor === color.value 
+                                ? 'border-gray-800 scale-110' 
+                                : 'border-gray-300 hover:border-gray-500'
+                            }`}
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        Cor atual: {iconBackgroundColors.find(c => c.value === data.customColor)?.name || 'Padrão'}
+                      </div>
                     </div>
                   </div>
                 </PopoverContent>

@@ -1,4 +1,3 @@
-
 import { Node, Edge } from '@xyflow/react';
 
 export interface NodeContent {
@@ -13,7 +12,7 @@ export interface CustomNodeData extends Record<string, unknown> {
   content: NodeContent | null;
   hasContent: boolean;
   customIcon?: string; // For emoji
-  customColor?: string; // For icon color
+  customColor?: string; // For icon background color
   nodeColor?: string; // For node background color
 }
 

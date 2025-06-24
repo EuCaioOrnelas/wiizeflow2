@@ -127,7 +127,6 @@ export const CustomNode = memo(({ id, data, selected, onUpdateNode }: CustomNode
     if (onUpdateNode) {
       onUpdateNode(id, { nodeColor: color });
     }
-    setShowCustomizer(false);
   };
 
   const handleOpenEditor = (e: React.MouseEvent) => {

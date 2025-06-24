@@ -1,3 +1,4 @@
+
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -159,6 +160,18 @@ const InfiniteCanvasInner = ({
     const timeoutId = setTimeout(autoSave, 2000); // Auto-save after 2 seconds of inactivity
     return () => clearTimeout(timeoutId);
   }, [nodes, edges, lastSaved, onSave]);
+
+  // Handle node updates
+  const handleUpdateNode = useCallback((nodeId: string, updates: Partial<CustomNodeData>) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, ...updates } }
+          : node
+      )
+    );
+    saveToHistory();
+  }, [setNodes, saveToHistory]);
 
   // Modificar os nodeTypes para incluir a função de atualização
   const customNodeTypes = {

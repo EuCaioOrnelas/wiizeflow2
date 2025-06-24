@@ -5,15 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Target, LogOut, Camera, Moon, Sun, CreditCard } from "lucide-react";
+import { Target, LogOut, Camera, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Account = () => {
   const [user, setUser] = useState<any>(null);
-  const [theme, setTheme] = useState('light');
   const [funnelsCount, setFunnelsCount] = useState(0);
   const [funnelsLimit, setFunnelsLimit] = useState(2);
-  const [currentPlan, setCurrentPlan] = useState('Free');
+  const [currentPlan, setCurrentPlan] = useState('Gratuito');
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -36,11 +35,6 @@ const Account = () => {
       const funnels = JSON.parse(savedFunnels);
       setFunnelsCount(funnels.length);
     }
-
-    // Load theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme);
-    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
 
     // Load plan info (simulated - in real app this would come from backend)
     const planInfo = localStorage.getItem('userPlan');
@@ -88,35 +82,15 @@ const Account = () => {
     }
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    
-    // Force a re-render by updating the document class immediately
-    if (newTheme === 'dark') {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-    
-    toast({
-      title: "Tema alterado",
-      description: `Tema ${newTheme === 'dark' ? 'escuro' : 'claro'} ativado.`,
-    });
-  };
-
   const handleUpgrade = () => {
     window.location.href = '/pricing';
   };
 
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'Free': return 'text-gray-600 bg-gray-100';
-      case 'Start': return 'text-blue-600 bg-blue-100';
-      case 'Pro': return 'text-purple-600 bg-purple-100';
-      case 'Wiize Max': return 'text-gold-600 bg-yellow-100';
+      case 'Gratuito': return 'text-gray-600 bg-gray-100';
+      case 'Mensal': return 'text-blue-600 bg-blue-100';
+      case 'Anual': return 'text-green-600 bg-green-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
@@ -126,9 +100,9 @@ const Account = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b transition-colors duration-300">
+      <header className="bg-white border-b">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Target className="w-8 h-8 text-green-600" />
@@ -235,17 +209,21 @@ const Account = () => {
                   <p className="text-sm text-gray-600 mb-2">Funis criados</p>
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold">{funnelsCount}</span>
-                    <span className="text-sm text-gray-500">de {funnelsLimit}</span>
+                    <span className="text-sm text-gray-500">
+                      {typeof funnelsLimit === 'number' ? `de ${funnelsLimit}` : funnelsLimit}
+                    </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div 
-                      className="bg-green-600 h-2 rounded-full" 
-                      style={{ width: `${(funnelsCount / funnelsLimit) * 100}%` }}
-                    ></div>
-                  </div>
+                  {typeof funnelsLimit === 'number' && (
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full" 
+                        style={{ width: `${(funnelsCount / funnelsLimit) * 100}%` }}
+                      ></div>
+                    </div>
+                  )}
                 </div>
 
-                {funnelsCount >= funnelsLimit && (
+                {typeof funnelsLimit === 'number' && funnelsCount >= funnelsLimit && (
                   <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                     <p className="text-orange-800 text-sm">
                       Você atingiu o limite do seu plano. Faça upgrade para continuar criando funis.
@@ -253,37 +231,10 @@ const Account = () => {
                   </div>
                 )}
 
-                <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700" variant="outline">
+                <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700">
                   <CreditCard className="w-4 h-4 mr-2" />
-                  Fazer Upgrade
+                  {currentPlan === 'Gratuito' ? 'Fazer Upgrade' : 'Gerenciar Plano'}
                 </Button>
-              </CardContent>
-            </Card>
-
-            {/* Settings Card */}
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle>Configurações</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    {theme === 'light' ? (
-                      <Sun className="w-5 h-5 text-yellow-500" />
-                    ) : (
-                      <Moon className="w-5 h-5 text-blue-500" />
-                    )}
-                    <div>
-                      <p className="font-medium">Tema</p>
-                      <p className="text-sm text-gray-500">
-                        {theme === 'light' ? 'Tema claro ativado' : 'Tema escuro ativado'}
-                      </p>
-                    </div>
-                  </div>
-                  <Button onClick={toggleTheme} variant="outline">
-                    Alterar para {theme === 'light' ? 'Escuro' : 'Claro'}
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </div>

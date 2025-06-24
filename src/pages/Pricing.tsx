@@ -1,68 +1,91 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Target, Star } from "lucide-react";
+import { Check, Target, Star, Crown } from "lucide-react";
 
 const Pricing = () => {
   const plans = [
     {
-      name: "Free",
+      name: "Gratuito",
       price: "R$0",
-      period: "/mês",
+      period: "/sempre",
       funnelLimit: 2,
       features: [
         "Até 2 funis",
-        "Sem cartão de crédito",
-        "Funcionalidades básicas"
+        "Editor visual básico",
+        "Exportar como imagem/PDF",
+        "Sem cartão de crédito"
+      ],
+      restrictions: [
+        "Não inclui templates",
+        "Suporte limitado"
       ],
       buttonText: "Começar grátis",
       buttonAction: () => window.location.href = '/',
-      popular: false
+      popular: false,
+      color: "gray"
     },
     {
-      name: "Start",
-      price: "R$9",
-      period: "/mês",
-      funnelLimit: 5,
-      features: [
-        "Até 5 funis",
-        "Suporte básico",
-        "Templates inclusos"
-      ],
-      buttonText: "Assinar com Stripe",
-      buttonAction: () => alert("Integração com Stripe em breve"),
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: "R$19",
-      period: "/mês",
-      funnelLimit: 10,
-      features: [
-        "Até 10 funis",
-        "Suporte priorizado",
-        "Analytics avançado"
-      ],
-      buttonText: "Assinar com Stripe",
-      buttonAction: () => alert("Integração com Stripe em breve"),
-      popular: true
-    },
-    {
-      name: "Wiize Max",
-      price: "R$39",
+      name: "Mensal",
+      price: "R$47",
       period: "/mês",
       funnelLimit: "Ilimitados",
       features: [
         "Funis ilimitados",
-        "Suporte completo",
-        "Acesso antecipado a funções novas",
-        "Consultoria personalizada"
+        "Todos os templates inclusos",
+        "Editor visual avançado",
+        "Exportar como imagem/PDF",
+        "Suporte prioritário",
+        "Atualizações automáticas"
       ],
-      buttonText: "Assinar com Stripe",
-      buttonAction: () => alert("Integração com Stripe em breve"),
-      popular: false
+      restrictions: [],
+      buttonText: "Assinar Mensal",
+      buttonAction: () => alert("Integração com pagamento em breve"),
+      popular: false,
+      color: "blue"
+    },
+    {
+      name: "Anual",
+      price: "R$397",
+      period: "/ano",
+      originalPrice: "R$564",
+      savings: "30% OFF",
+      funnelLimit: "Ilimitados",
+      features: [
+        "Funis ilimitados",
+        "Todos os templates inclusos",
+        "Editor visual avançado",
+        "Exportar como imagem/PDF",
+        "Suporte prioritário VIP",
+        "Atualizações automáticas",
+        "Acesso antecipado a novas funcionalidades",
+        "Consultoria personalizada (1h/mês)"
+      ],
+      restrictions: [],
+      buttonText: "Assinar Anual",
+      buttonAction: () => alert("Integração com pagamento em breve"),
+      popular: true,
+      color: "green"
     }
   ];
+
+  const getCardStyle = (plan: any) => {
+    if (plan.popular) {
+      return 'border-2 border-green-500 scale-105 relative';
+    }
+    return 'border border-gray-200';
+  };
+
+  const getButtonStyle = (plan: any) => {
+    switch (plan.color) {
+      case 'green':
+        return 'bg-green-600 hover:bg-green-700 text-white';
+      case 'blue':
+        return 'bg-blue-600 hover:bg-blue-700 text-white';
+      default:
+        return 'bg-gray-600 hover:bg-gray-700 text-white';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -83,37 +106,49 @@ const Pricing = () => {
         </div>
       </header>
 
-      {/* Pricing Section */}
-      <section className="container mx-auto px-6 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Escolha seu plano e comece a criar seus funis agora mesmo
-          </h1>
-          <p className="text-xl text-gray-600">
-            Planos flexíveis para todos os tipos de negócio
-          </p>
-        </div>
+      {/* Hero Section */}
+      <section className="container mx-auto px-6 py-16 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          Escolha o Plano Ideal para Seu Negócio
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          Crie funis visuais profissionais e aumente suas conversões com nossa plataforma completa
+        </p>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+      {/* Pricing Cards */}
+      <section className="container mx-auto px-6 pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
-            <Card key={index} className={`relative ${plan.popular ? 'border-2 border-blue-500 scale-105' : 'border border-gray-200'} hover:shadow-lg transition-all duration-200`}>
+            <Card key={index} className={`${getCardStyle(plan)} hover:shadow-lg transition-all duration-200`}>
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center">
-                    <Star className="w-4 h-4 mr-1" />
+                  <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center">
+                    <Crown className="w-4 h-4 mr-1" />
                     Mais Popular
                   </span>
                 </div>
               )}
               
               <CardHeader className="text-center pb-4">
-                <CardTitle className="text-xl font-bold text-gray-900 mb-2">
+                <CardTitle className="text-2xl font-bold text-gray-900 mb-2">
                   {plan.name}
                 </CardTitle>
-                <div className="flex items-baseline justify-center">
-                  <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
+                
+                <div className="flex items-baseline justify-center mb-2">
+                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                   <span className="text-gray-500 ml-1">{plan.period}</span>
                 </div>
+                
+                {plan.originalPrice && (
+                  <div className="flex items-center justify-center space-x-2">
+                    <span className="text-lg text-gray-400 line-through">{plan.originalPrice}</span>
+                    <span className="bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full font-medium">
+                      {plan.savings}
+                    </span>
+                  </div>
+                )}
+                
                 <p className="text-sm text-gray-600 mt-2">
                   {typeof plan.funnelLimit === 'number' ? `Até ${plan.funnelLimit} funis` : plan.funnelLimit + ' funis'}
                 </p>
@@ -127,11 +162,17 @@ const Pricing = () => {
                       <span className="text-gray-700 text-sm">{feature}</span>
                     </li>
                   ))}
+                  {plan.restrictions.map((restriction, restrictionIndex) => (
+                    <li key={restrictionIndex} className="flex items-start">
+                      <span className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0 text-red-500">✗</span>
+                      <span className="text-gray-500 text-sm">{restriction}</span>
+                    </li>
+                  ))}
                 </ul>
 
                 <Button 
                   onClick={plan.buttonAction}
-                  className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : plan.name === 'Free' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-800 hover:bg-gray-900'} text-white`}
+                  className={`w-full ${getButtonStyle(plan)}`}
                 >
                   {plan.buttonText}
                 </Button>
@@ -141,12 +182,21 @@ const Pricing = () => {
         </div>
 
         {/* Additional Info */}
-        <div className="text-center mt-12 max-w-3xl mx-auto">
+        <div className="text-center mt-12 max-w-4xl mx-auto">
+          <div className="bg-blue-50 p-6 rounded-lg mb-6">
+            <h3 className="text-lg font-semibold text-blue-900 mb-2">
+              💡 Dica: Economize 30% com o Plano Anual
+            </h3>
+            <p className="text-blue-700">
+              Pague apenas R$ 397 ao invés de R$ 564 e tenha acesso completo por um ano inteiro!
+            </p>
+          </div>
+          
           <p className="text-gray-600 mb-4">
-            ✨ Todos os planos incluem acesso completo às funcionalidades de criação de funis
+            ✨ Todos os planos pagos incluem acesso completo às funcionalidades de criação de funis
           </p>
           <p className="text-gray-600">
-            🔒 Pagamento seguro processado pelo Stripe • Cancele a qualquer momento
+            🔒 Pagamento seguro • Cancele a qualquer momento • Suporte em português
           </p>
         </div>
       </section>

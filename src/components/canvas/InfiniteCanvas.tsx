@@ -1,4 +1,3 @@
-
 import { useCallback, useRef, useState, useEffect } from 'react';
 import {
   ReactFlow,
@@ -32,6 +31,8 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { EdgeTypeSelector } from './EdgeTypeSelector';
 import { EdgeType } from '@/types/canvas';
+import { Button } from '@/components/ui/button';
+import { Minimize, Maximize } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -66,6 +67,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
   const [currentEdgeType, setCurrentEdgeType] = useState<EdgeType>('straight');
   const [edgeToDelete, setEdgeToDelete] = useState<string | null>(null);
   const [isTemplateManagerOpen, setIsTemplateManagerOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -335,21 +337,23 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
 
   return (
     <div className="w-full h-screen flex bg-gray-50 dark:bg-gray-900">
-      <CanvasSidebar onAddNode={addNode} />
+      {!isMinimized && <CanvasSidebar onAddNode={addNode} />}
       
       <div className="flex-1 flex flex-col">
-        <CanvasHeader
-          funnelName={funnelName}
-          onFunnelNameChange={onFunnelNameChange}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
-          canUndo={canUndo}
-          canRedo={canRedo}
-          onExportAsImage={exportAsImage}
-          onExportAsPDF={exportAsPDF}
-          onSave={saveFunnel}
-          onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
-        />
+        {!isMinimized && (
+          <CanvasHeader
+            funnelName={funnelName}
+            onFunnelNameChange={onFunnelNameChange}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onExportAsImage={exportAsImage}
+            onExportAsPDF={exportAsPDF}
+            onSave={saveFunnel}
+            onOpenTemplateManager={() => setIsTemplateManagerOpen(true)}
+          />
+        )}
 
         {/* Canvas */}
         <div className="flex-1" ref={reactFlowWrapper}>
@@ -393,18 +397,36 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
                 <span className="text-sm text-gray-600 dark:text-gray-300">
                   {nodes.length} nós • {edges.length} conexões
                 </span>
-                <EdgeTypeSelector 
-                  currentType={currentEdgeType}
-                  onTypeChange={setCurrentEdgeType}
-                />
+                {!isMinimized && (
+                  <EdgeTypeSelector 
+                    currentType={currentEdgeType}
+                    onTypeChange={setCurrentEdgeType}
+                  />
+                )}
               </div>
+            </Panel>
+
+            {/* Minimize/Maximize Button */}
+            <Panel position="top-right">
+              <Button
+                onClick={() => setIsMinimized(!isMinimized)}
+                variant="outline"
+                size="sm"
+                className="bg-white hover:bg-gray-50 shadow-md"
+              >
+                {isMinimized ? (
+                  <Maximize className="w-4 h-4" />
+                ) : (
+                  <Minimize className="w-4 h-4" />
+                )}
+              </Button>
             </Panel>
           </ReactFlow>
         </div>
       </div>
 
       {/* Context Menu */}
-      {contextMenu && (
+      {contextMenu && !isMinimized && (
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
@@ -418,7 +440,7 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
       )}
 
       {/* Content Editor */}
-      {isEditorOpen && selectedNode && (
+      {isEditorOpen && selectedNode && !isMinimized && (
         <ContentEditor
           node={selectedNode}
           isOpen={isEditorOpen}
@@ -452,7 +474,8 @@ const InfiniteCanvasInner = ({ funnelId, funnelName, onFunnelNameChange }: Infin
               Remover
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialogFooter>
+      </AlertDialogContent>
       </AlertDialog>
     </div>
   );

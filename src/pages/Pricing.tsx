@@ -17,6 +17,8 @@ const Pricing = () => {
       return;
     }
 
+    console.log('Selected price ID:', priceId); // Debug log
+
     // Verificar se usuário está logado
     const user = await getCurrentUser();
     if (user?.email) {
@@ -31,6 +33,7 @@ const Pricing = () => {
   };
 
   const handleEmailConfirm = (email: string) => {
+    console.log('Email confirmed, creating payment with price ID:', selectedPriceId); // Debug log
     createPayment(selectedPriceId, email);
     setEmailDialogOpen(false);
   };
@@ -74,7 +77,7 @@ const Pricing = () => {
       buttonText: "Assinar Mensal",
       popular: false,
       color: "blue",
-      priceId: "price_1RdhpHG1GdQ2ZjmFmYXfEFJa"
+      priceId: "price_1RdhpHG1GdQ2ZjmFmYXfEFJa" // PRODUCTION MONTHLY PRICE ID
     },
     {
       name: "Anual",
@@ -99,7 +102,7 @@ const Pricing = () => {
       buttonText: "Assinar Anual",
       popular: true,
       color: "green",
-      priceId: "price_1RdhqYG1GdQ2ZjmFlAOaBr4A"
+      priceId: "price_1RdhqYG1GdQ2ZjmFlAOaBr4A" // PRODUCTION ANNUAL PRICE ID
     }
   ];
 

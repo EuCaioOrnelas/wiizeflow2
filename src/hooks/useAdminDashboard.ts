@@ -13,6 +13,13 @@ interface AdminStats {
   projected_monthly_revenue: number;
 }
 
+interface CreateUserResponse {
+  success?: boolean;
+  error?: string;
+  user_id?: string;
+  message?: string;
+}
+
 export const useAdminDashboard = () => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -188,8 +195,11 @@ export const useAdminDashboard = () => {
         throw error;
       }
 
-      if (data.error) {
-        throw new Error(data.error);
+      // Type guard para verificar se data é um objeto com a propriedade error
+      const response = data as CreateUserResponse;
+
+      if (response?.error) {
+        throw new Error(response.error);
       }
 
       toast({

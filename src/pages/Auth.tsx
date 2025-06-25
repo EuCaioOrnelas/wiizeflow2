@@ -34,11 +34,13 @@ const Auth = () => {
     // Configurar listener de mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth event:', event, 'Session:', session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
           // Redirecionar para dashboard quando autenticado
+          console.log('User authenticated, redirecting to dashboard');
           window.location.href = '/dashboard';
         }
       }
@@ -46,10 +48,12 @@ const Auth = () => {
 
     // Verificar sessão existente
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Existing session check:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
+        console.log('Existing session found, redirecting to dashboard');
         window.location.href = '/dashboard';
       }
     });
@@ -62,12 +66,15 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      console.log('Attempting login for:', email);
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
         if (error.message.includes('Invalid login credentials')) {
           toast({
             title: "Erro de Login",
@@ -80,6 +87,12 @@ const Auth = () => {
             description: "Verifique seu email e clique no link de confirmação.",
             variant: "destructive",
           });
+        } else if (error.message.includes('Invalid URL') || error.message.includes('redirect')) {
+          toast({
+            title: "Erro de Configuração",
+            description: "Problema de configuração de URL. Entre em contato com o suporte.",
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Erro de Login",
@@ -90,12 +103,14 @@ const Auth = () => {
         return;
       }
 
+      console.log('Login successful');
       toast({
         title: "Login realizado!",
         description: "Redirecionando para o dashboard...",
       });
       
     } catch (error: any) {
+      console.error('Unexpected login error:', error);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro inesperado. Tente novamente.",
@@ -121,7 +136,13 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      console.log('Attempting signup for:', email);
+      
+      // Detectar se estamos em produção ou desenvolvimento
+      const currentOrigin = window.location.origin;
+      const redirectUrl = `${currentOrigin}/`;
+      
+      console.log('Using redirect URL:', redirectUrl);
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -135,6 +156,7 @@ const Auth = () => {
       });
 
       if (error) {
+        console.error('Signup error:', error);
         if (error.message.includes('User already registered')) {
           toast({
             title: "Email já cadastrado",
@@ -157,6 +179,7 @@ const Auth = () => {
         return;
       }
 
+      console.log('Signup successful');
       toast({
         title: "Conta criada com sucesso!",
         description: "Verifique seu email para confirmar sua conta e fazer login.",
@@ -169,6 +192,7 @@ const Auth = () => {
       setIsLogin(true);
       
     } catch (error: any) {
+      console.error('Unexpected signup error:', error);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro inesperado. Tente novamente.",

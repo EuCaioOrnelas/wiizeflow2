@@ -43,14 +43,14 @@ serve(async (req) => {
     const checkoutEmail = customerEmail && customerEmail.trim() !== "" ? customerEmail : "guest@wiizeflow.com";
     console.log('Using email for checkout:', checkoutEmail);
 
-    // Determine plan details based on price ID
+    // Determine plan details based on price ID (UPDATED FOR PRODUCTION)
     let planName = "Plano Desconhecido";
     let amount = 0;
     
-    if (priceId === "price_1RdfWZQFkphRyjSA3oNlNfiK") {
+    if (priceId === "price_1RdhpHG1GdQ2ZjmFmYXfEFJa") {
       planName = "Mensal";
       amount = 4700; // R$ 47,00 em centavos
-    } else if (priceId === "price_1RdfX2QFkphRyjSANdSPAZUq") {
+    } else if (priceId === "price_1RdhqYG1GdQ2ZjmFlAOaBr4A") {
       planName = "Anual";
       amount = 39700; // R$ 397,00 em centavos
     }

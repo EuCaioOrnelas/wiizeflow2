@@ -1,11 +1,10 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Target, LogOut, Camera, CreditCard, Upload } from "lucide-react";
+import { Target, LogOut, Camera, CreditCard, Upload, MessageCircle, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
@@ -164,31 +163,46 @@ const Account = () => {
     setUploadingPhoto(true);
     
     try {
-      // Upload da imagem para o Supabase Storage
+      // Delete old avatar if exists
+      if (avatarUrl) {
+        const oldPath = avatarUrl.split('/').pop();
+        if (oldPath) {
+          await supabase.storage
+            .from('avatars')
+            .remove([`${user.id}/${oldPath}`]);
+        }
+      }
+
+      // Upload new image to Supabase Storage
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
+        console.error('Upload error:', uploadError);
         throw uploadError;
       }
 
-      // Obter URL pública da imagem
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Atualizar perfil com nova URL do avatar
+      // Update profile with new avatar URL
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
         .eq('id', user.id);
 
       if (updateError) {
+        console.error('Update error:', updateError);
         throw updateError;
       }
 
@@ -204,7 +218,7 @@ const Account = () => {
       console.error('Error uploading photo:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível alterar a foto de perfil.",
+        description: error.message || "Não foi possível alterar a foto de perfil.",
         variant: "destructive",
       });
     } finally {
@@ -213,7 +227,6 @@ const Account = () => {
   };
 
   const handleUpgrade = () => {
-    // Redirecionar para seção de preços na página inicial
     window.location.href = '/#pricing-section';
   };
 
@@ -235,6 +248,28 @@ const Account = () => {
     }
   };
 
+  const getSupportInfo = () => {
+    if (profile?.plan_type === 'monthly' || profile?.plan_type === 'annual') {
+      return {
+        type: 'premium',
+        title: 'Suporte Premium',
+        description: 'WhatsApp e Email',
+        contact: '+55 (11) 99999-9999',
+        email: 'support@wiizeflow.com.br',
+        icon: MessageCircle
+      };
+    } else {
+      return {
+        type: 'free',
+        title: 'Suporte Gratuito',
+        description: 'Email apenas',
+        contact: null,
+        email: 'support@wiizeflow.com.br',
+        icon: Mail
+      };
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
@@ -247,6 +282,8 @@ const Account = () => {
   if (!user || !profile) {
     return <div>Carregando...</div>;
   }
+
+  const supportInfo = getSupportInfo();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -366,27 +403,82 @@ const Account = () => {
               </CardContent>
             </Card>
 
-            {/* Plan Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Plano Atual</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getPlanColor(profile.plan_type)}`}>
-                  {getPlanName(profile.plan_type)}
-                </div>
+            <div className="space-y-6">
+              {/* Plan Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Plano Atual</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getPlanColor(profile.plan_type)}`}>
+                    {getPlanName(profile.plan_type)}
+                  </div>
 
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">Status</p>
-                  <span className="text-lg font-semibold text-green-600">Ativo</span>
-                </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">Status</p>
+                    <span className="text-lg font-semibold text-green-600">Ativo</span>
+                  </div>
 
-                <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700">
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  {profile.plan_type === 'free' ? 'Fazer Upgrade' : 'Gerenciar Plano'}
-                </Button>
-              </CardContent>
-            </Card>
+                  <Button onClick={handleUpgrade} className="w-full bg-green-600 hover:bg-green-700">
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    {profile.plan_type === 'free' ? 'Fazer Upgrade' : 'Gerenciar Plano'}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Support Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <supportInfo.icon className="w-5 h-5 mr-2" />
+                    {supportInfo.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600">{supportInfo.description}</p>
+                  
+                  {supportInfo.contact && (
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <MessageCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm">WhatsApp:</span>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="w-full"
+                        onClick={() => window.open(`https://wa.me/5511999999999?text=Olá, preciso de suporte técnico.`, '_blank')}
+                      >
+                        {supportInfo.contact}
+                      </Button>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Mail className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">Email:</span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="w-full"
+                      onClick={() => window.open(`mailto:${supportInfo.email}?subject=Suporte WiizeFlow`, '_blank')}
+                    >
+                      {supportInfo.email}
+                    </Button>
+                  </div>
+
+                  {profile.plan_type === 'free' && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                      <p className="text-xs text-blue-700 text-center">
+                        Upgrade para ter suporte prioritário via WhatsApp
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>

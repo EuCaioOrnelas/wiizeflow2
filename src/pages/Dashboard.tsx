@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -225,7 +224,7 @@ const Dashboard = () => {
   };
 
   const handleUpgrade = () => {
-    navigate('/sales');
+    window.location.href = '/#pricing-section';
   };
 
   const handleAccount = () => {
@@ -318,7 +317,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {/* Usage Stats - Agora com 3 cards em vez de 4 */}
+        {/* Usage Stats - 3 cards layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">

@@ -11,6 +11,8 @@ const Pricing = () => {
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
   const handlePlanClick = async (priceId: string | null) => {
+    console.log('Plan clicked with priceId:', priceId);
+    
     if (!priceId) {
       // Plano gratuito - redirecionar para página de cadastro/auth
       window.location.href = '/auth';
@@ -22,9 +24,11 @@ const Pricing = () => {
     if (user?.email) {
       // Usuário logado - usar email da sessão
       console.log('User logged in, using session email:', user.email);
+      console.log('Creating payment with priceId:', priceId);
       createPayment(priceId, user.email);
     } else {
       // Usuário não logado - abrir popup para capturar email
+      console.log('User not logged in, opening email dialog for priceId:', priceId);
       setSelectedPriceId(priceId);
       setEmailDialogOpen(true);
     }

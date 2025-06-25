@@ -28,6 +28,7 @@ serve(async (req) => {
     // Initialize Stripe
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     console.log('Stripe key exists:', !!stripeKey);
+    console.log('Stripe key starts with:', stripeKey ? stripeKey.substring(0, 7) : 'undefined');
     
     if (!stripeKey) {
       throw new Error("STRIPE_SECRET_KEY not configured");
@@ -39,11 +40,22 @@ serve(async (req) => {
 
     console.log('Creating checkout session for price:', priceId);
 
+    // Validate that we have a valid production price ID
+    const validPriceIds = [
+      "price_1RdhpHG1GdQ2ZjmFmYXfEFJa", // Mensal
+      "price_1RdhqYG1GdQ2ZjmFlAOaBr4A"  // Anual
+    ];
+    
+    if (!validPriceIds.includes(priceId)) {
+      console.error('Invalid price ID received:', priceId);
+      throw new Error(`Invalid price ID: ${priceId}`);
+    }
+
     // Use the provided email or fall back to a guest email
     const checkoutEmail = customerEmail && customerEmail.trim() !== "" ? customerEmail : "guest@wiizeflow.com";
     console.log('Using email for checkout:', checkoutEmail);
 
-    // Determine plan details based on price ID (UPDATED FOR PRODUCTION)
+    // Determine plan details based on price ID (PRODUCTION PRICE IDS)
     let planName = "Plano Desconhecido";
     let amount = 0;
     
@@ -53,6 +65,21 @@ serve(async (req) => {
     } else if (priceId === "price_1RdhqYG1GdQ2ZjmFlAOaBr4A") {
       planName = "Anual";
       amount = 39700; // R$ 397,00 em centavos
+    }
+
+    console.log('Plan details:', { planName, amount, priceId });
+
+    // Verify the price exists in Stripe before creating session
+    try {
+      const price = await stripe.prices.retrieve(priceId);
+      console.log('Price verified in Stripe:', { id: price.id, active: price.active });
+      
+      if (!price.active) {
+        throw new Error(`Price ${priceId} is not active in Stripe`);
+      }
+    } catch (stripeError) {
+      console.error('Error verifying price in Stripe:', stripeError);
+      throw new Error(`Price ${priceId} not found in Stripe. Please verify the price exists in production mode.`);
     }
 
     // Create a subscription payment session
@@ -71,7 +98,7 @@ serve(async (req) => {
       billing_address_collection: "required",
     });
 
-    console.log('Checkout session created:', session.id);
+    console.log('Checkout session created successfully:', session.id);
     console.log('Checkout URL:', session.url);
 
     // Initialize Supabase client with service role key to save order data

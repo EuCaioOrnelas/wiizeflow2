@@ -311,8 +311,8 @@ const Index = () => {
                 Usado por 5.000+ empresários brasileiros
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Crie Funis de Vendas que 
-                <span className="text-blue-600 block">Convertem 300% Mais</span>
+                Triplique suas Vendas com 
+                <span className="text-blue-600 block">Funis Visuais</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 A primeira ferramenta brasileira que transforma sua estratégia de marketing digital em 

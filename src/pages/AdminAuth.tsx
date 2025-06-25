@@ -24,28 +24,51 @@ const AdminAuth = () => {
     // Configurar listener de mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Verificar se o usuário é admin
-          const { data: adminCheck } = await supabase
-            .from('admin_users')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .single();
-
-          if (adminCheck) {
-            // Redirecionar para admin dashboard
+          // Verificar se o usuário é admin pelo email
+          if (session.user.email === 'adminwiize@wiizeflow.com.br') {
+            console.log('Admin user logged in, redirecting to admin dashboard');
             navigate('/admin');
-          } else {
-            // Usuário não é admin, fazer logout
-            await supabase.auth.signOut();
-            toast({
-              title: "Acesso Negado",
-              description: "Apenas administradores podem acessar esta área.",
-              variant: "destructive",
-            });
+            return;
+          }
+
+          // Tentar verificar se o usuário é admin na tabela
+          try {
+            const { data: adminCheck } = await supabase
+              .from('admin_users')
+              .select('id')
+              .eq('user_id', session.user.id)
+              .maybeSingle();
+
+            if (adminCheck) {
+              navigate('/admin');
+            } else {
+              // Usuário não é admin, fazer logout
+              await supabase.auth.signOut();
+              toast({
+                title: "Acesso Negado",
+                description: "Apenas administradores podem acessar esta área.",
+                variant: "destructive",
+              });
+            }
+          } catch (error) {
+            console.error('Error checking admin status:', error);
+            
+            // Se houver erro mas é o email admin, permitir acesso
+            if (session.user.email === 'adminwiize@wiizeflow.com.br') {
+              navigate('/admin');
+            } else {
+              await supabase.auth.signOut();
+              toast({
+                title: "Erro",
+                description: "Erro ao verificar permissões de administrador.",
+                variant: "destructive",
+              });
+            }
           }
         }
       }
@@ -53,21 +76,34 @@ const AdminAuth = () => {
 
     // Verificar sessão existente
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      console.log('Existing session:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Verificar se o usuário é admin
-        const { data: adminCheck } = await supabase
-          .from('admin_users')
-          .select('id')
-          .eq('user_id', session.user.id)
-          .single();
-
-        if (adminCheck) {
+        // Verificar se o usuário é admin pelo email primeiro
+        if (session.user.email === 'adminwiize@wiizeflow.com.br') {
           navigate('/admin');
-        } else {
-          await supabase.auth.signOut();
+          return;
+        }
+
+        try {
+          const { data: adminCheck } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+
+          if (adminCheck) {
+            navigate('/admin');
+          } else {
+            await supabase.auth.signOut();
+          }
+        } catch (error) {
+          console.error('Error checking existing session admin status:', error);
+          if (session.user.email !== 'adminwiize@wiizeflow.com.br') {
+            await supabase.auth.signOut();
+          }
         }
       }
     });
@@ -80,12 +116,17 @@ const AdminAuth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log('Attempting login with email:', email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log('Login result:', data, error);
+
       if (error) {
+        console.error('Login error:', error);
         if (error.message.includes('Invalid login credentials')) {
           toast({
             title: "Erro de Login",
@@ -102,9 +143,12 @@ const AdminAuth = () => {
         return;
       }
 
+      console.log('Login successful for:', data.user?.email);
+      
       // A verificação de admin será feita no useEffect através do onAuthStateChange
       
     } catch (error: any) {
+      console.error('Unexpected login error:', error);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro inesperado. Tente novamente.",

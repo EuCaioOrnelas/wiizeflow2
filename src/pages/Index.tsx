@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
@@ -7,11 +6,69 @@ import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3,
 import { usePayment } from "@/hooks/usePayment";
 import { useState } from "react";
 import EmailCaptureDialog from "@/components/EmailCaptureDialog";
+import { useSEO } from "@/hooks/useSEO";
 
 const Index = () => {
   const { createPayment, getCurrentUser, loading } = usePayment();
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
+
+  // SEO otimizado para conversão
+  useSEO({
+    title: "WiizeFlow - Ferramenta de Funis de Vendas Visual | Aumente suas Conversões em 300%",
+    description: "Crie funis de vendas visuais profissionais com drag-and-drop. Aumente suas conversões, otimize sua estratégia de marketing digital e triplique suas vendas. Templates prontos + Editor visual + Análises detalhadas. Teste grátis!",
+    keywords: "funil de vendas, marketing digital, conversão, CRM, automação de vendas, estratégia de vendas, landing page, lead generation, marketing automation, vendas online, ROI, otimização conversão, jornada do cliente, pipeline vendas, growth hacking, inbound marketing, outbound marketing, vendas B2B, vendas B2C, e-commerce, infoprodutos, curso online, consultoria, agência marketing, empreendedorismo, negócio digital, monetização, receita recorrente, LTV, CAC, métricas vendas, dashboard vendas, relatórios vendas, análise performance",
+    ogTitle: "WiizeFlow - Triplique suas Vendas com Funis Visuais Profissionais",
+    ogDescription: "A primeira ferramenta brasileira para criar funis de vendas visuais. Aumente conversões em 300%, economize 15h/semana. +5.000 empresários já usam. Teste grátis!",
+    ogImage: "https://lovable.dev/opengraph-image-p98pqg.png",
+    canonicalUrl: "https://wiizeflow.com/",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "WiizeFlow",
+      "description": "Ferramenta visual para criação de funis de vendas profissionais com drag-and-drop",
+      "url": "https://wiizeflow.com",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Plano Gratuito",
+          "price": "0",
+          "priceCurrency": "BRL",
+          "description": "Até 2 funis com funcionalidades básicas"
+        },
+        {
+          "@type": "Offer",
+          "name": "Plano Mensal",
+          "price": "47",
+          "priceCurrency": "BRL",
+          "description": "Funis ilimitados com todas as funcionalidades"
+        },
+        {
+          "@type": "Offer",
+          "name": "Plano Anual",
+          "price": "397",
+          "priceCurrency": "BRL",
+          "description": "Plano anual com 30% de desconto e benefícios exclusivos"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "5000",
+        "bestRating": "5"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "WiizeFlow",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://wiizeflow.com/lovable-uploads/7f16165c-d306-4571-8b04-5c0136a778b4.png"
+        }
+      }
+    }
+  });
 
   const handleGetStarted = () => {
     window.location.href = '/auth';
@@ -222,7 +279,7 @@ const Index = () => {
           <div className="flex items-center space-x-3">
             <img 
               src="/lovable-uploads/7f16165c-d306-4571-8b04-5c0136a778b4.png" 
-              alt="WiizeFlow Logo" 
+              alt="WiizeFlow - Ferramenta de Funis de Vendas" 
               className="w-8 h-8"
             />
             <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
@@ -244,23 +301,23 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - Otimizado para SEO */}
       <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-100 py-20">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
                 <PlayCircle className="w-4 h-4 mr-2" />
-                Usado por 5.000+ empresários
+                Usado por 5.000+ empresários brasileiros
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                Visualize, Otimize e 
-                <span className="text-blue-600 block">Triplique suas Vendas</span>
+                Crie Funis de Vendas que 
+                <span className="text-blue-600 block">Convertem 300% Mais</span>
               </h1>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                A primeira plataforma brasileira que transforma sua estratégia de vendas em 
-                funis visuais profissionais. Identifique gargalos, otimize conversões e 
-                aumente seu faturamento de forma sistemática.
+                A primeira ferramenta brasileira que transforma sua estratégia de marketing digital em 
+                funis visuais profissionais. Otimize conversões, aumente ROI e 
+                escale seu negócio com automação inteligente.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -269,7 +326,7 @@ const Index = () => {
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  Criar Meu Primeiro Funil Grátis
+                  Criar Meu Funil de Vendas Grátis
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Button 
@@ -289,11 +346,11 @@ const Index = () => {
                   <div className="text-sm text-gray-600">Funis Criados</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">280%</div>
-                  <div className="text-sm text-gray-600">Aumento Médio</div>
+                  <div className="text-2xl font-bold text-gray-900">300%</div>
+                  <div className="text-sm text-gray-600">+ Conversões</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">30 min</div>
+                  <div className="text-2xl font-bold text-gray-900">15min</div>
                   <div className="text-sm text-gray-600">Para Criar</div>
                 </div>
               </div>
@@ -310,16 +367,16 @@ const Index = () => {
                         <p className="text-sm font-medium text-gray-800">Editor Visual Drag & Drop</p>
                       </div>
                       <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-                        <p className="text-sm font-medium text-gray-800">Templates Profissionais</p>
+                        <p className="text-sm font-medium text-gray-800">Templates de Conversão</p>
                       </div>
                       <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
-                        <p className="text-sm font-medium text-gray-800">Análises em Tempo Real</p>
+                        <p className="text-sm font-medium text-gray-800">Análise de Performance</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 text-center">
-                  Interface 100% intuitiva - Nenhum conhecimento técnico necessário
+                  Interface 100% intuitiva - Sem conhecimento técnico
                 </p>
               </div>
             </div>
@@ -327,43 +384,43 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Problem Section */}
+      {/* Problem Section - Otimizado com palavras-chave de dor */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Por que 87% dos negócios online falham?
+              Por que 87% dos negócios digitais falham?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A resposta está na falta de clareza sobre a jornada do cliente. Sem visualizar o processo, é impossível otimizar.
+              O problema não é falta de tráfego ou produto ruim. É a ausência de uma estratégia visual clara para converter visitantes em clientes.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             <div className="bg-white p-8 rounded-xl shadow-lg text-center border-l-4 border-red-500">
               <div className="text-6xl mb-4">📉</div>
-              <h3 className="text-xl font-semibold mb-3 text-red-600">Vendas Estagnadas</h3>
-              <p className="text-gray-600">Você sabe que tem um bom produto, mas as vendas não decolam. O problema não é o produto, é o processo.</p>
+              <h3 className="text-xl font-semibold mb-3 text-red-600">Baixa Taxa de Conversão</h3>
+              <p className="text-gray-600">Você investe em marketing digital mas não consegue converter visitantes em clientes pagantes. O funil está furado.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-lg text-center border-l-4 border-orange-500">
               <div className="text-6xl mb-4">🤯</div>
-              <h3 className="text-xl font-semibold mb-3 text-orange-600">Estratégia Confusa</h3>
-              <p className="text-gray-600">Sua equipe não consegue entender ou executar sua estratégia porque ela existe apenas na sua cabeça.</p>
+              <h3 className="text-xl font-semibold mb-3 text-orange-600">Jornada do Cliente Confusa</h3>
+              <p className="text-gray-600">Sua equipe não entende o processo de vendas porque não existe uma visualização clara da estratégia.</p>
             </div>
             <div className="bg-white p-8 rounded-xl shadow-lg text-center border-l-4 border-yellow-500">
               <div className="text-6xl mb-4">💸</div>
-              <h3 className="text-xl font-semibold mb-3 text-yellow-600">Dinheiro Desperdiçado</h3>
-              <p className="text-gray-600">Você investe em tráfego pago, mas não sabe exatamente onde os clientes abandonam sua jornada.</p>
+              <h3 className="text-xl font-semibold mb-3 text-yellow-600">ROI Negativo</h3>
+              <p className="text-gray-600">Você gasta com tráfego pago mas não sabe onde os leads abandonam sua jornada de compra.</p>
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-red-50 to-orange-50 p-8 rounded-xl border border-red-200">
             <div className="text-center">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                O Resultado? Prejuízo de R$ 50.000+ por ano
+                Resultado: Prejuízo de R$ 50.000+ por ano em oportunidades perdidas
               </h3>
               <p className="text-lg text-gray-700">
-                Esse é o valor médio que empresários perdem anualmente por não ter clareza sobre sua estratégia de vendas.
+                Esse é o valor médio que empreendedores perdem anualmente por não ter clareza sobre sua estratégia de conversão.
               </p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Target, Zap, Users, ArrowRight, BarChart3, 
@@ -39,6 +40,13 @@ const Index = () => {
   const handleEmailConfirm = (email: string) => {
     createPayment(selectedPriceId, email);
     setEmailDialogOpen(false);
+  };
+
+  const handlePricingScroll = () => {
+    const pricingSection = document.getElementById('pricing-section');
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const plans = [
@@ -211,11 +219,18 @@ const Index = () => {
       {/* Header */}
       <header className="border-b bg-white sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Target className="w-8 h-8 text-blue-600" />
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/7f16165c-d306-4571-8b04-5c0136a778b4.png" 
+              alt="WiizeFlow Logo" 
+              className="w-8 h-8"
+            />
             <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           <div className="flex items-center space-x-4">
+            <Button variant="ghost" onClick={handlePricingScroll}>
+              Preços
+            </Button>
             <Button variant="ghost" onClick={() => window.location.href = '/contact'}>
               Contato
             </Button>
@@ -381,26 +396,26 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-20 bg-blue-600 text-white">
+      {/* Benefits Section - Cards brancos com conteúdo visível */}
+      <section className="py-20 bg-green-600 text-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-6">
               Resultados Reais dos Nossos Clientes
             </h2>
-            <p className="text-xl text-blue-100">
+            <p className="text-xl text-green-100">
               Empresários como você já transformaram seus negócios com o WiizeFlow
             </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8 mb-16">
             {benefits.map((benefit, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-sm p-8 rounded-xl">
-                <div className="bg-white/20 p-4 rounded-lg w-fit mb-6">
+              <div key={index} className="bg-white p-8 rounded-xl shadow-lg">
+                <div className="bg-green-100 p-4 rounded-lg w-fit mb-6">
                   {benefit.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-4">{benefit.title}</h3>
-                <p className="text-blue-100 leading-relaxed">{benefit.description}</p>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">{benefit.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </div>
             ))}
           </div>
@@ -410,7 +425,7 @@ const Index = () => {
               onClick={handleGetStarted}
               size="lg"
               variant="secondary"
-              className="bg-white text-blue-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold shadow-lg"
+              className="bg-white text-green-600 hover:bg-gray-50 px-8 py-4 text-lg font-semibold shadow-lg"
             >
               Quero Esses Resultados Também
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -456,7 +471,7 @@ const Index = () => {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
+      <section id="pricing-section" className="py-20 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
@@ -660,8 +675,12 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-2">
-              <div className="flex items-center space-x-2 mb-4">
-                <Target className="w-8 h-8 text-blue-400" />
+              <div className="flex items-center space-x-3 mb-4">
+                <img 
+                  src="/lovable-uploads/7f16165c-d306-4571-8b04-5c0136a778b4.png" 
+                  alt="WiizeFlow Logo" 
+                  className="w-8 h-8"
+                />
                 <span className="text-2xl font-bold">WiizeFlow</span>
               </div>
               <p className="text-gray-300 mb-4 leading-relaxed">

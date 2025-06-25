@@ -1,11 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Target, LogOut, Camera, CreditCard } from "lucide-react";
+import { Target, LogOut, Camera, CreditCard, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
@@ -18,6 +18,9 @@ const Account = () => {
   const [newName, setNewName] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(true);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -69,6 +72,7 @@ const Account = () => {
 
       setProfile(data);
       setNewName(data.name || '');
+      setAvatarUrl(data.avatar_url || '');
       
     } catch (error) {
       console.error('Error loading user profile:', error);
@@ -153,8 +157,64 @@ const Account = () => {
     }
   };
 
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploadingPhoto(true);
+    
+    try {
+      // Upload da imagem para o Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Obter URL pública da imagem
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Atualizar perfil com nova URL do avatar
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      setAvatarUrl(publicUrl);
+      setProfile({ ...profile, avatar_url: publicUrl });
+      
+      toast({
+        title: "Foto atualizada",
+        description: "Sua foto de perfil foi alterada com sucesso.",
+      });
+
+    } catch (error: any) {
+      console.error('Error uploading photo:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível alterar a foto de perfil.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
   const handleUpgrade = () => {
-    window.location.href = '/sales';
+    // Redirecionar para seção de preços na página inicial
+    window.location.href = '/#pricing-section';
   };
 
   const getPlanColor = (plan: string) => {
@@ -193,14 +253,18 @@ const Account = () => {
       {/* Header */}
       <header className="bg-white border-b">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Target className="w-8 h-8 text-green-600" />
+          <div className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/7f16165c-d306-4571-8b04-5c0136a778b4.png" 
+              alt="WiizeFlow Logo" 
+              className="w-8 h-8"
+            />
             <span className="text-2xl font-bold text-gray-900">WiizeFlow</span>
           </div>
           
           <div className="flex items-center space-x-4">
             <Button variant="outline" onClick={() => window.location.href = '/dashboard'}>
-              Dashboard
+              Painel
             </Button>
             <Button variant="outline" onClick={handleLogout} size="sm">
               <LogOut className="w-4 h-4 mr-2" />
@@ -224,15 +288,33 @@ const Account = () => {
               <CardContent className="space-y-6">
                 <div className="flex items-center space-x-4">
                   <Avatar className="w-20 h-20">
-                    <AvatarImage src="" />
+                    <AvatarImage src={avatarUrl} />
                     <AvatarFallback className="text-lg">
                       {profile.name?.charAt(0)?.toUpperCase() || user.email?.charAt(0)?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <Button variant="outline" size="sm">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Alterar Foto
-                  </Button>
+                  <div className="space-y-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingPhoto}
+                    >
+                      {uploadingPhoto ? (
+                        <Upload className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Camera className="w-4 h-4 mr-2" />
+                      )}
+                      {uploadingPhoto ? 'Enviando...' : 'Alterar Foto'}
+                    </Button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-4">

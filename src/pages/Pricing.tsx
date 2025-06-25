@@ -31,6 +31,7 @@ const Pricing = () => {
   };
 
   const handleEmailConfirm = (email: string) => {
+    console.log('Email confirmed, creating payment for:', email, 'with priceId:', selectedPriceId);
     createPayment(selectedPriceId, email);
     setEmailDialogOpen(false);
   };

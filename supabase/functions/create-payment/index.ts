@@ -43,7 +43,7 @@ serve(async (req) => {
     const checkoutEmail = customerEmail && customerEmail.trim() !== "" ? customerEmail : "guest@wiizeflow.com";
     console.log('Using email for checkout:', checkoutEmail);
 
-    // Determine plan details based on price ID (UPDATED FOR PRODUCTION)
+    // Determine plan details based on price ID (UPDATED PRICE IDS)
     let planName = "Plano Desconhecido";
     let amount = 0;
     
@@ -54,6 +54,8 @@ serve(async (req) => {
       planName = "Anual";
       amount = 39700; // R$ 397,00 em centavos
     }
+
+    console.log('Plan details:', { planName, amount, priceId });
 
     // Create a subscription payment session
     const session = await stripe.checkout.sessions.create({
@@ -92,6 +94,7 @@ serve(async (req) => {
       
       if (!userError && users && users.length > 0) {
         userId = users[0].id;
+        console.log('Found user ID for email:', userId);
       }
     } catch (userFetchError) {
       console.log('Could not fetch user ID, continuing without it:', userFetchError);

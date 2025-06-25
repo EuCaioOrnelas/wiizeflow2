@@ -74,7 +74,7 @@ const Pricing = () => {
       buttonText: "Assinar Mensal",
       popular: false,
       color: "blue",
-      priceId: "price_1QaABcDefGhIjKlMnOpQrStU" // Test Price ID for monthly
+      priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
     },
     {
       name: "Anual",
@@ -99,7 +99,7 @@ const Pricing = () => {
       buttonText: "Assinar Anual",
       popular: true,
       color: "green",
-      priceId: "price_1QaABcDefGhIjKlMnOpQrSt2" // Test Price ID for yearly
+      priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
     }
   ];
 

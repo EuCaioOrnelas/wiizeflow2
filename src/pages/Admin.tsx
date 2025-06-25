@@ -14,14 +14,15 @@ import {
   CreditCard,
   Gift,
   RefreshCw,
-  ArrowLeft
+  ArrowLeft,
+  LogOut
 } from "lucide-react";
 import { useAdminDashboard } from "@/hooks/useAdminDashboard";
 import { supabase } from "@/integrations/supabase/client";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { stats, loading, isAdmin, refreshStats } = useAdminDashboard();
+  const { stats, loading, isAdmin, logout, refreshStats } = useAdminDashboard();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ const Admin = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/auth');
+        navigate('/admin-auth');
       }
     };
     
@@ -71,9 +72,9 @@ const Admin = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Você não tem permissão para acessar esta área.
           </p>
-          <Button onClick={() => navigate('/')} variant="outline">
+          <Button onClick={() => navigate('/admin-auth')} variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao Início
+            Ir para Login Admin
           </Button>
         </div>
       </div>
@@ -109,6 +110,10 @@ const Admin = () => {
             <Button variant="outline" onClick={() => navigate('/')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Site
+            </Button>
+            <Button variant="destructive" onClick={logout} size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
             </Button>
           </div>
         </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface AdminStats {
   online_users: number;
@@ -17,16 +18,23 @@ export const useAdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkAdminStatus();
+  }, []);
+
+  useEffect(() => {
     if (isAdmin) {
       loadDashboardStats();
       // Refresh stats every 30 seconds
       const interval = setInterval(loadDashboardStats, 30000);
       return () => clearInterval(interval);
+    } else if (loading === false && !isAdmin) {
+      // Se não é admin e terminou de carregar, redirecionar para login admin
+      navigate('/admin-auth');
     }
-  }, [isAdmin]);
+  }, [isAdmin, loading, navigate]);
 
   const checkAdminStatus = async () => {
     try {
@@ -34,20 +42,31 @@ export const useAdminDashboard = () => {
       
       if (!user) {
         setLoading(false);
+        navigate('/admin-auth');
         return;
       }
 
       const { data: adminCheck } = await supabase
         .from('admin_users')
-        .select('id')
+        .select('id, role')
         .eq('user_id', user.id)
         .single();
 
       setIsAdmin(!!adminCheck);
       setLoading(false);
+
+      if (!adminCheck) {
+        toast({
+          title: "Acesso Negado",
+          description: "Você não tem permissão para acessar esta área.",
+          variant: "destructive",
+        });
+        navigate('/admin-auth');
+      }
     } catch (error) {
       console.error('Error checking admin status:', error);
       setLoading(false);
+      navigate('/admin-auth');
     }
   };
 
@@ -86,10 +105,16 @@ export const useAdminDashboard = () => {
     }
   };
 
+  const logout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin-auth');
+  };
+
   return {
     stats,
     loading,
     isAdmin,
+    logout,
     refreshStats: loadDashboardStats
   };
 };

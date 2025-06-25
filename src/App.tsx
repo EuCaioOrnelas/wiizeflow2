@@ -10,6 +10,7 @@ import Builder from "./pages/Builder";
 import Pricing from "./pages/Pricing";
 import Account from "./pages/Account";
 import Auth from "./pages/Auth";
+import AdminAuth from "./pages/AdminAuth";
 import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -29,6 +30,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/admin-auth" element={<AdminAuth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/builder/:id" element={<Builder />} />
           <Route path="/pricing" element={<Pricing />} />

@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Target, Crown } from "lucide-react";
@@ -11,8 +12,6 @@ const Pricing = () => {
   const [selectedPriceId, setSelectedPriceId] = useState<string>("");
 
   const handlePlanClick = async (priceId: string | null) => {
-    console.log('Plan clicked with priceId:', priceId);
-    
     if (!priceId) {
       // Plano gratuito - redirecionar para página de cadastro/auth
       window.location.href = '/auth';
@@ -24,18 +23,15 @@ const Pricing = () => {
     if (user?.email) {
       // Usuário logado - usar email da sessão
       console.log('User logged in, using session email:', user.email);
-      console.log('Creating payment with priceId:', priceId);
       createPayment(priceId, user.email);
     } else {
       // Usuário não logado - abrir popup para capturar email
-      console.log('User not logged in, opening email dialog for priceId:', priceId);
       setSelectedPriceId(priceId);
       setEmailDialogOpen(true);
     }
   };
 
   const handleEmailConfirm = (email: string) => {
-    console.log('Email confirmed, creating payment for:', email, 'with priceId:', selectedPriceId);
     createPayment(selectedPriceId, email);
     setEmailDialogOpen(false);
   };
@@ -79,7 +75,7 @@ const Pricing = () => {
       buttonText: "Assinar Mensal",
       popular: false,
       color: "blue",
-      priceId: "price_1RdhpHG1GdQ2ZjmFmYXfEFJa"
+      priceId: "price_1RdfWZQFkphRyjSA3oNlNfiK"
     },
     {
       name: "Anual",
@@ -104,7 +100,7 @@ const Pricing = () => {
       buttonText: "Assinar Anual",
       popular: true,
       color: "green",
-      priceId: "price_1RdhqYG1GdQ2ZjmFlAOaBr4A"
+      priceId: "price_1RdfX2QFkphRyjSANdSPAZUq"
     }
   ];
 

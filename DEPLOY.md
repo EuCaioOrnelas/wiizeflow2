@@ -7,15 +7,15 @@ Acesse: https://supabase.com/dashboard/project/ndrxhyrjjybnsohxykbq/auth/url-con
 
 ### Site URL
 ```
-https://seu-projeto.vercel.app
+https://appwiizeflow.vercel.app
 ```
 
 ### Redirect URLs (adicione todas estas URLs):
 ```
-https://seu-projeto.vercel.app/
-https://seu-projeto.vercel.app/**
-https://seu-projeto.vercel.app/auth
-https://seu-projeto.vercel.app/dashboard
+https://appwiizeflow.vercel.app/
+https://appwiizeflow.vercel.app/**
+https://appwiizeflow.vercel.app/auth
+https://appwiizeflow.vercel.app/dashboard
 http://localhost:5173/**
 http://localhost:3000/**
 ```
@@ -53,7 +53,7 @@ git push origin main
 
 ## 5. Após o Deploy
 
-1. Atualize a Site URL no Supabase com sua URL real do Vercel
+1. Atualize a Site URL no Supabase com: https://appwiizeflow.vercel.app
 2. Teste o login/registro
 3. Teste os pagamentos
 
@@ -68,9 +68,9 @@ git push origin main
 - Verifique os logs das Edge Functions no dashboard
 
 ### Emails de confirmação com links errados
-- Verifique se a Site URL no Supabase está correta
+- Verifique se a Site URL no Supabase está correta: https://appwiizeflow.vercel.app
 - Para desenvolvimento, use localhost:5173
-- Para produção, use sua URL do Vercel
+- Para produção, use: https://appwiizeflow.vercel.app
 
 ## URLs Importantes
 
@@ -78,4 +78,6 @@ git push origin main
 - URL Configuration: https://supabase.com/dashboard/project/ndrxhyrjjybnsohxykbq/auth/url-configuration
 - Edge Functions: https://supabase.com/dashboard/project/ndrxhyrjjybnsohxykbq/functions
 - Secrets: https://supabase.com/dashboard/project/ndrxhyrjjybnsohxykbq/settings/functions
-```
+
+## URL de Produção
+- Site Principal: https://appwiizeflow.vercel.app

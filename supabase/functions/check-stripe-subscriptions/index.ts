@@ -69,7 +69,7 @@ serve(async (req) => {
           stripeSubscriptionId = subscription.id;
           subscriptionExpiresAt = new Date(subscription.current_period_end * 1000).toISOString();
 
-          // Determine plan type based on price ID (UPDATED PRICE IDS)
+          // Determine plan type based on the CORRECT price IDs
           const priceId = subscription.items.data[0]?.price?.id;
           console.log(`Price ID for customer ${profile.stripe_customer_id}: ${priceId}`);
 

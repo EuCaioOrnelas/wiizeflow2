@@ -43,7 +43,7 @@ serve(async (req) => {
     const checkoutEmail = customerEmail && customerEmail.trim() !== "" ? customerEmail : "guest@wiizeflow.com";
     console.log('Using email for checkout:', checkoutEmail);
 
-    // Determine plan details based on price ID (UPDATED PRICE IDS)
+    // Determine plan details based on the CORRECT price IDs
     let planName = "Plano Desconhecido";
     let amount = 0;
     

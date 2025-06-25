@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,15 +17,16 @@ import {
   LogOut
 } from "lucide-react";
 import { useAdminDashboard } from "@/hooks/useAdminDashboard";
+import { CreateUserDialog } from "@/components/CreateUserDialog";
+import { PaymentFailuresTable } from "@/components/PaymentFailuresTable";
 import { supabase } from "@/integrations/supabase/client";
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { stats, loading, isAdmin, logout, refreshStats } = useAdminDashboard();
+  const { stats, loading, isAdmin, logout, createUser, refreshStats } = useAdminDashboard();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    // Check authentication
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -98,6 +98,7 @@ const Admin = () => {
           </div>
           
           <div className="flex items-center space-x-4">
+            <CreateUserDialog onCreateUser={createUser} />
             <Button 
               variant="outline" 
               onClick={handleRefresh}
@@ -182,7 +183,7 @@ const Admin = () => {
         </div>
 
         {/* Plan Distribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Free Plan Users */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -225,7 +226,7 @@ const Admin = () => {
               </p>
               <div className="mt-2">
                 <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                  R$ 29,90/mês
+                  R$ 47,00/mês
                 </Badge>
               </div>
             </CardContent>
@@ -249,7 +250,7 @@ const Admin = () => {
               </p>
               <div className="mt-2">
                 <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                  R$ 299,90/ano
+                  R$ 397,00/ano
                 </Badge>
               </div>
             </CardContent>
@@ -257,7 +258,7 @@ const Admin = () => {
         </div>
 
         {/* Revenue Breakdown */}
-        <div className="mt-8">
+        <div className="mb-8">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -270,20 +271,20 @@ const Admin = () => {
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Receita Planos Mensais</p>
                   <p className="text-xl font-bold text-blue-600">
-                    {formatCurrency((stats?.monthly_users || 0) * 29.90)}
+                    {formatCurrency((stats?.monthly_users || 0) * 47.00)}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {stats?.monthly_users || 0} usuários × R$ 29,90
+                    {stats?.monthly_users || 0} usuários × R$ 47,00
                   </p>
                 </div>
                 
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Receita Planos Anuais (mensal)</p>
                   <p className="text-xl font-bold text-yellow-600">
-                    {formatCurrency((stats?.annual_users || 0) * (299.90 / 12))}
+                    {formatCurrency((stats?.annual_users || 0) * (397.00 / 12))}
                   </p>
                   <p className="text-xs text-gray-500">
-                    {stats?.annual_users || 0} usuários × R$ 24,99
+                    {stats?.annual_users || 0} usuários × R$ 33,08
                   </p>
                 </div>
                 
@@ -300,6 +301,9 @@ const Admin = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Payment Failures Table */}
+        <PaymentFailuresTable />
       </main>
     </div>
   );

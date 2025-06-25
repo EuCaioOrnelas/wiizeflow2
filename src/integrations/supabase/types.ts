@@ -113,6 +113,39 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_failures: {
+        Row: {
+          created_at: string | null
+          failure_date: string | null
+          failure_reason: string | null
+          id: string
+          resolved: boolean | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          failure_date?: string | null
+          failure_reason?: string | null
+          id?: string
+          resolved?: boolean | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          failure_date?: string | null
+          failure_reason?: string | null
+          id?: string
+          resolved?: boolean | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -121,6 +154,10 @@ export type Database = {
           id: string
           name: string | null
           plan_type: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_expires_at: string | null
+          subscription_status: string | null
           updated_at: string | null
         }
         Insert: {
@@ -130,6 +167,10 @@ export type Database = {
           id: string
           name?: string | null
           plan_type?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -139,6 +180,10 @@ export type Database = {
           id?: string
           name?: string | null
           plan_type?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -172,6 +217,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_expired_subscriptions: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      create_admin_user: {
+        Args: {
+          user_email: string
+          user_password: string
+          user_name: string
+          plan_type: string
+          subscription_period?: string
+        }
+        Returns: Json
+      }
       get_admin_dashboard_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
